@@ -1,19 +1,21 @@
 #include "../headers/main.h"
 
-char	**get_paths(char **env, int *nb_paths);
+char	**get_paths(int *nb_paths);
 void	handle_input(char *input, char **paths, bool *exit_flag);
 int	is_a_valid_command(char *input, char **paths);
+int	is_in_dir(char *input, DIR *directory);
 
-int main(int argc, char **argv, char **env)
+int main(int argc, char **argv)
 {
 	char	**paths;
 	int		nb_paths;
 	char	*input;
 	bool	exit_flag;
 
-	(void)argc;
 	(void)argv;
-	paths = get_paths(env, &nb_paths);
+	if (argc > 1)
+		return (0);
+	paths = get_paths(&nb_paths);
 	exit_flag = false;
 	while (!exit_flag)
 	{
@@ -21,34 +23,29 @@ int main(int argc, char **argv, char **env)
 		handle_input(input, paths, &exit_flag);
 		free(input);
 	}
-	char *location;
-	location = getcwd(NULL, 0);
-	printf("%s\n", location);
-	int iter = -1;
-	while (paths[++iter] != NULL)
-		printf("%s\n", paths[iter]);
+
+				// TESTS, ERASE THIS
+				char *location;
+				location = getcwd(NULL, 0);
+				printf("%s\n", location);
+				int iter = -1;
+				while (paths[++iter] != NULL)
+					printf("%s\n", paths[iter]);
+
 	if (paths)
 		ft_free_matrix((void**)paths, nb_paths);
 	return (0);
 }
 
 
-char	**get_paths(char **env, int *nb_paths)
+char	**get_paths(int *nb_paths)
 {
 	char	*paths_str;
 	char	**paths;
-	int		iter;
 
-	paths_str = NULL;
-	iter = -1;
-	while (env[++iter] != NULL)
-	{
-		if (!ft_strncmp(env[iter], "PATH=", 5))
-		{
-			paths_str = env[iter] + 5;
-			break ;
-		}
-	}
+	paths_str = getenv("PATH");
+//	if (!paths)
+//		handle_error(NOT_ENV_VAR);
 	paths = ft_split(paths_str, ':', nb_paths);
 	if (!paths)
 		handle_error(FAILED_MALLOC);
@@ -73,21 +70,37 @@ int	is_a_valid_command(char *input, char **paths)
 	DIR	*directory;
 	int	iter;
 
+
 	iter = -1;
 	while (paths[++iter] != NULL)
 	{
 		directory = opendir(paths[iter]);
-		while (1)
+		if (is_in_dir(input, directory))
+			return (1);
+	}
+	return (0);
+}
+
+int	is_in_dir(char *input, DIR *directory)
+{
+	struct dirent *dir_struct;
+
+	while (1)
+	{
+		dir_struct = readdir(directory);
+		if (dir_struct != NULL)
 		{
-			if (readdir(directory) != NULL)
-				check_name(input, directory);
-			else
-			{
-				check_errno //to see if error;
-				if (closedir(directory) != 0)
-					handle_error(CLOSING_FILE);
-			}
+			if (ft_strncmp(input, dir_struct->d_name, ft_strlen(input) + 1) == 0)
+				return (1);
+		}
+		else
+		{
+//			check_errno //to see if error;
+//			if (closedir(directory) != 0)
+//				handle_error(CLOSING_FILE);
+			return (0);
 		}
 	}
-	return (1);
+
+
 }
