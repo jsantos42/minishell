@@ -44,11 +44,11 @@ char	**get_paths(int *nb_paths)
 	char	**paths;
 
 	paths_str = getenv("PATH");
-//	if (!paths)
-//		handle_error(NOT_ENV_VAR);
+	if (!paths_str)
+		handle_error(ENV_VAR);
 	paths = ft_split(paths_str, ':', nb_paths);
 	if (!paths)
-		handle_error(FAILED_MALLOC);
+		handle_error(MALLOC);
 	return (paths);
 }
 
@@ -70,11 +70,12 @@ int	is_a_valid_command(char *input, char **paths)
 	DIR	*directory;
 	int	iter;
 
-
 	iter = -1;
 	while (paths[++iter] != NULL)
 	{
 		directory = opendir(paths[iter]);
+		if (!directory)
+			handle_error(OPENING_DIR);
 		if (is_in_dir(input, directory))
 			return (1);
 	}
@@ -95,9 +96,10 @@ int	is_in_dir(char *input, DIR *directory)
 		}
 		else
 		{
-//			check_errno //to see if error;
-//			if (closedir(directory) != 0)
-//				handle_error(CLOSING_FILE);
+			if (errno == EBADF || errno == EFAULT || errno == EIO)
+				handle_error(READING_DIR);
+			if (closedir(directory) != 0)
+				handle_error(CLOSING_DIR);
 			return (0);
 		}
 	}
