@@ -11,5 +11,6 @@
 # include "../libs/libft/include/libft.h" // this already includes stdlib.h and unistd.h
 # include "types.h"
 # include "error_utils.h"
+# include "command_utils.h"
 
 #endif
