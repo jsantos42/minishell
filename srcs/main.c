@@ -1,23 +1,43 @@
 #include "../headers/main.h"
 
 char	**get_paths(char **env, int *nb_paths);
+void	handle_input(char *input, char **paths, bool *exit_flag);
 
 int main(int argc, char **argv, char **env)
 {
 	char	**paths;
 	int		nb_paths;
+	char	*input;
+	bool	exit_flag;
 
 	(void)argc;
 	(void)argv;
 	paths = get_paths(env, &nb_paths);
-//	int iter = -1;
-//	while (paths[++iter] != NULL)
-//		printf("%s\n", paths[iter]);
+	exit_flag = false;
+	while (!exit_flag)
+	{
+		input = readline("minishell-1.0$ ");
+		handle_input(input, paths, &exit_flag);
+		free(input);
+	}
 	if (paths)
 		ft_free_matrix((void**)paths, nb_paths);
-	return 0;
+	return (0);
 }
 
+
+void	handle_input(char *input, char **paths, bool *exit_flag)
+{
+	if (!ft_strncmp(input, "exit", 5))
+	{
+		printf("%s\n", input);
+		*exit_flag = true;
+	}
+//	else
+//		look for command in paths
+	(void)paths;
+
+}
 
 char	**get_paths(char **env, int *nb_paths)
 {
