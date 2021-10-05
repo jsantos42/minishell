@@ -12,11 +12,8 @@ int main(int argc, char **argv)
 		data.input = readline(PROMPT);
 		if (is_exit_command(data.input))
 			break ;
-		if (is_a_valid_command(data.input, data.paths))
-		{
-			printf("%s is a command!\n", data.input);
-//			execute_command(input, paths);
-		}
+		if (is_a_valid_command(&data))
+			execute_command(&data);
 		else
 			printf("%s: command not found\n", data.input);
 		free(data.input);
