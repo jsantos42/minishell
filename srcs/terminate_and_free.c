@@ -1,8 +1,8 @@
-#include "../headers/error_utils.h"
+#include "../headers/terminate_and_free.h"
 
-void	handle_error(int error)
+void	terminate_program(int error, t_data *data)
 {
-//	free_data;
+	free_data(data);
 	printf("ERROR\n");
 	if (error == MALLOC)
 		printf("Memory allocation failed.\n");
@@ -22,4 +22,14 @@ void	handle_error(int error)
 	else if (error == UNCLOSED_QUOTES)
 		printf("Minishell should not interpret unclosed quotes.\n");
 	exit(error);
+}
+
+void	free_data(t_data *data)
+{
+	if (data->input)
+		free(data->input);
+	if (data->paths)
+		ft_free_matrix((void**)data->paths, data->nb_paths);
+	if (data->commands)
+		ft_free_matrix((void**)data->commands, data->nb_commands);
 }

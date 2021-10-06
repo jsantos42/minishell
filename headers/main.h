@@ -10,9 +10,9 @@
 # include <sys/errno.h>
 # include "../libs/libft/include/libft.h" // this already includes stdlib.h and unistd.h
 # include "types.h"
-# include "error_utils.h"
+# include "terminate_and_free.h"
 # include "command_utils.h"
-# include "parser.h"
+# include "input_parsing.h"
 
 
 #endif

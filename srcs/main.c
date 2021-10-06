@@ -7,15 +7,15 @@ int main(int argc, char **argv)
 	t_data	data;
 
 	init_data(&data, argc, argv);
-	while (true)
+	while (!data.exit_cmd)
 	{
 		data.input = readline(PROMPT);
 		parse_input(&data);
+		execute_input(&data);
 		free(data.input);
 		data.input = NULL;
 	}
-	if (data.paths)
-		ft_free_matrix((void**)data.paths, data.nb_paths);
+	free_data(&data);
 	return (0);
 }
 
@@ -28,19 +28,12 @@ static void	init_data(t_data *data, int argc, char **argv)
 	(void)argv;
 	data->paths = NULL;
 	data->input = NULL;
+	data->commands = NULL;
+	data->exit_cmd = false;
 	env_paths = getenv("PATH");
 	if (!env_paths)
-		handle_error(ENV_VAR);
+		terminate_program(ENV_VAR, data);
 	data->paths = ft_split(env_paths, ':', &data->nb_paths);
 	if (!data->paths)
-		handle_error(MALLOC);
+		terminate_program(MALLOC, data);
 }
-
-
-//// TESTS, ERASE THIS
-//char *location;
-//location = getcwd(NULL, 0);
-//printf("%s\n", location);
-//int iter = -1;
-//while (data.paths[++iter] != NULL)
-//printf("%s\n", data.paths[iter]);

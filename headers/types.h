@@ -16,10 +16,12 @@ typedef enum e_errors {
 
 
 typedef struct	s_data {
+	char	*input;
 	char	**paths;
 	int		nb_paths;
-	char	*input;
-	char	**split_input;
+	char	**commands;
+	int		nb_commands;
+	bool	exit_cmd;
 }	t_data;
 
 #endif
