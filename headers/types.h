@@ -9,7 +9,9 @@ typedef enum e_errors {
 	ENV_VAR			= -2,
 	OPENING_DIR		= -4,
 	READING_DIR		= -5,
-	CLOSING_DIR		= -6
+	CLOSING_DIR		= -6,
+	SPECIAL_CHAR	= -7,
+	UNCLOSED_QUOTES	= -8
 }	t_errors;
 
 
@@ -17,6 +19,7 @@ typedef struct	s_data {
 	char	**paths;
 	int		nb_paths;
 	char	*input;
+	char	**split_input;
 }	t_data;
 
 #endif

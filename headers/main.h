@@ -12,5 +12,7 @@
 # include "types.h"
 # include "error_utils.h"
 # include "command_utils.h"
+# include "parser.h"
+
 
 #endif

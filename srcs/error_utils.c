@@ -2,6 +2,7 @@
 
 void	handle_error(int error)
 {
+//	free_data;
 	printf("ERROR\n");
 	if (error == MALLOC)
 		printf("Memory allocation failed.\n");
@@ -13,5 +14,12 @@ void	handle_error(int error)
 		printf("Could not read a directory.\n");
 	else if (error == CLOSING_DIR)
 		printf("Could not close a directory.\n");
+	else if (error == SPECIAL_CHAR)
+	{
+		printf("Minishell should not interpret unspecified special characters");
+		printf(" like '\\' or ';'.\n");
+	}
+	else if (error == UNCLOSED_QUOTES)
+		printf("Minishell should not interpret unclosed quotes.\n");
 	exit(error);
 }
