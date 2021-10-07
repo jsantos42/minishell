@@ -28,7 +28,7 @@ static void	init_data(t_data *data, int argc, char **argv)
 	(void)argv;
 	data->paths = NULL;
 	data->input = NULL;
-	data->commands = NULL;
+	data->cmd = NULL;
 	data->exit_cmd = false;
 	env_paths = getenv("PATH");
 	if (!env_paths)
