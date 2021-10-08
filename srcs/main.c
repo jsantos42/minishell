@@ -12,6 +12,7 @@ int main(int argc, char **argv)
 		data.input = readline(PROMPT);
 		parse_input(&data);
 		execute_input(&data);
+		//free_data_cmd;
 		free(data.input);
 		data.input = NULL;
 	}

@@ -10,7 +10,7 @@ int	is_exit_command(char *input)
 	return (0);
 }
 
-int	is_a_valid_command(t_data *data)
+int	is_a_valid_command(char *cmd, t_data *data)
 {
 	DIR	*directory;
 	int	iter;
@@ -20,8 +20,8 @@ int	is_a_valid_command(t_data *data)
 	{
 		directory = opendir(data->paths[iter]);
 		if (!directory)
-			handle_error(OPENING_DIR);
-		if (is_in_dir(data->input, data->paths[iter], directory))
+			terminate_program(OPENING_DIR, data);
+		if (is_in_dir(cmd, data->paths[iter], directory))
 			return (1);
 	}
 	return (0);

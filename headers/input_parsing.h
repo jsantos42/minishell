@@ -4,8 +4,7 @@
 # include "main.h"
 
 void	parse_input(t_data *data);
-int	handle_white_space(char *input);
-int	handle_pipe(char *input);
-int	handle_redirection(char *input);
+int	read_command(t_data *data, char *str);
+int	read_argument(t_data *data, char *str);
 
 #endif

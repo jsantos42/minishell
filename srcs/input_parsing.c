@@ -28,117 +28,100 @@ void	parse_input(t_data *data)
 
 	str += handle_white_space(str);
 	command_iter = -1;
-	iter = 0;
-	while (str[iter] != '\0')
-	{
-		status = reading_cmd;
-		command_iter++;
-		while (str[iter] != '|' && str[iter] != '&'&& str[iter] != '\''
-		&& str[iter] != '\"' && str[iter] != '<' && str[iter] != '>'
-		&& str[iter] != '$' && str[iter] != '\\' && str[iter] != ';'
-		&& !ft_isspace(str[iter]))
-			iter++;
-		check_if_valid_command_and_save_command_so_far(data, str, iter);
-		str +=iter;
-		iter  = 0;
-		status = reading_args;
-			str += handle_white_space(str);
-		if (*str == '\\' || *str == ';')
-			terminate_program(SPECIAL_CHAR, data);
-		else if (*str == '\'' || *str == '\"')
-			str += save_quoted_str(data, str); //dont forget on this function to check which quote char it is
-		else if (*str == '$')
-			str += expand_var(data, str);
-		else if (*str == '|')
-			str += handle_pipe(data, str);
-			//check for next char to be different than pipe, to see if is OR op
-			//args[command_iter] = NULL;
-			//break;
-		else if (*str == '&')
-			str += handle_amper(data, str);
-			//check for next char to be different than amper, to see if is AND op
-			//args[command_iter] = NULL;
-			//break;
-		else if (*str == '<' || *str == '>')
-		{
-			str += handle_redirection(data, str);
-			//check for next char to be different than this one
-			//save operation
-		}
-
-
-	}
-}
-
-int	check_how_many_commands(char *input)
-{
-	size_t	pipe_nb;
-	size_t	amper_nb;
-	size_t	squote_nb;
-	size_t	dquote_nb;
-	size_t	langle_nb;
-	size_t	rangle_nb;
-	int		*pipe_pos;
-	int		*amper_pos;
-	int		*squote_pos;
-	int		*dquote_pos;
-	int		*langle_pos;
-	int		*rangle_pos;
-
-	if (count_chr_instances(input, '\\') || count_chr_instances(input, ';'))
-		terminate_program(SPECIAL_CHAR, data); //only if not inside quotes!!
-	pipe_pos = map_chr_instances(input, '|', &pipe_nb);
-	amper_pos = map_chr_instances(input, '&', &pipe_nb);
-	squote_pos = map_chr_instances(input, '\'', &pipe_nb);
-	dquote_pos = map_chr_instances(input, '\"', &pipe_nb);
-	langle_pos = map_chr_instances(input, '<', &langle_nb);
-	rangle_pos = map_chr_instances(input, '>', &rangle_nb);
-	if ((!pipe_pos && pipe_nb != 0)
-	|| (!amper_pos && amper_nb != 0)
-	|| (!squote_pos && squote_nb != 0)
-	|| (!dquote_pos && dquote_nb != 0)
-	|| (!langle_pos && langle_nb != 0)
-	|| (!rangle_pos && rangle_nb != 0))
-		terminate_program(MALLOC, data);
-
-	return (1);
-}
-
-
-void read_command()
-{
 	while (*str != '\0')
 	{
-		reading_command = true;
-		if (*str != '<' || *str != '<')
-		{
-			reading_command = false;
-			read_arguments; //until isspace==true
-		}
-
-
+		//init data->cmd malloc!
+		str += read_command(data, str);
+		str += handle_white_space(str);
+		str += read_argument(data, str);
+		if (*str == '\\' || *str == ';')
+			terminate_program(SPECIAL_CHAR, data);
+		else if (*str == '|')
+			str += handle_pipe(data, str);
+		else if (*str == '&')
+			str += handle_amper(data, str);
+		else if (*str == '<' || *str == '>')
+			str += handle_redirection(data, str);
 	}
 }
 
-	/*old version
-
-			*/
-
-
-int	handle_white_space(char *input)
+int	read_command(t_data *data, char *str)
 {
-	int	iter;
+	int		iter;
+	char	*cmd;
 
-	iter = -1;
-	while (input[++iter] != '\0')
+	iter = 0;
+	while (str[iter] != '\0'
+		&& !is_special_char(str[iter]) && !ft_isspace(str[iter]))
+		iter++;
+	cmd = ft_substr(str, 0, iter + 1);
+	if (is_a_valid_command(cmd, data))
 	{
-		if (ft_isspace(input[iter]))
-			iter++;
-		else
-			break ;
+		save_command_so_far(data, cmd);
+		command_iter++;
+	}
+	else
+	{
+		printf("minishell: %s: command not found\n", cmd);
+		free(cmd);
+		//free_stuff
 	}
 	return (iter);
 }
 
-if (save_quoted_str(input) < 0)
-//look for other corresponding quote and save str in between
+int	read_argument(t_data *data, char *str)
+{
+	int iter;
+
+	iter = 0;
+	while (str[iter] != '\0')
+	{
+		if (str[iter] == '\'' || str[iter] == '\"')
+			iter += handle_quote(data, str + iter); //advance until closing quote. dont forget on this function to check which quote char it is
+		else if (str[iter] == '$')
+			iter += handle_dollar_sign(data, str); //this must finish on a space or special char
+		else if (ft_isspace(str[iter]) || is_special_char(str[iter]))
+		{
+			save_new_argument_so_far(data, str, iter);
+			break;
+		}
+		else
+			iter++;
+	}
+}
+
+
+
+//int	check_how_many_commands(char *input)
+//{
+//	size_t	pipe_nb;
+//	size_t	amper_nb;
+//	size_t	squote_nb;
+//	size_t	dquote_nb;
+//	size_t	langle_nb;
+//	size_t	rangle_nb;
+//	int		*pipe_pos;
+//	int		*amper_pos;
+//	int		*squote_pos;
+//	int		*dquote_pos;
+//	int		*langle_pos;
+//	int		*rangle_pos;
+//
+//	if (count_chr_instances(input, '\\') || count_chr_instances(input, ';'))
+//		terminate_program(SPECIAL_CHAR, data); //only if not inside quotes!!
+//	pipe_pos = map_chr_instances(input, '|', &pipe_nb);
+//	amper_pos = map_chr_instances(input, '&', &pipe_nb);
+//	squote_pos = map_chr_instances(input, '\'', &pipe_nb);
+//	dquote_pos = map_chr_instances(input, '\"', &pipe_nb);
+//	langle_pos = map_chr_instances(input, '<', &langle_nb);
+//	rangle_pos = map_chr_instances(input, '>', &rangle_nb);
+//	if ((!pipe_pos && pipe_nb != 0)
+//		|| (!amper_pos && amper_nb != 0)
+//		|| (!squote_pos && squote_nb != 0)
+//		|| (!dquote_pos && dquote_nb != 0)
+//		|| (!langle_pos && langle_nb != 0)
+//		|| (!rangle_pos && rangle_nb != 0))
+//		terminate_program(MALLOC, data);
+//
+//	return (1);
+//}

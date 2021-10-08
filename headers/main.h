@@ -13,6 +13,8 @@
 # include "terminate_and_free.h"
 # include "command_utils.h"
 # include "input_parsing.h"
+# include "input_parsing_utils.h"
+# include "handle_special_chars.h"
 
 
 #endif
