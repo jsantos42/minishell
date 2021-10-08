@@ -17,11 +17,13 @@ int	handle_white_space(char *input)
 
 int	handle_dollar_sign(t_data *data, char *str)
 {
-
+	//this must finish on a space or special char
 }
 
-int	handle_quote(t_data *data, char *str) //advance until closing quote. dont forget on this function to check which quote char it is
+int	handle_quote(t_data *data, char *str)
 {
+	//advance until closing quote. dont forget on this function to check which quote char it is
+	//make sure to check for escaping char before the closing quote
 
 }
 

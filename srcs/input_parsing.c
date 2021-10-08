@@ -25,14 +25,10 @@ void	parse_input(t_data *data)
 	int		iter;
 
 	str = data->input;
-
-	str += handle_white_space(str);
-	command_iter = -1;
 	while (*str != '\0')
 	{
 		//init data->cmd malloc!
 		str += read_command(data, str);
-		str += handle_white_space(str);
 		str += read_argument(data, str);
 		if (*str == '\\' || *str == ';')
 			terminate_program(SPECIAL_CHAR, data);
@@ -50,6 +46,7 @@ int	read_command(t_data *data, char *str)
 	int		iter;
 	char	*cmd;
 
+	str += handle_white_space(str);
 	iter = 0;
 	while (str[iter] != '\0'
 		&& !is_special_char(str[iter]) && !ft_isspace(str[iter]))
@@ -73,13 +70,14 @@ int	read_argument(t_data *data, char *str)
 {
 	int iter;
 
+	str += handle_white_space(str);
 	iter = 0;
 	while (str[iter] != '\0')
 	{
 		if (str[iter] == '\'' || str[iter] == '\"')
-			iter += handle_quote(data, str + iter); //advance until closing quote. dont forget on this function to check which quote char it is
+			iter += handle_quote(data, str + iter);
 		else if (str[iter] == '$')
-			iter += handle_dollar_sign(data, str); //this must finish on a space or special char
+			iter += handle_dollar_sign(data, str);
 		else if (ft_isspace(str[iter]) || is_special_char(str[iter]))
 		{
 			save_new_argument_so_far(data, str, iter);
