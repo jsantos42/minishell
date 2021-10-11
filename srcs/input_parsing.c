@@ -24,8 +24,8 @@ int	parse_input(t_data *data)
 	t_cmd	*current_command;
 	char	*str;
 
+	init_command(data, &data->commands);
 	current_command = data->commands;
-	init_command(data, &current_command);
 	str = data->input;
 	while (*str != '\0')
 	{
