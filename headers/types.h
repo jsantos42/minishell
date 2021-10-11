@@ -4,6 +4,7 @@
 # include "main.h"
 
 # define PROMPT "minishell-1.0$ "
+
 typedef enum e_errors {
 	MALLOC			= -1,
 	ENV_VAR			= -2,
@@ -17,7 +18,10 @@ typedef enum e_errors {
 
 typedef struct	s_cmd {
 	char			*command;
+	char			*redir_input;
+	char			*redir_output;
 	char			**arguments;
+	int				nb_arguments;
 	struct s_cmd	*next;
 }	t_cmd;
 

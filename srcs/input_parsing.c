@@ -27,15 +27,21 @@ void	parse_input(t_data *data)
 	str = data->input;
 	while (*str != '\0')
 	{
-		//init data->cmd malloc!
+		init_cmd(data);
 		str += read_command(data, str);
 		str += read_argument(data, str);
 		if (*str == '\\' || *str == ';')
 			terminate_program(SPECIAL_CHAR, data);
 		else if (*str == '|')
+		{
 			str += handle_pipe(data, str);
+			//command++;
+		}
 		else if (*str == '&')
+		{
 			str += handle_amper(data, str);
+			//command++;
+		}
 		else if (*str == '<' || *str == '>')
 			str += handle_redirection(data, str);
 	}
@@ -68,26 +74,40 @@ int	read_command(t_data *data, char *str)
 
 int	read_argument(t_data *data, char *str)
 {
+	int	count;
 	int iter;
 
-	str += handle_white_space(str);
-	iter = 0;
-	while (str[iter] != '\0')
+	count = 0;
+	iter = -1;
+	while (str[++iter] != '\0')
 	{
 		if (str[iter] == '\'' || str[iter] == '\"')
-			iter += handle_quote(data, str + iter);
+			iter += advance_to_closing_quote(data, str + iter);
 		else if (str[iter] == '$')
-			iter += handle_dollar_sign(data, str);
-		else if (ft_isspace(str[iter]) || is_special_char(str[iter]))
+			iter += handle_dollar_sign(data, str + iter);
+		else if (is_special_char(str[iter]))
 		{
-			save_new_argument_so_far(data, str, iter);
+			str += save_new_argument_so_far(data, str, iter);
 			break;
 		}
-		else
-			iter++;
+		else if (ft_isspace(str[iter]))
+		{
+			str += save_new_argument_so_far(data, str, iter);
+			str += handle_white_space(str + iter);
+			count = iter;
+			iter = -1;
+		}
 	}
+	return (count + iter);
 }
 
+
+int	save_new_argument(t_data *data, char *str, int end)
+{
+
+	return (end);
+
+}
 
 
 //int	check_how_many_commands(char *input)
