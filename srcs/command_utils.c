@@ -10,7 +10,7 @@ int	is_exit_command(char *input)
 	return (0);
 }
 
-int	is_a_valid_command(char *cmd, t_data *data)
+int	is_a_valid_command(t_data *data, char *cmd)
 {
 	DIR	*directory;
 	int	iter;

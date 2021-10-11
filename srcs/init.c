@@ -9,8 +9,8 @@ void	init_data(t_data *data, int argc, char **argv)
 	(void)argv;
 	data->paths = NULL;
 	data->input = NULL;
-	data->cmd = NULL;
 	data->exit_cmd = false;
+	data->commands = NULL;
 	env_paths = getenv("PATH");
 	if (!env_paths)
 		terminate_program(ENV_VAR, data);
@@ -19,15 +19,15 @@ void	init_data(t_data *data, int argc, char **argv)
 		terminate_program(MALLOC, data);
 }
 
-void	init_cmd(t_data *data)
+void	init_command(t_data *data, t_cmd *command)
 {
-	data->cmd = NULL;
-	if (!ft_other_malloc((void**)&(data->cmd)))
+	command = NULL;
+	if (!ft_other_malloc((void**)&command))
 		terminate_program(MALLOC, data);
-	data->cmd->command = NULL;
-	data->cmd->redir_input = NULL;
-	data->cmd->redir_output = NULL;
-	data->cmd->arguments = NULL;
-	data->cmd->nb_arguments = 0;
-	data->cmd->next = NULL;
+	command->cmd = NULL;
+	command->redir_input = NULL;
+	command->redir_output = NULL;
+	command->args = NULL;
+	command->nb_args = 0;
+	command->next = NULL;
 }

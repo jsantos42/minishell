@@ -17,11 +17,11 @@ typedef enum e_errors {
 
 
 typedef struct	s_cmd {
-	char			*command;
+	char			*cmd;
 	char			*redir_input;
 	char			*redir_output;
-	char			**arguments;
-	int				nb_arguments;
+	char			**args;
+	int				nb_args;
 	struct s_cmd	*next;
 }	t_cmd;
 
@@ -29,7 +29,7 @@ typedef struct	s_data {
 	char	*input;
 	char	**paths;
 	int		nb_paths;
-	t_cmd	*cmd;
+	t_cmd	*commands;
 	bool	exit_cmd;
 }	t_data;
 

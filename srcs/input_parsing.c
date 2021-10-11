@@ -19,78 +19,92 @@ A && B means "run command B if command A succeeded", and A || B means "run comma
 		 * otherwise, read command until then
 		 * then check next char to see if this was actually a pipe or a || sign
  */
-void	parse_input(t_data *data)
+int	parse_input(t_data *data)
 {
+	t_cmd	*current_command;
 	char	*str;
 	int		iter;
 
+	current_command = data->commands;
+	init_command(data, current_command);
 	str = data->input;
 	while (*str != '\0')
 	{
-		init_cmd(data);
-		str += read_command(data, str);
-		str += read_argument(data, str);
+		if (!read_command(data, current_command, &str)
+		|| !read_argument(data, current_command, &str))
+			return (0);
 		if (*str == '\\' || *str == ';')
 			terminate_program(SPECIAL_CHAR, data);
 		else if (*str == '|')
 		{
-			str += handle_pipe(data, str);
-			//command++;
+			handle_pipe(data, &str);
+			current_command = current_command->next;
+			init_command(data, current_command);
 		}
 		else if (*str == '&')
 		{
-			str += handle_amper(data, str);
-			//command++;
+			handle_amper(data, &str);
+			current_command = current_command->next;
+			init_command(data, current_command);
 		}
 		else if (*str == '<' || *str == '>')
-			str += handle_redirection(data, str);
+			handle_redirection(data, &str);
 	}
+	return (1);
 }
 
-int	read_command(t_data *data, char *str)
+/*
+**	In the beginning it checks whether command has already been saved; if so, it
+**	moves on and assumes it is meant to read an argument.
+*/
+
+int	read_command(t_data *data, t_cmd *command, char **str)
 {
 	int		iter;
 	char	*cmd;
 
-	str += handle_white_space(str);
+	if (command->cmd != NULL)
+		return (1);
+	*str += handle_white_space(*str);
 	iter = 0;
-	while (str[iter] != '\0'
-		&& !is_special_char(str[iter]) && !ft_isspace(str[iter]))
+	while ((*str)[iter] != '\0'
+	&& !is_special_char((*str)[iter])
+	&& !ft_isspace((*str)[iter]))
 		iter++;
-	cmd = ft_substr(str, 0, iter + 1);
-	if (is_a_valid_command(cmd, data))
+	cmd = ft_substr(*str, 0, iter + 1);
+	if (is_a_valid_command(data, cmd))
 	{
-		save_command_so_far(data, cmd);
-		command_iter++;
+		command->cmd = cmd;
+		*str += iter;
+		return (1);
 	}
 	else
 	{
 		printf("minishell: %s: command not found\n", cmd);
 		free(cmd);
-		//free_stuff
+		return (0);
 	}
-	return (iter);
 }
 
-int	read_argument(t_data *data, char *str)
+int	read_argument(t_data *data, t_cmd *command, char **str)
 {
 	int	count;
 	int iter;
 
 	count = 0;
 	iter = -1;
-	while (str[++iter] != '\0')
+	while ((*str)[++iter] != '\0')
 	{
-		if (str[iter] == '\'' || str[iter] == '\"')
+		if ((*str)[iter] == '\'' || (*str)[iter] == '\"')
 			iter += advance_to_closing_quote(data, str + iter);
-		else if (str[iter] == '$')
+		else if ((*str)[iter] == '$')
 			iter += handle_dollar_sign(data, str + iter);
-		else if (is_special_char(str[iter]))
+		else if (is_special_char((*str)[iter]))
 		{
 			str += save_new_argument_so_far(data, str, iter);
 			break;
 		}
-		else if (ft_isspace(str[iter]))
+		else if (ft_isspace((*str)[iter]))
 		{
 			str += save_new_argument_so_far(data, str, iter);
 			str += handle_white_space(str + iter);
