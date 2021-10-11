@@ -18,6 +18,7 @@ int	advance_to_closing_quote(t_data *data, char *str)
 	iter = -1;
 	while (str[++iter] != '\0')
 	{
+		//handle escape char
 		if (str[iter] == quote_type)
 			return (iter);
 	}

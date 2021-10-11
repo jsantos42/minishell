@@ -5,6 +5,7 @@
 
 # define PROMPT "minishell-1.0$ "
 
+
 typedef enum e_errors {
 	MALLOC			= -1,
 	ENV_VAR			= -2,
@@ -15,6 +16,11 @@ typedef enum e_errors {
 	UNCLOSED_QUOTES	= -8
 }	t_errors;
 
+typedef enum e_relation {
+	PIPE	= 1,
+	OR		= 2,
+	AND		= 3
+}	t_relation;
 
 typedef struct	s_cmd {
 	char			*cmd;
@@ -22,6 +28,7 @@ typedef struct	s_cmd {
 	char			*redir_output;
 	char			**args;
 	int				nb_args;
+	int				relation_to_next;
 	struct s_cmd	*next;
 }	t_cmd;
 

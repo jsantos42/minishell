@@ -88,10 +88,8 @@ int	read_command(t_data *data, t_cmd *command, char **str)
 
 int	read_argument(t_data *data, t_cmd *command, char **str)
 {
-	int	count;
 	int iter;
 
-	count = 0;
 	iter = -1;
 	while ((*str)[++iter] != '\0')
 	{
@@ -101,23 +99,26 @@ int	read_argument(t_data *data, t_cmd *command, char **str)
 			iter += handle_dollar_sign(data, str + iter);
 		else if (is_special_char((*str)[iter]))
 		{
-			str += save_new_argument_so_far(data, str, iter);
+			save_new_argument(data, command, str, iter); //updates the str pointer position
 			break;
 		}
 		else if (ft_isspace((*str)[iter]))
 		{
-			str += save_new_argument_so_far(data, str, iter);
-			str += handle_white_space(str + iter);
-			count = iter;
+			save_new_argument(data, command, str, iter); //updates the str pointer position
+			str += handle_white_space(str);
 			iter = -1;
 		}
 	}
-	return (count + iter);
+	return (1);
 }
 
-
-int	save_new_argument(t_data *data, char *str, int end)
+int	save_new_argument(t_data *data, t_cmd *command, char **str, int end)
 {
+	if (!command->args)
+		init_args_matrix(command->args);
+
+
+	command->nb_args++;
 
 	return (end);
 

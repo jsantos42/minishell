@@ -28,6 +28,8 @@ void	init_command(t_data *data, t_cmd *command)
 	command->redir_input = NULL;
 	command->redir_output = NULL;
 	command->args = NULL;
+	command->args = NULL;
 	command->nb_args = 0;
+	command->relation_to_next = 0;
 	command->next = NULL;
 }
