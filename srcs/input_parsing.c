@@ -23,10 +23,9 @@ int	parse_input(t_data *data)
 {
 	t_cmd	*current_command;
 	char	*str;
-	int		iter;
 
 	current_command = data->commands;
-	init_command(data, current_command);
+	init_command(data, &current_command);
 	str = data->input;
 	while (*str != '\0')
 	{
@@ -39,13 +38,13 @@ int	parse_input(t_data *data)
 		{
 			handle_pipe(data, &str);
 			current_command = current_command->next;
-			init_command(data, current_command);
+			init_command(data, &current_command);
 		}
 		else if (*str == '&')
 		{
 			handle_amper(data, &str);
 			current_command = current_command->next;
-			init_command(data, current_command);
+			init_command(data, &current_command);
 		}
 		else if (*str == '<' || *str == '>')
 			handle_redirection(data, &str);
@@ -63,9 +62,9 @@ int	read_command(t_data *data, t_cmd *command, char **str)
 	int		iter;
 	char	*cmd;
 
+	*str += handle_white_space(*str);
 	if (command->cmd != NULL)
 		return (1);
-	*str += handle_white_space(*str);
 	iter = 0;
 	while ((*str)[iter] != '\0'
 	&& !is_special_char((*str)[iter])
@@ -90,11 +89,12 @@ int	read_argument(t_data *data, t_cmd *command, char **str)
 {
 	int iter;
 
+	str += handle_white_space(*str);
 	iter = -1;
 	while ((*str)[++iter] != '\0')
 	{
 		if ((*str)[iter] == '\'' || (*str)[iter] == '\"')
-			iter += advance_to_closing_quote(data, str + iter);
+			iter += advance_to_closing_quote(data, *str + iter);
 		else if ((*str)[iter] == '$')
 			iter += handle_dollar_sign(data, str + iter);
 		else if (is_special_char((*str)[iter]))
@@ -105,23 +105,40 @@ int	read_argument(t_data *data, t_cmd *command, char **str)
 		else if (ft_isspace((*str)[iter]))
 		{
 			save_new_argument(data, command, str, iter); //updates the str pointer position
-			str += handle_white_space(str);
+			str += handle_white_space(*str);
 			iter = -1;
 		}
 	}
 	return (1);
 }
 
-int	save_new_argument(t_data *data, t_cmd *command, char **str, int end)
+/*
+**	Creates a new matrix, allocating enough memory to contain both the previous
+**	allocated argument strings* and the new argument. Frees the previous
+**	allocated matrix* and makes command args point to this new matrix. Finally,
+**	it increases the number of arguments and advances the original string until
+**	the end char.
+**
+**	*in case it's not the first time it's called.
+*/
+
+void	save_new_argument(t_data *data, t_cmd *command, char **str, int end)
 {
-	if (!command->args)
-		init_args_matrix(command->args);
+	char	**new;
+	int		iter;
 
-
+	new = NULL;
+	new = malloc(sizeof(char *) * (command->nb_args + 1));
+	if (!new)
+		terminate_program(MALLOC, data);
+	iter = -1;
+	while (++iter < command->nb_args)
+		new[iter] = command->args[iter];
+	new[iter] = ft_substr(*str, 0, end);
+	free_if_not_null(command->args);
+	command->args = new;
 	command->nb_args++;
-
-	return (end);
-
+	*str += end;
 }
 
 

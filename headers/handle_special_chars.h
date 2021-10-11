@@ -4,10 +4,9 @@
 # include "main.h"
 
 int	handle_white_space(char *input);
-int	handle_dollar_sign(t_data *data, char *str);
-int	handle_quote(t_data *data, char *str);
-int	handle_pipe(t_data *data, char *str);
-int	handle_amper(t_data *data, char *str);
-int	handle_redirection(t_data *data, char *str);
+int	handle_dollar_sign(t_data *data, char **str);
+void	handle_pipe(t_data *data, char **str);
+void	handle_amper(t_data *data, char **str);
+void	handle_redirection(t_data *data, char **str);
 
 #endif

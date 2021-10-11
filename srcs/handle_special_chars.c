@@ -15,36 +15,38 @@ int	handle_white_space(char *input)
 	return (iter);
 }
 
-int	handle_dollar_sign(t_data *data, char *str)
+int	handle_dollar_sign(t_data *data, char **str)
 {
 	//this must finish on a space or special char
+	(void)data;
+	(void)str;
+	return (0);
 }
 
-int	handle_quote(t_data *data, char *str)
+void	handle_pipe(t_data *data, char **str)
 {
-	//advance until closing quote. dont forget on this function to check which quote char it is
-	//make sure to check for escaping char before the closing quote
-
-}
-
-int	handle_pipe(t_data *data, char *str)
-{
+	(void)data;
+	(void)str;
 	//check for next char to be different than pipe, to see if is OR op
 	//args[command_iter] = NULL;
 	//break;
 
 }
 
-int	handle_amper(t_data *data, char *str)
+void	handle_amper(t_data *data, char **str)
 {
+	(void)data;
+	(void)str;
 	//check for next char to be different than amper, to see if is AND op
 	//args[command_iter] = NULL;
 	//break;
 
 }
 
-int	handle_redirection(t_data *data, char *str)
+void	handle_redirection(t_data *data, char **str)
 {
+	(void)data;
+	(void)str;
 	//check for next char to be different than this one
 	//save operation
 

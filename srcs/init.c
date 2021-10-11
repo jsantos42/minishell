@@ -19,17 +19,17 @@ void	init_data(t_data *data, int argc, char **argv)
 		terminate_program(MALLOC, data);
 }
 
-void	init_command(t_data *data, t_cmd *command)
+void	init_command(t_data *data, t_cmd **command)
 {
-	command = NULL;
-	if (!ft_other_malloc((void**)&command))
+	*command = NULL;
+	if (!ft_other_malloc((void**)command))
 		terminate_program(MALLOC, data);
-	command->cmd = NULL;
-	command->redir_input = NULL;
-	command->redir_output = NULL;
-	command->args = NULL;
-	command->args = NULL;
-	command->nb_args = 0;
-	command->relation_to_next = 0;
-	command->next = NULL;
+	(*command)->cmd = NULL;
+	(*command)->redir_input = NULL;
+	(*command)->redir_output = NULL;
+	(*command)->args = NULL;
+	(*command)->args = NULL;
+	(*command)->nb_args = 0;
+	(*command)->relation_to_next = 0;
+	(*command)->next = NULL;
 }
