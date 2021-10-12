@@ -35,17 +35,9 @@ int	parse_input(t_data *data)
 		if (*str == '\\' || *str == ';')
 			terminate_program(SPECIAL_CHAR, data);
 		else if (*str == '|')
-		{
-			handle_pipe(data, &str);
-			current_command = current_command->next;
-			init_command(data, &current_command);
-		}
+			handle_pipe(data, &current_command, &str);
 		else if (*str == '&')
-		{
-			handle_amper(data, &str);
-			current_command = current_command->next;
-			init_command(data, &current_command);
-		}
+			handle_amper(data, &current_command, &str);
 		else if (*str == '<' || *str == '>')
 			handle_redirection(data, &str);
 	}

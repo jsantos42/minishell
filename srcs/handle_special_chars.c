@@ -21,24 +21,41 @@ int	handle_dollar_sign(t_data *data, char **str)
 	return (0);
 }
 
-void	handle_pipe(t_data *data, char **str)
+void	handle_pipe(t_data *data, t_cmd **command, char **str)
 {
-	(void)data;
-	(void)str;
-	//check for next char to be different than pipe, to see if is OR op
-	//args[command_iter] = NULL;
-	//break;
+	t_cmd	*new_command;
 
+	if (**str == *(*str + 1))
+	{
+		(*command)->relation_to_next = OR;
+		(*str) += 2;
+	}
+	else
+	{
+		(*command)->relation_to_next = PIPE;
+		(*str)++;
+	}
+	new_command = NULL;
+	init_command(data, &new_command);
+	(*command)->next = new_command;
+	*command = (*command)->next;
 }
 
-void	handle_amper(t_data *data, char **str)
+void	handle_amper(t_data *data, t_cmd **command, char **str)
 {
-	(void)data;
-	(void)str;
-	//check for next char to be different than amper, to see if is AND op
-	//args[command_iter] = NULL;
-	//break;
+	t_cmd	*new_command;
 
+	if (**str == *(*str + 1))
+	{
+		(*command)->relation_to_next = AND;
+		(*str) += 2;
+	}
+	else
+		terminate_program(RUN_BG, data);
+	new_command = NULL;
+	init_command(data, &new_command);
+	(*command)->next = new_command;
+	*command = (*command)->next;
 }
 
 void	handle_redirection(t_data *data, char **str)

@@ -21,6 +21,8 @@ void	terminate_program(int error, t_data *data)
 	}
 	else if (error == UNCLOSED_QUOTES)
 		printf("Minishell should not interpret unclosed quotes.\n");
+	else if (error == RUN_BG)
+		printf("Minishell should not deal with job control. Did you mean '&&'?\n");
 	exit(error);
 }
 

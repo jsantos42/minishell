@@ -13,7 +13,8 @@ typedef enum e_errors {
 	READING_DIR		= -5,
 	CLOSING_DIR		= -6,
 	SPECIAL_CHAR	= -7,
-	UNCLOSED_QUOTES	= -8
+	UNCLOSED_QUOTES	= -8,
+	RUN_BG			= -9
 }	t_errors;
 
 typedef enum e_relation {

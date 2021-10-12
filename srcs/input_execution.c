@@ -5,9 +5,13 @@ void	execute_input(t_data *data)
 	int	iter;
 
 	printf("The arguments you gave me:\n");
-	iter = -1;
-	while (++iter < data->commands->nb_args)
-		printf("%s\n", data->commands->args[iter]);
+	while (data->commands != NULL)
+	{
+		iter = -1;
+		while (++iter < data->commands->nb_args)
+			printf("%s\n", data->commands->args[iter]);
+		data->commands = data->commands->next;
+	}
 //	//while parsing list of commands
 //	if (is_exit_command(data->input))
 //	{
