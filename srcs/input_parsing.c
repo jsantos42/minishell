@@ -70,7 +70,7 @@ int	read_command(t_data *data, t_cmd *command, char **str)
 	&& !is_special_char((*str)[iter])
 	&& !ft_isspace((*str)[iter]))
 		iter++;
-	cmd = ft_substr(*str, 0, iter + 1);
+	cmd = ft_substr(*str, 0, iter);
 	if (is_a_valid_command(data, cmd))
 	{
 		command->cmd = cmd;
@@ -89,7 +89,7 @@ int	read_argument(t_data *data, t_cmd *command, char **str)
 {
 	int iter;
 
-	str += handle_white_space(*str);
+	*str += handle_white_space(*str);
 	iter = -1;
 	while ((*str)[++iter] != '\0')
 	{
@@ -98,17 +98,15 @@ int	read_argument(t_data *data, t_cmd *command, char **str)
 		else if ((*str)[iter] == '$')
 			iter += handle_dollar_sign(data, str + iter);
 		else if (is_special_char((*str)[iter]))
-		{
-			save_new_argument(data, command, str, iter); //updates the str pointer position
-			break;
-		}
+			break ;
 		else if (ft_isspace((*str)[iter]))
 		{
 			save_new_argument(data, command, str, iter); //updates the str pointer position
-			str += handle_white_space(*str);
+			*str += handle_white_space(*str);
 			iter = -1;
 		}
 	}
+	save_new_argument(data, command, str, iter); //updates the str pointer position
 	return (1);
 }
 

@@ -7,9 +7,7 @@ int	handle_white_space(char *input)
 	iter = -1;
 	while (input[++iter] != '\0')
 	{
-		if (ft_isspace(input[iter]))
-			iter++;
-		else
+		if (!ft_isspace(input[iter]))
 			break ;
 	}
 	return (iter);
