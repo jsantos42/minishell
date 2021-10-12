@@ -2,27 +2,21 @@
 
 void	init_data(t_data *data, int argc, char **argv)
 {
-	char	*env_paths;
-
 	if (argc > 1)
-		exit (0);
-	(void)argv;
-	data->paths = NULL;
+		exit(0);
+	(void) argv;
 	data->input = NULL;
-	data->exit_cmd = false;
+	data->paths = NULL;
+	data->nb_paths = 0;
 	data->commands = NULL;
-	env_paths = getenv("PATH");
-	if (!env_paths)
-		terminate_program(ENV_VAR, data);
-	data->paths = ft_split(env_paths, ':', &data->nb_paths);
-	if (!data->paths)
-		terminate_program(MALLOC, data);
+	data->exit_cmd = false;
 }
 
 void	init_command(t_data *data, t_cmd **command)
 {
 	*command = NULL;
-	if (!ft_other_malloc((void**)command))
+	*command = malloc(sizeof(t_cmd));
+	if (!*command)
 		terminate_program(MALLOC, data);
 	(*command)->cmd = NULL;
 	(*command)->redir_input = NULL;

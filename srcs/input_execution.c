@@ -4,8 +4,11 @@ void	execute_input(t_data *data)
 {
 	(void)data;
 //	//while parsing list of commands
-//	if (is_exit_command(data.input))
-//		break ;
+//	if (is_exit_command(data->input))
+//	{
+//		data->exit_cmd = true;
+//		break;
+//	}
 //	if (is_a_valid_command(&data))
 //		execute_command(&data);
 //	else
