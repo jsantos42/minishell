@@ -24,6 +24,7 @@ void	init_command(t_data *data, t_cmd **command)
 	(*command)->args = NULL;
 	(*command)->args = NULL;
 	(*command)->nb_args = 0;
-	(*command)->relation_to_next = 0;
-	(*command)->next = NULL;
+	(*command)->operator = 0;
+	(*command)->left = NULL;
+	(*command)->right = NULL;
 }

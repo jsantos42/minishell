@@ -25,7 +25,7 @@ int	parse_input(t_data *data)
 	char	*str;
 
 	init_command(data, &data->commands);
-	current_command = data->commands;
+	current_command = data->commands->left;
 	str = data->input;
 	while (*str != '\0')
 	{
@@ -46,7 +46,8 @@ int	parse_input(t_data *data)
 
 /*
 **	In the beginning it checks whether command has already been saved; if so, it
-**	moves on and assumes it is meant to read an argument.
+**	assumes it is meant to read an argument and returns. Otherwise, tries to
+**	read a command and checks if it is a valid one.
 */
 
 int	read_command(t_data *data, t_cmd *command, char **str)
@@ -54,7 +55,7 @@ int	read_command(t_data *data, t_cmd *command, char **str)
 	int		iter;
 	char	*cmd;
 
-	*str += handle_white_space(*str);
+	*str += skip_white_space(*str);
 	if (command->cmd != NULL)
 		return (1);
 	iter = 0;
@@ -81,7 +82,7 @@ int	read_argument(t_data *data, t_cmd *command, char **str)
 {
 	int iter;
 
-	*str += handle_white_space(*str);
+	*str += skip_white_space(*str);
 	iter = -1;
 	while ((*str)[++iter] != '\0')
 	{
@@ -94,7 +95,7 @@ int	read_argument(t_data *data, t_cmd *command, char **str)
 		else if (ft_isspace((*str)[iter]))
 		{
 			save_new_argument(data, command, str, iter); //updates the str pointer position
-			*str += handle_white_space(*str);
+			*str += skip_white_space(*str);
 			iter = -1;
 		}
 	}

@@ -32,3 +32,7 @@ static void	get_paths(t_data *data)
 	if (!data->paths)
 		terminate_program(MALLOC, data);
 }
+
+
+/// change args to first arg as command and null terminated
+/// implement unions and brak comd struct

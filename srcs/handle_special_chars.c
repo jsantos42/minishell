@@ -1,6 +1,6 @@
 #include "../headers/handle_special_chars.h"
 
-int	handle_white_space(char *input)
+int	skip_white_space(char *input)
 {
 	int	iter;
 
@@ -27,18 +27,18 @@ void	handle_pipe(t_data *data, t_cmd **command, char **str)
 
 	if (**str == *(*str + 1))
 	{
-		(*command)->relation_to_next = OR;
+		(*command)->operator = OR;
 		(*str) += 2;
 	}
 	else
 	{
-		(*command)->relation_to_next = PIPE;
+		(*command)->operator = PIPE;
 		(*str)++;
 	}
 	new_command = NULL;
 	init_command(data, &new_command);
-	(*command)->next = new_command;
-	*command = (*command)->next;
+	(*command)->right = new_command;
+	*command = (*command)->right;
 }
 
 void	handle_amper(t_data *data, t_cmd **command, char **str)
@@ -47,15 +47,15 @@ void	handle_amper(t_data *data, t_cmd **command, char **str)
 
 	if (**str == *(*str + 1))
 	{
-		(*command)->relation_to_next = AND;
+		(*command)->operator = AND;
 		(*str) += 2;
 	}
 	else
 		terminate_program(RUN_BG, data);
 	new_command = NULL;
 	init_command(data, &new_command);
-	(*command)->next = new_command;
-	*command = (*command)->next;
+	(*command)->right = new_command;
+	*command = (*command)->right;
 }
 
 void	handle_redirection(t_data *data, char **str)

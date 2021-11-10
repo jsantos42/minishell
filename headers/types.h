@@ -28,9 +28,10 @@ typedef struct	s_cmd {
 	char			*redir_input;
 	char			*redir_output;
 	char			**args;
-	int				nb_args;
-	int				relation_to_next;
-	struct s_cmd	*next;
+	int				nb_args; //probably unnecessary since args has to be null terminated
+	int				operator;
+	struct s_cmd	*left;
+	struct s_cmd	*right;
 }	t_cmd;
 
 typedef struct	s_data {
