@@ -7,24 +7,26 @@ void	init_data(t_data *data, int argc, char **argv)
 	(void) argv;
 	data->input = NULL;
 	data->paths = NULL;
-	data->nb_paths = 0;
-	data->commands = NULL;
+//	data->nb_paths = 0;
+	data->tree = NULL;
 	data->exit_cmd = false;
 }
 
-void	init_command(t_data *data, t_cmd **command)
+void	init_cmd_node(t_data *data, t_node **branch)
 {
-	*command = NULL;
-	*command = malloc(sizeof(t_cmd));
-	if (!*command)
+	*branch = NULL;
+	*branch = malloc(sizeof(t_node));
+	if (!*branch)
 		terminate_program(MALLOC, data);
-	(*command)->cmd = NULL;
-	(*command)->redir_input = NULL;
-	(*command)->redir_output = NULL;
-	(*command)->args = NULL;
-	(*command)->args = NULL;
-	(*command)->nb_args = 0;
-	(*command)->operator = 0;
-	(*command)->left = NULL;
-	(*command)->right = NULL;
+	(*branch)->cmd_node.cmd = NULL;
+	(*branch)->cmd_node.redir_input = NULL;
+	(*branch)->cmd_node.redir_output = NULL;
+	(*branch)->cmd_node.args = NULL;
+}
+
+void	init_op_node(t_data *data, t_node **branch)
+{
+	(*branch)->op_node.operator = 0;
+	(*branch)->op_node.left = NULL;
+	(*branch)->op_node.right = NULL;
 }

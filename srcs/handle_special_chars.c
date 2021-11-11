@@ -21,41 +21,49 @@ int	handle_dollar_sign(t_data *data, char **str)
 	return (0);
 }
 
-void	handle_pipe(t_data *data, t_cmd **command, char **str)
+void	handle_pipe(t_data *data, t_tree **current_node, char **str)
 {
-	t_cmd	*new_command;
+	t_leaf_node 	*new_leaf_node;
+	t_branch_node 	*branch_node;
+
+	/*
+	 * create new branch node
+	 * (*current_node)->previous->branch.right = branch_node;
+	 * branch_node->left = *current_node
+	 * *current_node = branch_node->right;
+	 */
 
 	if (**str == *(*str + 1))
 	{
-		(*command)->operator = OR;
+		(*current_node)->operator = OR;
 		(*str) += 2;
 	}
 	else
 	{
-		(*command)->operator = PIPE;
+		(*current_node)->operator = PIPE;
 		(*str)++;
 	}
-	new_command = NULL;
-	init_command(data, &new_command);
-	(*command)->right = new_command;
-	*command = (*command)->right;
+	new_cmd_node = NULL;
+	init_cmd_node(data, &new_command);
+	(*current_node)->right = new_command;
+	*current_node = (*current_node)->right;
 }
 
-void	handle_amper(t_data *data, t_cmd **command, char **str)
+void	handle_amper(t_data *data, t_cmd **current_node, char **str)
 {
 	t_cmd	*new_command;
 
 	if (**str == *(*str + 1))
 	{
-		(*command)->operator = AND;
+		(*current_node)->operator = AND;
 		(*str) += 2;
 	}
 	else
 		terminate_program(RUN_BG, data);
 	new_command = NULL;
-	init_command(data, &new_command);
-	(*command)->right = new_command;
-	*command = (*command)->right;
+	init_cmd_node(data, &new_command);
+	(*current_node)->right = new_command;
+	*current_node = (*current_node)->right;
 }
 
 void	handle_redirection(t_data *data, char **str)

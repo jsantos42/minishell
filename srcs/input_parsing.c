@@ -21,23 +21,23 @@ A && B means "run command B if command A succeeded", and A || B means "run comma
  */
 int	parse_input(t_data *data)
 {
-	t_cmd	*current_command;
+	t_tree 	*current_node;
 	char	*str;
 
-	init_command(data, &data->commands);
-	current_command = data->commands->left;
+	init_cmd_node(data, &data->tree);
+	current_node = data->tree;
 	str = data->input;
 	while (*str != '\0')
 	{
-		if (!read_command(data, current_command, &str)
-		|| !read_argument(data, current_command, &str))
+		if (!read_command(data, current_node->leaf, &str)
+		|| !read_argument(data, current_node->leaf, &str))
 			return (0);
 		if (*str == '\\' || *str == ';')
 			terminate_program(SPECIAL_CHAR, data);
 		else if (*str == '|')
-			handle_pipe(data, &current_command, &str);
+			handle_pipe(data, &current_node, &str);
 		else if (*str == '&')
-			handle_amper(data, &current_command, &str);
+			handle_amper(data, &current_node, &str);
 		else if (*str == '<' || *str == '>')
 			handle_redirection(data, &str);
 	}
@@ -50,13 +50,13 @@ int	parse_input(t_data *data)
 **	read a command and checks if it is a valid one.
 */
 
-int	read_command(t_data *data, t_cmd *command, char **str)
+int	read_command(t_data *data, t_leaf_node *current_node, char **str)
 {
 	int		iter;
 	char	*cmd;
 
 	*str += skip_white_space(*str);
-	if (command->cmd != NULL)
+	if (current_node->cmd != NULL)
 		return (1);
 	iter = 0;
 	while ((*str)[iter] != '\0'
@@ -66,7 +66,7 @@ int	read_command(t_data *data, t_cmd *command, char **str)
 	cmd = ft_substr(*str, 0, iter);
 	if (is_a_valid_command(data, cmd))
 	{
-		command->cmd = cmd;
+		current_node->cmd = cmd;
 		*str += iter;
 		return (1);
 	}
@@ -78,7 +78,7 @@ int	read_command(t_data *data, t_cmd *command, char **str)
 	}
 }
 
-int	read_argument(t_data *data, t_cmd *command, char **str)
+int	read_argument(t_data *data, t_leaf_node *current_node, char **str)
 {
 	int iter;
 
@@ -94,12 +94,12 @@ int	read_argument(t_data *data, t_cmd *command, char **str)
 			break ;
 		else if (ft_isspace((*str)[iter]))
 		{
-			save_new_argument(data, command, str, iter); //updates the str pointer position
+			save_new_argument(data, current_node, str, iter); //updates the str pointer position
 			*str += skip_white_space(*str);
 			iter = -1;
 		}
 	}
-	save_new_argument(data, command, str, iter); //updates the str pointer position
+	save_new_argument(data, current_node, str, iter); //updates the str pointer position
 	return (1);
 }
 
@@ -113,56 +113,21 @@ int	read_argument(t_data *data, t_cmd *command, char **str)
 **	*in case it's not the first time it's called.
 */
 
-void	save_new_argument(t_data *data, t_cmd *command, char **str, int end)
+void	save_new_argument(t_data *data, t_leaf_node *current_node, char **str, int end)
 {
 	char	**new;
 	int		iter;
 
 	new = NULL;
-	new = malloc(sizeof(char *) * (command->nb_args + 1));
+	new = malloc(sizeof(char *) * (current_node->nb_args + 1));
 	if (!new)
 		terminate_program(MALLOC, data);
 	iter = -1;
-	while (++iter < command->nb_args)
-		new[iter] = command->args[iter];
+	while (++iter < current_node->nb_args)
+		new[iter] = current_node->args[iter];
 	new[iter] = ft_substr(*str, 0, end);
-	free_if_not_null(command->args);
-	command->args = new;
-	command->nb_args++;
+	free_if_not_null(current_node->args);
+	current_node->args = new;
+	current_node->nb_args++;
 	*str += end;
 }
-
-
-//int	check_how_many_commands(char *input)
-//{
-//	size_t	pipe_nb;
-//	size_t	amper_nb;
-//	size_t	squote_nb;
-//	size_t	dquote_nb;
-//	size_t	langle_nb;
-//	size_t	rangle_nb;
-//	int		*pipe_pos;
-//	int		*amper_pos;
-//	int		*squote_pos;
-//	int		*dquote_pos;
-//	int		*langle_pos;
-//	int		*rangle_pos;
-//
-//	if (count_chr_instances(input, '\\') || count_chr_instances(input, ';'))
-//		terminate_program(SPECIAL_CHAR, data); //only if not inside quotes!!
-//	pipe_pos = map_chr_instances(input, '|', &pipe_nb);
-//	amper_pos = map_chr_instances(input, '&', &pipe_nb);
-//	squote_pos = map_chr_instances(input, '\'', &pipe_nb);
-//	dquote_pos = map_chr_instances(input, '\"', &pipe_nb);
-//	langle_pos = map_chr_instances(input, '<', &langle_nb);
-//	rangle_pos = map_chr_instances(input, '>', &rangle_nb);
-//	if ((!pipe_pos && pipe_nb != 0)
-//		|| (!amper_pos && amper_nb != 0)
-//		|| (!squote_pos && squote_nb != 0)
-//		|| (!dquote_pos && dquote_nb != 0)
-//		|| (!langle_pos && langle_nb != 0)
-//		|| (!rangle_pos && rangle_nb != 0))
-//		terminate_program(MALLOC, data);
-//
-//	return (1);
-//}
