@@ -1,8 +1,8 @@
 #include "../headers/terminate_and_free.h"
 
-void	terminate_program(int error, t_data *data)
+void	terminate_program(int error)
 {
-	free_data(data);
+	free_data();
 	printf("ERROR\n");
 	if (error == MALLOC)
 		printf("Memory allocation failed.\n");

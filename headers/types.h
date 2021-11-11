@@ -24,8 +24,8 @@ typedef enum e_relation {
 
 typedef struct s_branch_node {
 	int				operator;
-	struct s_cmd	*left;
-	struct s_cmd	*right;
+	struct s_tree	*left;
+	struct s_tree	*right;
 }	t_branch_node;
 
 typedef struct s_leaf_node {

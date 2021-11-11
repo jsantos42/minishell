@@ -12,21 +12,33 @@ void	init_data(t_data *data, int argc, char **argv)
 	data->exit_cmd = false;
 }
 
-void	init_cmd_node(t_data *data, t_node **branch)
+t_tree	*init_leaf_node(t_tree *previous)
 {
-	*branch = NULL;
-	*branch = malloc(sizeof(t_node));
-	if (!*branch)
-		terminate_program(MALLOC, data);
-	(*branch)->cmd_node.cmd = NULL;
-	(*branch)->cmd_node.redir_input = NULL;
-	(*branch)->cmd_node.redir_output = NULL;
-	(*branch)->cmd_node.args = NULL;
+	t_tree	*new_node;
+
+	new_node = NULL;
+	new_node = malloc(sizeof(t_tree));
+	if (!new_node)
+		terminate_program(MALLOC);
+	new_node->leaf.cmd = NULL;
+	new_node->leaf.redir_input = NULL;
+	new_node->leaf.redir_output = NULL;
+	new_node->leaf.args = NULL;
+	new_node->previous = previous;
+	return (new_node);
 }
 
-void	init_op_node(t_data *data, t_node **branch)
+t_tree	*init_branch_node(t_tree *previous)
 {
-	(*branch)->op_node.operator = 0;
-	(*branch)->op_node.left = NULL;
-	(*branch)->op_node.right = NULL;
+	t_tree	*new_node;
+
+	new_node = NULL;
+	new_node = malloc(sizeof(t_tree));
+	if (!new_node)
+		terminate_program(MALLOC);
+	new_node->branch.operator = 0;
+	new_node->branch.left = NULL;
+	new_node->branch.right = NULL;
+	new_node->previous = previous;
+	return (new_node);
 }

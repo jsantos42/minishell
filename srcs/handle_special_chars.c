@@ -21,50 +21,105 @@ int	handle_dollar_sign(t_data *data, char **str)
 	return (0);
 }
 
-void	handle_pipe(t_data *data, t_tree **current_node, char **str)
+void	handle_pipe(t_tree **current_node, char **str)
 {
-	t_leaf_node 	*new_leaf_node;
-	t_branch_node 	*branch_node;
-
-	/*
-	 * create new branch node
-	 * (*current_node)->previous->branch.right = branch_node;
-	 * branch_node->left = *current_node
-	 * *current_node = branch_node->right;
-	 */
+	int	operator;
 
 	if (**str == *(*str + 1))
 	{
-		(*current_node)->operator = OR;
+		operator = OR;
 		(*str) += 2;
 	}
 	else
 	{
-		(*current_node)->operator = PIPE;
+		operator = PIPE;
 		(*str)++;
 	}
-	new_cmd_node = NULL;
-	init_cmd_node(data, &new_command);
-	(*current_node)->right = new_command;
-	*current_node = (*current_node)->right;
+	relink(current_node, operator);
 }
 
-void	handle_amper(t_data *data, t_cmd **current_node, char **str)
+void	handle_amper(t_tree **current_node, char **str)
 {
-	t_cmd	*new_command;
+	int	operator;
 
 	if (**str == *(*str + 1))
 	{
-		(*current_node)->operator = AND;
+		operator = AND;
 		(*str) += 2;
 	}
 	else
-		terminate_program(RUN_BG, data);
-	new_command = NULL;
-	init_cmd_node(data, &new_command);
-	(*current_node)->right = new_command;
-	*current_node = (*current_node)->right;
+		terminate_program(RUN_BG);
+	relink(current_node, operator);
 }
+
+
+///this function needs renaming
+/*
+ * create new branch node
+ * (*current_node)->previous->branch.right = branch_node;
+ * branch_node->left = *current_node
+ * *current_node = branch_node->right;
+ */
+void	relink(t_tree **current_node, int operator)
+{
+	t_tree	*branch_node;
+	t_tree	*new_leaf_node;
+
+	branch_node = init_branch_node((*current_node)->previous);
+	new_leaf_node = init_leaf_node(branch_node);
+	(*current_node)->previous->branch.right = branch_node;
+	branch_node->branch.left = *current_node;
+	branch_node->branch.right = new_leaf_node;
+	branch_node->branch.operator = operator;
+	*current_node = branch_node->branch.right;
+}
+
+
+
+
+///*
+// *	Creates a new branch_node and a new_leaf_node. Assigns the operator to the
+// *	branch node according to the chars in the input string str. If it
+// * create new branch node
+// * (*current_node)->previous->branch.right = branch_node;
+// * branch_node->left = *current_node
+// * *current_node = branch_node->right;
+// */
+//void	handle_pipe_ampersand(t_tree **current_node, char **str, int operator)
+//{
+//	t_tree	*branch_node;
+//	t_tree	*new_leaf_node;
+//
+//	branch_node = init_branch_node((*current_node)->previous);
+//	new_leaf_node = init_leaf_node(branch_node);
+//	if (**str != *(*str + 1))
+//	{
+//		branch_node->branch.operator = operator;
+//		(*str)++;
+//	}
+//	else if (**str == '|')
+//	{
+//		branch_node->branch.operator = OR;
+//		(*str) += 2;
+//	}
+//	else
+//		terminate_program(RUN_BG);
+//	(*current_node)->previous->branch.right = branch_node;
+//	branch_node->branch.left = *current_node;
+//	branch_node->branch.right = new_leaf_node;
+//	*current_node = branch_node->branch.right;
+//}
+
+
+
+
+
+
+
+
+
+
+
 
 void	handle_redirection(t_data *data, char **str)
 {

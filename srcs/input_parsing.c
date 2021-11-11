@@ -24,7 +24,7 @@ int	parse_input(t_data *data)
 	t_tree 	*current_node;
 	char	*str;
 
-	init_cmd_node(data, &data->tree);
+	data->tree = init_leaf_node(NULL);
 	current_node = data->tree;
 	str = data->input;
 	while (*str != '\0')

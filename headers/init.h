@@ -4,6 +4,7 @@
 # include "main.h"
 
 void	init_data(t_data *data, int argc, char **argv);
-void	init_cmd_node(t_data *data, t_cmd **command);
+t_tree	*init_leaf_node(t_tree *previous);
+t_tree	*init_branch_node(t_tree *previous);
 
 #endif
