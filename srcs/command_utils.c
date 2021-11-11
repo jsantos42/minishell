@@ -20,8 +20,8 @@ int	is_a_valid_command(t_data *data, char *cmd)
 	{
 		directory = opendir(data->paths[iter]);
 		if (!directory)
-			terminate_program(OPENING_DIR, data);
-		if (is_in_dir(data, cmd, data->paths[iter], directory))
+			terminate_program(OPENING_DIR);
+		if (is_in_dir(cmd, data->paths[iter], directory))
 			return (1);
 	}
 	return (0);
@@ -36,7 +36,7 @@ void	execute_command(t_data *data)
 }
 
 
-int	is_in_dir(t_data *data, char *input, char *path, DIR *directory)
+int	is_in_dir(char *input, char *path, DIR *directory)
 {
 	int	ret;
 
@@ -58,9 +58,9 @@ int	is_in_dir(t_data *data, char *input, char *path, DIR *directory)
 	{
 		ret = 0;
 		if (errno == EBADF || errno == EFAULT || errno == EIO)
-			terminate_program(READING_DIR, data);
+			terminate_program(READING_DIR);
 	}
 	if (closedir(directory) != 0)
-		terminate_program(CLOSING_DIR, data);
+		terminate_program(CLOSING_DIR);
 	return (ret);
 }

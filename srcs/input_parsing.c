@@ -29,15 +29,15 @@ int	parse_input(t_data *data)
 	str = data->input;
 	while (*str != '\0')
 	{
-		if (!read_command(data, current_node->leaf, &str)
-		|| !read_argument(data, current_node->leaf, &str))
+		if (!read_command(data, &current_node->leaf, &str)
+		|| !read_argument(data, &current_node->leaf, &str))
 			return (0);
 		if (*str == '\\' || *str == ';')
-			terminate_program(SPECIAL_CHAR, data);
+			terminate_program(SPECIAL_CHAR);
 		else if (*str == '|')
-			handle_pipe(data, &current_node, &str);
+			handle_pipe(&current_node, &str);
 		else if (*str == '&')
-			handle_amper(data, &current_node, &str);
+			handle_amper(&current_node, &str);
 		else if (*str == '<' || *str == '>')
 			handle_redirection(data, &str);
 	}
@@ -87,23 +87,31 @@ int	read_argument(t_data *data, t_leaf_node *current_node, char **str)
 	while ((*str)[++iter] != '\0')
 	{
 		if ((*str)[iter] == '\'' || (*str)[iter] == '\"')
-			iter += advance_to_closing_quote(data, *str + iter);
+			iter += advance_to_closing_quote(*str + iter);
 		else if ((*str)[iter] == '$')
 			iter += handle_dollar_sign(data, str + iter);
 		else if (is_special_char((*str)[iter]))
-			break ;
+			break;
 		else if (ft_isspace((*str)[iter]))
 		{
-			save_new_argument(data, current_node, str, iter); //updates the str pointer position
+			save_new_argument(current_node, str, iter); //updates the str pointer position
 			*str += skip_white_space(*str);
 			iter = -1;
 		}
 	}
-	save_new_argument(data, current_node, str, iter); //updates the str pointer position
+	save_new_argument(current_node, str, iter); //updates the str pointer position
 	return (1);
 }
 
+
+
+# define NEW_ARG	1
+# define NULLTERM	1
+
+///rename end var
 /*
+**	It should only save a new argument and increase the nb_args if there is
+**	anything to save (that is, if there's at least 1 char to save).
 **	Creates a new matrix, allocating enough memory to contain both the previous
 **	allocated argument strings* and the new argument. Frees the previous
 **	allocated matrix* and makes command args point to this new matrix. Finally,
@@ -113,21 +121,25 @@ int	read_argument(t_data *data, t_leaf_node *current_node, char **str)
 **	*in case it's not the first time it's called.
 */
 
-void	save_new_argument(t_data *data, t_leaf_node *current_node, char **str, int end)
+void	save_new_argument(t_leaf_node *current_node, char **str, int end)
 {
 	char	**new;
 	int		iter;
 
-	new = NULL;
-	new = malloc(sizeof(char *) * (current_node->nb_args + 1));
-	if (!new)
-		terminate_program(MALLOC, data);
-	iter = -1;
-	while (++iter < current_node->nb_args)
-		new[iter] = current_node->args[iter];
-	new[iter] = ft_substr(*str, 0, end);
-	free_if_not_null(current_node->args);
-	current_node->args = new;
-	current_node->nb_args++;
-	*str += end;
+	if (end != 0)
+	{
+		new = NULL;
+		new = malloc(sizeof(char *) * (current_node->nb_args + NEW_ARG + NULLTERM));
+		if (!new)
+			terminate_program(MALLOC);
+		iter = -1;
+		while (++iter < current_node->nb_args)
+			new[iter] = current_node->args[iter];
+		new[iter] = ft_substr(*str, 0, end);
+		new[++iter] = NULL;
+		free_if_not_null(current_node->args);
+		current_node->args = new;
+		current_node->nb_args++;
+		*str += end;
+	}
 }

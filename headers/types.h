@@ -47,7 +47,7 @@ typedef struct s_tree {
 typedef struct s_data {
 	char	*input;
 	char	**paths;
-//	int		nb_paths;
+	int		nb_paths;
 	t_tree	*tree;
 	bool	exit_cmd;
 }	t_data;

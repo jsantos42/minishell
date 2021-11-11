@@ -18,5 +18,6 @@
 # include "input_execution.h"
 # include "handle_special_chars.h"
 
+t_data	*get_data(t_data *data);
 
 #endif

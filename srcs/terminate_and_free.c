@@ -26,24 +26,27 @@ void	terminate_program(int error)
 	exit(error);
 }
 
-void	free_data(t_data *data)
+void	free_data(void)
 {
-	free_if_not_null(data->input);
-	free_matrix((void **) data->paths, data->nb_paths);
-	free_commands(data->commands);
+	t_data	*data;
+
+	data = get_data(NULL);
+//	free_if_not_null(data->input);
+//	free_matrix((void **) data->paths, data->nb_paths);
+//	free_commands(data->commands);
 }
 
-void	free_commands(t_cmd *commands)
-{
-	t_cmd *temp;
-
-	while (commands)
-	{
-		temp = commands->next;
-		free_if_not_null(commands->cmd);
-		free_if_not_null(commands->redir_input);
-		free_if_not_null(commands->redir_output);
-		free_matrix((void **) commands->args, commands->nb_args);
-		commands = temp;
-	}
-}
+//void	free_commands(t_cmd *commands)
+//{
+//	t_cmd *temp;
+//
+//	while (commands)
+//	{
+//		temp = commands->next;
+//		free_if_not_null(commands->cmd);
+//		free_if_not_null(commands->redir_input);
+//		free_if_not_null(commands->redir_output);
+//		free_matrix((void **) commands->args, commands->nb_args);
+//		commands = temp;
+//	}
+//}

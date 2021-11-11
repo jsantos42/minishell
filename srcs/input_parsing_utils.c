@@ -22,7 +22,7 @@ int	is_special_char(char chr)
 **	but the compiler does raise an error if it's not there.
 */
 
-int	advance_to_closing_quote(t_data *data, char *str)
+int	advance_to_closing_quote(char *str)
 {
 	char	quote_type;
 	int		iter;
@@ -34,6 +34,6 @@ int	advance_to_closing_quote(t_data *data, char *str)
 		if (str[iter] == quote_type && str[iter - 1] != '\\')
 			return (iter);
 	}
-	terminate_program(UNCLOSED_QUOTES, data);
+	terminate_program(UNCLOSED_QUOTES);
 	return (0);
 }

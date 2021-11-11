@@ -7,9 +7,10 @@ void	init_data(t_data *data, int argc, char **argv)
 	(void) argv;
 	data->input = NULL;
 	data->paths = NULL;
-//	data->nb_paths = 0;
+	data->nb_paths = 0;
 	data->tree = NULL;
 	data->exit_cmd = false;
+	get_data(data);
 }
 
 t_tree	*init_leaf_node(t_tree *previous)
@@ -24,6 +25,7 @@ t_tree	*init_leaf_node(t_tree *previous)
 	new_node->leaf.redir_input = NULL;
 	new_node->leaf.redir_output = NULL;
 	new_node->leaf.args = NULL;
+	new_node->leaf.nb_args = 0;
 	new_node->previous = previous;
 	return (new_node);
 }

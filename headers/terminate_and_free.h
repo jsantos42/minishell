@@ -3,8 +3,8 @@
 
 # include "main.h"
 
-void	terminate_program(int error, t_data *data);
-void	free_data(t_data *data);
-void	free_commands(t_cmd *commands);
+void	terminate_program(int error);
+void	free_data(void);
+//void	free_commands(t_cmd *commands);
 
 #endif

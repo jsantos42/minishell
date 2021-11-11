@@ -25,14 +25,11 @@ void	handle_pipe(t_tree **current_node, char **str)
 {
 	int	operator;
 
-	if (**str == *(*str + 1))
+	operator = PIPE;
+	(*str)++;
+	if (**str == '|')
 	{
 		operator = OR;
-		(*str) += 2;
-	}
-	else
-	{
-		operator = PIPE;
 		(*str)++;
 	}
 	relink(current_node, operator);
@@ -42,10 +39,12 @@ void	handle_amper(t_tree **current_node, char **str)
 {
 	int	operator;
 
-	if (**str == *(*str + 1))
+	operator = 0;
+	(*str)++;
+	if (**str == '&')
 	{
 		operator = AND;
-		(*str) += 2;
+		(*str)++;
 	}
 	else
 		terminate_program(RUN_BG);
@@ -62,12 +61,18 @@ void	handle_amper(t_tree **current_node, char **str)
  */
 void	relink(t_tree **current_node, int operator)
 {
+	t_data	*data;
 	t_tree	*branch_node;
 	t_tree	*new_leaf_node;
 
+	data = get_data(NULL);
 	branch_node = init_branch_node((*current_node)->previous);
 	new_leaf_node = init_leaf_node(branch_node);
-	(*current_node)->previous->branch.right = branch_node;
+	if ((*current_node)->previous)
+		(*current_node)->previous->branch.right = branch_node;
+	else
+		data->tree = branch_node;
+	(*current_node)->previous = branch_node;
 	branch_node->branch.left = *current_node;
 	branch_node->branch.right = new_leaf_node;
 	branch_node->branch.operator = operator;
