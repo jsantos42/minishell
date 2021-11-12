@@ -30,10 +30,13 @@ typedef struct s_branch_node {
 
 typedef struct s_leaf_node {
 	char			*cmd;
-	char			*redir_input;
-	char			*redir_output;
 	char			**args;
 	int				nb_args; //necessary to know how much memory to allocate
+	char			*redir_input;
+	char			*redir_output;
+	bool			append_mode;
+	bool			here_doc;
+	char 			*delimiter;
 }	t_leaf_node;
 
 typedef struct s_tree {

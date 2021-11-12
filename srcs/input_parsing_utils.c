@@ -1,13 +1,24 @@
 #include "../headers/input_parsing_utils.h"
 
-int	is_special_char(char chr)
+bool	is_special_char(char chr)
 {
-	if (chr == '|' || chr == '&'|| chr == '\'' || chr == '\"'
-		|| chr == '<' || chr == '>' || chr == '$' || chr == '\\' || chr == ';')
-		return (1);
+	if (chr == '|' || chr == '&' || chr == '<' || chr == '>'
+	|| chr == '\\' || chr == ';')
+		return (true);
 	else
-		return (0);
+		return (false);
 }
+
+bool	is_quote_char(char chr)
+{
+	return (chr == '\'' || chr == '\"');
+}
+
+bool	is_dollar_char(char chr)
+{
+	return (chr == '$');
+}
+
 
 /*
 **	This makes sure nothing between quotes gets interpreted as a command. It

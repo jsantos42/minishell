@@ -22,10 +22,13 @@ t_tree	*init_leaf_node(t_tree *previous)
 	if (!new_node)
 		terminate_program(MALLOC);
 	new_node->leaf.cmd = NULL;
-	new_node->leaf.redir_input = NULL;
-	new_node->leaf.redir_output = NULL;
 	new_node->leaf.args = NULL;
 	new_node->leaf.nb_args = 0;
+	new_node->leaf.redir_input = NULL;
+	new_node->leaf.redir_output = NULL;
+	new_node->leaf.append_mode = false;
+	new_node->leaf.here_doc = false;
+	new_node->leaf.delimiter = NULL;
 	new_node->previous = previous;
 	return (new_node);
 }

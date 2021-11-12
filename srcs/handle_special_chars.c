@@ -81,56 +81,59 @@ void	relink(t_tree **current_node, int operator)
 
 
 
+/// has to output error when the next char is a PIPE or an AMPERSAND or a third >>>
 
-///*
-// *	Creates a new branch_node and a new_leaf_node. Assigns the operator to the
-// *	branch node according to the chars in the input string str. If it
-// * create new branch node
-// * (*current_node)->previous->branch.right = branch_node;
-// * branch_node->left = *current_node
-// * *current_node = branch_node->right;
-// */
-//void	handle_pipe_ampersand(t_tree **current_node, char **str, int operator)
-//{
-//	t_tree	*branch_node;
-//	t_tree	*new_leaf_node;
-//
-//	branch_node = init_branch_node((*current_node)->previous);
-//	new_leaf_node = init_leaf_node(branch_node);
-//	if (**str != *(*str + 1))
-//	{
-//		branch_node->branch.operator = operator;
-//		(*str)++;
-//	}
-//	else if (**str == '|')
-//	{
-//		branch_node->branch.operator = OR;
-//		(*str) += 2;
-//	}
-//	else
-//		terminate_program(RUN_BG);
-//	(*current_node)->previous->branch.right = branch_node;
-//	branch_node->branch.left = *current_node;
-//	branch_node->branch.right = new_leaf_node;
-//	*current_node = branch_node->branch.right;
-//}
-
-
-
-
-
-
-
-
-
-
-
-
-void	handle_redirection(t_data *data, char **str)
+void	handle_input_redirection(t_tree **current_node, char **str)
 {
-	(void)data;
+	(void)current_node;
 	(void)str;
-	//check for next char to be different than this one
-	//save operation
+//	(*str++);
+//	if
+//
+//	(void)str;
+//	//check for next char to be different than this one
+//	//save operation
 
 }
+
+
+
+void	handle_output_redirection(t_tree **current_node, char **str)
+{
+	int	iter;
+
+	(*str)++;
+	if (**str == '>')
+	{
+		(*current_node)->leaf.append_mode = true;
+		(*str)++;
+	}
+	*str += skip_white_space(*str);
+	iter = -1;
+	while ((*str)[++iter] != '\0' && !is_special_char((*str)[iter]))
+	{
+		if (is_quote_char((*str)[iter]))
+			iter += advance_to_closing_quote(*str + iter);
+		else if (is_dollar_char((*str)[iter]))
+			iter += handle_dollar_sign(NULL, str + iter); //rewrite this
+		else if (ft_isspace((*str)[iter]))
+			break ;
+	}
+	if (iter != 0)
+		(*current_node)->leaf.redir_output = ft_substr(*str, 0, iter);
+	*str += iter;
+	*str += skip_white_space(*str);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

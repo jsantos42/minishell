@@ -38,8 +38,10 @@ int	parse_input(t_data *data)
 			handle_pipe(&current_node, &str);
 		else if (*str == '&')
 			handle_amper(&current_node, &str);
-		else if (*str == '<' || *str == '>')
-			handle_redirection(data, &str);
+		else if (*str == '<')
+			handle_input_redirection(&current_node, &str);
+		else if (*str == '>')
+			handle_output_redirection(&current_node, &str);
 	}
 	return (1);
 }
@@ -61,6 +63,8 @@ int	read_command(t_data *data, t_leaf_node *current_node, char **str)
 	iter = 0;
 	while ((*str)[iter] != '\0'
 	&& !is_special_char((*str)[iter])
+	&& !is_dollar_char((*str)[iter])
+	&& !is_quote_char((*str)[iter])
 	&& !ft_isspace((*str)[iter]))
 		iter++;
 	cmd = ft_substr(*str, 0, iter);
@@ -84,14 +88,12 @@ int	read_argument(t_data *data, t_leaf_node *current_node, char **str)
 
 	*str += skip_white_space(*str);
 	iter = -1;
-	while ((*str)[++iter] != '\0')
+	while ((*str)[++iter] != '\0' && !is_special_char((*str)[iter]))
 	{
-		if ((*str)[iter] == '\'' || (*str)[iter] == '\"')
+		if (is_quote_char((*str)[iter]))
 			iter += advance_to_closing_quote(*str + iter);
-		else if ((*str)[iter] == '$')
+		else if (is_dollar_char((*str)[iter]))
 			iter += handle_dollar_sign(data, str + iter);
-		else if (is_special_char((*str)[iter]))
-			break;
 		else if (ft_isspace((*str)[iter]))
 		{
 			save_new_argument(current_node, str, iter); //updates the str pointer position
