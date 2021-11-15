@@ -27,11 +27,8 @@ int	parse_input(t_data *data)
 	data->tree = init_leaf_node(NULL);
 	current_node = data->tree;
 	str = data->input;
-	while (*str != '\0')
+	while (*str != '\0' && !data->illegal_input)
 	{
-		if (!read_command(data, &current_node->leaf, &str)
-		|| !read_argument(&current_node->leaf, &str))
-			return (0);
 		if (*str == '\\' || *str == ';')
 			terminate_program(SPECIAL_CHAR);
 		else if (*str == '|')
@@ -42,24 +39,29 @@ int	parse_input(t_data *data)
 			handle_input_redirection(&current_node, &str);
 		else if (*str == '>')
 			handle_output_redirection(&current_node, &str);
+		else
+			read_cmd_and_args(data, &current_node->leaf, &str);
 	}
+	if (data->illegal_input)
+		return (0);
 	return (1);
 }
 
+///rewrite comment
 /*
 **	In the beginning it checks whether command has already been saved; if so, it
 **	assumes it is meant to read an argument and returns. Otherwise, tries to
 **	read a command and checks if it is a valid one.
 */
 
-int	read_command(t_data *data, t_leaf_node *current_node, char **str)
+int	read_cmd_and_args(t_data *data, t_leaf_node *current_node, char **str)
 {
 	int		i;
 	char	*cmd;
 
 	*str += skip_white_space(*str);
 	if (current_node->cmd != NULL)
-		return (1);
+		return (read_argument(current_node, str));
 	i = 0;
 	while ((*str)[i] != '\0'
 	&& !is_special_char((*str)[i])
@@ -70,6 +72,7 @@ int	read_command(t_data *data, t_leaf_node *current_node, char **str)
 	cmd = ft_substr(*str, 0, i);
 	if (is_a_valid_command(data, cmd))
 	{
+		///this should be save new arg
 		current_node->cmd = cmd;
 		*str += i;
 		return (1);
@@ -77,10 +80,16 @@ int	read_command(t_data *data, t_leaf_node *current_node, char **str)
 	else
 	{
 		printf("minishell: %s: command not found\n", cmd);
+		data->illegal_input	= true;
 		free(cmd);
 		return (0);
 	}
 }
+
+/*
+**	It should only save a new argument if there is
+**	anything to save (that is, if there's at least 1 char to save, i != 0).
+*/
 
 int	read_argument(t_leaf_node *current_node, char **str)
 {
@@ -88,20 +97,18 @@ int	read_argument(t_leaf_node *current_node, char **str)
 
 	*str += skip_white_space(*str);
 	i = -1;
-	while ((*str)[++i] != '\0' && !is_special_char((*str)[i]))
+	while ((*str)[++i] != '\0'
+		   && !is_special_char((*str)[i])
+		   && !ft_isspace((*str)[i]))
 	{
 		if (is_quote_char((*str)[i]))
 			*str = handle_quote_char(*str, &i);
 		else if (is_dollar_sign((*str)[i]))
 			*str = handle_dollar_sign(*str, &i);
-		else if (ft_isspace((*str)[i]))
-		{
-			save_new_argument(current_node, str, i); //updates the str pointer position
-			*str += skip_white_space(*str);
-			i = -1;
-		}
 	}
-	save_new_argument(current_node, str, i); //updates the str pointer position
+	if (i != 0)
+		save_new_argument(current_node, str, i); //updates the str pointer position
+	*str += i;
 	return (1);
 }
 
@@ -112,8 +119,6 @@ int	read_argument(t_leaf_node *current_node, char **str)
 
 ///rename end var
 /*
-**	It should only save a new argument and increase the nb_args if there is
-**	anything to save (that is, if there's at least 1 char to save).
 **	Creates a new matrix, allocating enough memory to contain both the previous
 **	allocated argument strings* and the new argument. Frees the previous
 **	allocated matrix* and makes command args point to this new matrix. Finally,
@@ -128,20 +133,17 @@ void	save_new_argument(t_leaf_node *current_node, char **str, int end)
 	char	**new;
 	int		i;
 
-	if (end != 0)
-	{
-		new = NULL;
-		new = malloc(sizeof(char *) * (current_node->nb_args + NEW_ARG + NULLTERM));
-		if (!new)
-			terminate_program(MALLOC);
-		i = -1;
-		while (++i < current_node->nb_args)
-			new[i] = current_node->args[i];
-		new[i] = ft_substr(*str, 0, end);
-		new[++i] = NULL;
-		free_if_not_null(current_node->args);
-		current_node->args = new;
-		current_node->nb_args++;
-		*str += end;
-	}
+	new = NULL;
+	new = malloc(sizeof(char *) * (current_node->nb_args + NEW_ARG + NULLTERM));
+	if (!new)
+		terminate_program(MALLOC);
+	i = -1;
+	while (++i < current_node->nb_args)
+		new[i] = current_node->args[i];
+	new[i] = ft_substr(*str, 0, end);
+	new[++i] = NULL;
+	free_if_not_null(current_node->args);
+	current_node->args = new;
+	current_node->nb_args++;
+	*str += end;
 }

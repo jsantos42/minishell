@@ -110,19 +110,18 @@ void	handle_output_redirection(t_tree **current_node, char **str)
 	}
 	*str += skip_white_space(*str);
 	i = -1;
-	while ((*str)[++i] != '\0' && !is_special_char((*str)[i]))
+	while ((*str)[++i] != '\0'
+	&& !is_special_char((*str)[i])
+	&& !ft_isspace((*str)[i]))
 	{
 		if (is_quote_char((*str)[i]))
 			*str = handle_quote_char(*str, &i);
 		else if (is_dollar_sign((*str)[i]))
 			*str = handle_dollar_sign(*str, &i);
-		else if (ft_isspace((*str)[i]))
-			break ;
 	}
 	if (i != 0)
 		(*current_node)->leaf.redir_output = ft_substr(*str, 0, i);
 	*str += i;
-	*str += skip_white_space(*str);
 }
 
 /*

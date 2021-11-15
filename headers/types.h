@@ -53,6 +53,7 @@ typedef struct s_data {
 	int		nb_paths;
 	t_tree	*tree;
 	bool	exit_cmd;
+	bool	illegal_input;
 }	t_data;
 
 #endif
