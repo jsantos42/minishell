@@ -5,7 +5,6 @@
 
 bool	is_special_char(char chr);
 bool	is_quote_char(char chr);
-bool	is_dollar_char(char chr);
-int	advance_to_closing_quote(char *str);
+bool	is_dollar_sign(char chr);
 
 #endif

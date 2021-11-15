@@ -2,23 +2,23 @@
 
 int	skip_white_space(char *input)
 {
-	int	iter;
+	int	i;
 
-	iter = -1;
-	while (input[++iter] != '\0')
+	i = -1;
+	while (input[++i] != '\0')
 	{
-		if (!ft_isspace(input[iter]))
+		if (!ft_isspace(input[i]))
 			break ;
 	}
-	return (iter);
+	return (i);
 }
 
-int	handle_dollar_sign(t_data *data, char **str)
+char	*handle_dollar_sign(char *input, int *dollar_pos)
 {
 	//this must finish on a space or special char
-	(void)data;
-	(void)str;
-	return (0);
+	(void)input;
+	(void)dollar_pos;
+	return (input);//must return new_input
 }
 
 void	handle_pipe(t_tree **current_node, char **str)
@@ -100,7 +100,7 @@ void	handle_input_redirection(t_tree **current_node, char **str)
 
 void	handle_output_redirection(t_tree **current_node, char **str)
 {
-	int	iter;
+	int	i;
 
 	(*str)++;
 	if (**str == '>')
@@ -109,31 +109,74 @@ void	handle_output_redirection(t_tree **current_node, char **str)
 		(*str)++;
 	}
 	*str += skip_white_space(*str);
-	iter = -1;
-	while ((*str)[++iter] != '\0' && !is_special_char((*str)[iter]))
+	i = -1;
+	while ((*str)[++i] != '\0' && !is_special_char((*str)[i]))
 	{
-		if (is_quote_char((*str)[iter]))
-			iter += advance_to_closing_quote(*str + iter);
-		else if (is_dollar_char((*str)[iter]))
-			iter += handle_dollar_sign(NULL, str + iter); //rewrite this
-		else if (ft_isspace((*str)[iter]))
+		if (is_quote_char((*str)[i]))
+			*str = handle_quote_char(*str, &i);
+		else if (is_dollar_sign((*str)[i]))
+			*str = handle_dollar_sign(*str, &i);
+		else if (ft_isspace((*str)[i]))
 			break ;
 	}
-	if (iter != 0)
-		(*current_node)->leaf.redir_output = ft_substr(*str, 0, iter);
-	*str += iter;
+	if (i != 0)
+		(*current_node)->leaf.redir_output = ft_substr(*str, 0, i);
+	*str += i;
 	*str += skip_white_space(*str);
 }
 
+/*
+**	This makes sure nothing between quotes gets interpreted as a command.
+**	1) It starts by defining which type of quote it's using.
+**	2) Creates a new_input string, which will be a copy of input without the
+**	pair of quotes it's handling.
+**	3) Parses through the input string and copies it to new_input, except for
+**	the quote_type char (unless it's escaped). Continues to do so until it finds
+**	a closing quote.
+**	4) If it found a closing quote, saves the new position (that will be passed
+**	to scanner->cursor) and copies the rest of the input string to new_input,
+**	NULL-terminating it and returning it.
+**	NOTE: when saving the new quote_pos, it uses k (instead of i) because
+**	it needs to subtract 2 quote chars from the index count. Plus, it needs to
+**	subtract 1 because the iteration on the previous while goes one extra loop.
+*/
 
+char	*handle_quote_char(char *input, int *quote_pos)
+{
+	char	quote_type;
+	char	*new_input;
+	int 	quotes_found;
+	int		i;
+	int		k;
 
-
-
-
-
-
-
-
-
-
-
+	quote_type = *(input + *quote_pos);
+	new_input = malloc(ft_strlen(input) - PAIR_OF_QUOTES + 1);
+	if (!new_input)
+		terminate_program(MALLOC);
+	quotes_found = 0;
+	i = 0;
+	k = 0;
+	while (input[i] != '\0' && quotes_found < 2)
+	{
+		if (!(input[i] == quote_type
+			  && (i == 0 || input[i - 1] != '\\')))
+			new_input[k++] = input[i];
+		else
+			(quotes_found)++;
+		i++;
+	}
+	if (quotes_found < 2)
+	{
+		free(new_input);
+		terminate_program(UNCLOSED_QUOTES);
+	}
+	else
+	{
+		*quote_pos += k - 1;
+		while (input[i] != '\0')
+			new_input[k++] = input[i++];
+		new_input[k] = '\0';
+	}
+	free(input);
+	return (new_input);
+}

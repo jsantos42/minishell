@@ -30,7 +30,7 @@ int	parse_input(t_data *data)
 	while (*str != '\0')
 	{
 		if (!read_command(data, &current_node->leaf, &str)
-		|| !read_argument(data, &current_node->leaf, &str))
+		|| !read_argument(&current_node->leaf, &str))
 			return (0);
 		if (*str == '\\' || *str == ';')
 			terminate_program(SPECIAL_CHAR);
@@ -54,24 +54,24 @@ int	parse_input(t_data *data)
 
 int	read_command(t_data *data, t_leaf_node *current_node, char **str)
 {
-	int		iter;
+	int		i;
 	char	*cmd;
 
 	*str += skip_white_space(*str);
 	if (current_node->cmd != NULL)
 		return (1);
-	iter = 0;
-	while ((*str)[iter] != '\0'
-	&& !is_special_char((*str)[iter])
-	&& !is_dollar_char((*str)[iter])
-	&& !is_quote_char((*str)[iter])
-	&& !ft_isspace((*str)[iter]))
-		iter++;
-	cmd = ft_substr(*str, 0, iter);
+	i = 0;
+	while ((*str)[i] != '\0'
+	&& !is_special_char((*str)[i])
+	&& !is_dollar_sign((*str)[i])
+	&& !is_quote_char((*str)[i])
+	&& !ft_isspace((*str)[i]))
+		i++;
+	cmd = ft_substr(*str, 0, i);
 	if (is_a_valid_command(data, cmd))
 	{
 		current_node->cmd = cmd;
-		*str += iter;
+		*str += i;
 		return (1);
 	}
 	else
@@ -82,26 +82,26 @@ int	read_command(t_data *data, t_leaf_node *current_node, char **str)
 	}
 }
 
-int	read_argument(t_data *data, t_leaf_node *current_node, char **str)
+int	read_argument(t_leaf_node *current_node, char **str)
 {
-	int iter;
+	int i;
 
 	*str += skip_white_space(*str);
-	iter = -1;
-	while ((*str)[++iter] != '\0' && !is_special_char((*str)[iter]))
+	i = -1;
+	while ((*str)[++i] != '\0' && !is_special_char((*str)[i]))
 	{
-		if (is_quote_char((*str)[iter]))
-			iter += advance_to_closing_quote(*str + iter);
-		else if (is_dollar_char((*str)[iter]))
-			iter += handle_dollar_sign(data, str + iter);
-		else if (ft_isspace((*str)[iter]))
+		if (is_quote_char((*str)[i]))
+			*str = handle_quote_char(*str, &i);
+		else if (is_dollar_sign((*str)[i]))
+			*str = handle_dollar_sign(*str, &i);
+		else if (ft_isspace((*str)[i]))
 		{
-			save_new_argument(current_node, str, iter); //updates the str pointer position
+			save_new_argument(current_node, str, i); //updates the str pointer position
 			*str += skip_white_space(*str);
-			iter = -1;
+			i = -1;
 		}
 	}
-	save_new_argument(current_node, str, iter); //updates the str pointer position
+	save_new_argument(current_node, str, i); //updates the str pointer position
 	return (1);
 }
 
@@ -126,7 +126,7 @@ int	read_argument(t_data *data, t_leaf_node *current_node, char **str)
 void	save_new_argument(t_leaf_node *current_node, char **str, int end)
 {
 	char	**new;
-	int		iter;
+	int		i;
 
 	if (end != 0)
 	{
@@ -134,11 +134,11 @@ void	save_new_argument(t_leaf_node *current_node, char **str, int end)
 		new = malloc(sizeof(char *) * (current_node->nb_args + NEW_ARG + NULLTERM));
 		if (!new)
 			terminate_program(MALLOC);
-		iter = -1;
-		while (++iter < current_node->nb_args)
-			new[iter] = current_node->args[iter];
-		new[iter] = ft_substr(*str, 0, end);
-		new[++iter] = NULL;
+		i = -1;
+		while (++i < current_node->nb_args)
+			new[i] = current_node->args[i];
+		new[i] = ft_substr(*str, 0, end);
+		new[++i] = NULL;
 		free_if_not_null(current_node->args);
 		current_node->args = new;
 		current_node->nb_args++;
