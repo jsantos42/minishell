@@ -13,9 +13,9 @@
 # include "terminate_and_free.h"
 # include "command_utils.h"
 # include "init.h"
-# include "input_parsing.h"
-# include "input_parsing_utils.h"
-# include "input_execution.h"
+# include "parse_input.h"
+# include "parse_input_utils.h"
+# include "execute_input.h"
 # include "handle_special_chars.h"
 
 t_data	*get_data(t_data *data);

@@ -21,7 +21,6 @@ t_tree	*init_leaf_node(t_tree *previous)
 	new_node = malloc(sizeof(t_tree));
 	if (!new_node)
 		terminate_program(MALLOC);
-	new_node->leaf.cmd = NULL;
 	new_node->leaf.args = NULL;
 	new_node->leaf.nb_args = 0;
 	new_node->leaf.redir_input = NULL;

@@ -29,9 +29,8 @@ typedef struct s_branch_node {
 }	t_branch_node;
 
 typedef struct s_leaf_node {
-	char			*cmd;
-	char			**args;
-	int				nb_args; //necessary to know how much memory to allocate
+	char			**args; //the first string is the command name
+	int				nb_args; //necessary to know how much memory to allocate; note that since the first arg is the command itself, if the command has no arguments tha nb_args will be 1 (and not 0)
 	char			*redir_input;
 	char			*redir_output;
 	bool			append_mode;

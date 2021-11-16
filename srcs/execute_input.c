@@ -1,4 +1,4 @@
-#include "../headers/input_execution.h"
+#include "../headers/execute_input.h"
 
 void	execute_input(t_data *data)
 {

@@ -1,4 +1,4 @@
-#include "../headers/input_parsing_utils.h"
+#include "../headers/parse_input_utils.h"
 
 bool	is_special_char(char chr)
 {

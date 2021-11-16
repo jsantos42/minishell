@@ -1,24 +1,19 @@
-#include "../headers/input_parsing.h"
+#include "../headers/parse_input.h"
 
-/* alternative: locate the special chars from the start
- if '>' or '<', next is file_name
-else is always command
+/*
+**	1) Starts by creating a starting leaf_node (if further on it discovers a
+**	pipe or an ampersand, then it will create a starting branch_node and this
+**	first leaf node will become the branch_node's left leaf_node (see types.h).
+**	2) The current_node will be the node that it will be working on. That way,
+**	data->tree will keep pointing to the tree starting point. The same reasoning
+**	applies to str, which will point to the current char to be parsed.
+**	3) The parser will work as long as there's input to parse and the input is
+**	legal.
+**	4) The input is white-space insensitive, so it can skip white space. If it
+**	finds a special char ('|', '&', '<', '>', '\\', ';') it handles it,
+**	otherwise it reads arguments (the first of which should be a command).
+*/
 
-if ('|'), it means new command
-
- in https://unix.stackexchange.com/questions/86247/what-does-ampersand-mean-at-the-end-of-a-shell-script-line
-A && B means "run command B if command A succeeded", and A || B means "run command B if command A failed".
- Examples: 'cd tmp && ls' will run ls only if folder tmp exists. Or in a script: 'cd foobar || exit 10' will stop the
- execution (exit) if folder foobar doesnt' exist. –
-
-		 * find location of first | and &
-		 * then check if there are quotes and if their location surrounds the found pipe/ampersand
-		 * 		make sure to check for both quotes types
-		 * 		if no closing quotes, error (unless surrounded by quotes of the other type)
-		 * if yes, ignore found |or& and find next one
-		 * otherwise, read command until then
-		 * then check next char to see if this was actually a pipe or a || sign
- */
 int	parse_input(t_data *data)
 {
 	t_tree 	*current_node;
@@ -29,6 +24,7 @@ int	parse_input(t_data *data)
 	str = data->input;
 	while (*str != '\0' && !data->illegal_input)
 	{
+		str += skip_white_space(str);
 		if (*str == '\\' || *str == ';')
 			terminate_program(SPECIAL_CHAR);
 		else if (*str == '|')
@@ -39,6 +35,8 @@ int	parse_input(t_data *data)
 			handle_input_redirection(&current_node, &str);
 		else if (*str == '>')
 			handle_output_redirection(&current_node, &str);
+//		else if (*str == '(')
+			///missing condition for parenthesis
 		else
 			read_cmd_and_args(data, &current_node->leaf, &str);
 	}
@@ -59,21 +57,17 @@ int	read_cmd_and_args(t_data *data, t_leaf_node *current_node, char **str)
 	int		i;
 	char	*cmd;
 
-	*str += skip_white_space(*str);
-	if (current_node->cmd != NULL)
+	if (current_node->args != NULL)
 		return (read_argument(current_node, str));
 	i = 0;
 	while ((*str)[i] != '\0'
-	&& !is_special_char((*str)[i])
-	&& !is_dollar_sign((*str)[i])
-	&& !is_quote_char((*str)[i])
-	&& !ft_isspace((*str)[i]))
+	&& !ft_isspace((*str)[i]) && !is_special_char((*str)[i])
+	&& !is_quote_char((*str)[i]) && !is_dollar_sign((*str)[i]))
 		i++;
 	cmd = ft_substr(*str, 0, i);
 	if (is_a_valid_command(data, cmd))
 	{
-		///this should be save new arg
-		current_node->cmd = cmd;
+		save_new_argument(current_node, cmd);
 		*str += i;
 		return (1);
 	}
@@ -94,21 +88,24 @@ int	read_cmd_and_args(t_data *data, t_leaf_node *current_node, char **str)
 int	read_argument(t_leaf_node *current_node, char **str)
 {
 	int i;
+	char	*new_arg;
 
-	*str += skip_white_space(*str);
-	i = -1;
-	while ((*str)[++i] != '\0'
-		   && !is_special_char((*str)[i])
-		   && !ft_isspace((*str)[i]))
+	i = 0;
+	while ((*str)[i] != '\0'
+	&& !ft_isspace((*str)[i]) && !is_special_char((*str)[i]))
 	{
 		if (is_quote_char((*str)[i]))
 			*str = handle_quote_char(*str, &i);
 		else if (is_dollar_sign((*str)[i]))
 			*str = handle_dollar_sign(*str, &i);
+		i++;
 	}
 	if (i != 0)
-		save_new_argument(current_node, str, i); //updates the str pointer position
-	*str += i;
+	{
+		new_arg = ft_substr(*str, 0, i);
+		save_new_argument(current_node, new_arg);
+		*str += i;
+	}
 	return (1);
 }
 
@@ -117,18 +114,17 @@ int	read_argument(t_leaf_node *current_node, char **str)
 # define NEW_ARG	1
 # define NULLTERM	1
 
-///rename end var
 /*
 **	Creates a new matrix, allocating enough memory to contain both the previous
 **	allocated argument strings* and the new argument. Frees the previous
-**	allocated matrix* and makes command args point to this new matrix. Finally,
-**	it increases the number of arguments and advances the original string until
-**	the end char.
+**	allocated matrix* and makes the current_node->args point to this new matrix.
+**	Finally, it increases the number of arguments (note that this nb_args
+**	includes the command itself, which should be the first arg).
 **
 **	*in case it's not the first time it's called.
 */
 
-void	save_new_argument(t_leaf_node *current_node, char **str, int end)
+void	save_new_argument(t_leaf_node *current_node, char *new_arg)
 {
 	char	**new;
 	int		i;
@@ -140,10 +136,9 @@ void	save_new_argument(t_leaf_node *current_node, char **str, int end)
 	i = -1;
 	while (++i < current_node->nb_args)
 		new[i] = current_node->args[i];
-	new[i] = ft_substr(*str, 0, end);
+	new[i] = new_arg;
 	new[++i] = NULL;
 	free_if_not_null(current_node->args);
 	current_node->args = new;
 	current_node->nb_args++;
-	*str += end;
 }

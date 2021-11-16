@@ -41,7 +41,3 @@ t_data	*get_data(t_data *data)
 		static_data = data;
 	return (static_data);
 }
-
-
-/// change args to first arg as command and null terminated
-
