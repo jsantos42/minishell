@@ -11,7 +11,6 @@
 # include "../libs/libft/include/libft.h" // this already includes stdlib.h and unistd.h
 # include "types.h"
 # include "terminate_and_free.h"
-# include "command_utils.h"
 # include "init.h"
 # include "parse_input.h"
 # include "parse_input_utils.h"

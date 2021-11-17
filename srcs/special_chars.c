@@ -39,21 +39,39 @@ void	handle_amper(t_tree **current_node, char **str)
 	relink(current_node, operator);
 }
 
-/// has to output error when the next char is a PIPE or an AMPERSAND or a third >>>
+/*
+**	Note: on heredoc, bash does not interpret the '$' as a variable expansion,
+**	that's why this function only calls handle_dollar_sign when it's not on
+**	here_doc mode.
+*/
 
 void	handle_input_redirection(t_tree **current_node, char **str)
 {
-	(void)current_node;
-	(void)str;
-//	(*str++);
-//	if
-//
-//	(void)str;
-//	//check for next char to be different than this one
-//	//save operation
+	int	i;
 
+	(*str)++;
+	if (**str == '<')
+	{
+		(*current_node)->leaf.here_doc = true;
+		(*str)++;
+	}
+	*str += skip_white_space(*str);
+	i = -1;
+	while ((*str)[++i] != '\0'
+		   && !is_special_char((*str)[i])
+		   && !ft_isspace((*str)[i]))
+	{
+		if (is_quote_char((*str)[i]))
+			*str = handle_quote_char(*str, &i);
+		else if (is_dollar_sign((*str)[i]) && !(*current_node)->leaf.here_doc)
+			*str = handle_dollar_sign(*str, &i);
+	}
+	if (i != 0 && (*current_node)->leaf.here_doc == false)
+		(*current_node)->leaf.redir_input = ft_substr(*str, 0, i);
+	else if (i != 0 && (*current_node)->leaf.here_doc == true)
+		(*current_node)->leaf.delimiter = ft_substr(*str, 0, i);
+	*str += i;
 }
-
 
 
 void	handle_output_redirection(t_tree **current_node, char **str)
@@ -81,13 +99,3 @@ void	handle_output_redirection(t_tree **current_node, char **str)
 		(*current_node)->leaf.redir_output = ft_substr(*str, 0, i);
 	*str += i;
 }
-
-
-
-
-
-
-
-
-
-
