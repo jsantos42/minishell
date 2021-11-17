@@ -40,6 +40,7 @@ int	is_in_dir(char *input, char *path, DIR *directory)
 
 	struct dirent *dir_struct;
 
+	(void)path;
 	dir_struct = NULL;
 	dir_struct = readdir(directory);
 	while (dir_struct)
@@ -47,7 +48,7 @@ int	is_in_dir(char *input, char *path, DIR *directory)
 		if (ft_strncmp(input, dir_struct->d_name, ft_strlen(input) + 1) == 0)
 		{
 			ret = 1;
-			printf("The absolute path of the command is %s/%s\n", path, input);
+			//printf("The absolute path of the command is %s/%s\n", path, input);
 			break;
 		}
 		dir_struct = readdir(directory);

@@ -1,13 +1,10 @@
 #include "../headers/main.h"
 
-static void	get_paths(t_data *data);
-
-int main(int argc, char **argv)
+int main(int argc, char **argv, char **envp)
 {
 	t_data	data;
 
-	init_data(&data, argc, argv);
-	get_paths(&data);
+	init_data(&data, argc, argv, envp);
 	while (!data.exit_cmd)
 	{
 		data.input = readline(PROMPT);
@@ -19,18 +16,6 @@ int main(int argc, char **argv)
 	}
 	free_data();
 	return (0);
-}
-
-static void	get_paths(t_data *data)
-{
-	char *env_paths;
-
-	env_paths = getenv("PATH");
-	if (!env_paths)
-		terminate_program(ENV_VAR);
-	data->paths = ft_split(env_paths, ':', &data->nb_paths);
-	if (!data->paths)
-		terminate_program(MALLOC);
 }
 
 t_data	*get_data(t_data *data)

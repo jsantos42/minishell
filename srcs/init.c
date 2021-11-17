@@ -1,13 +1,16 @@
 #include "../headers/init.h"
 
-void	init_data(t_data *data, int argc, char **argv)
+static char	**get_paths(t_data *data);
+
+void	init_data(t_data *data, int argc, char **argv, char **envp)
 {
 	if (argc > 1)
 		exit(0);
 	(void) argv;
+	data->envp = envp;
 	data->input = NULL;
-	data->paths = NULL;
 	data->nb_paths = 0;
+	data->paths = get_paths(data);
 	data->tree = NULL;
 	data->exit_cmd = false;
 	get_data(data);
@@ -21,6 +24,7 @@ t_tree	*init_leaf_node(t_tree *previous)
 	new_node = malloc(sizeof(t_tree));
 	if (!new_node)
 		terminate_program(MALLOC);
+	new_node->type = LEAF_NODE;
 	new_node->leaf.args = NULL;
 	new_node->leaf.nb_args = 0;
 	new_node->leaf.redir_input = NULL;
@@ -40,9 +44,24 @@ t_tree	*init_branch_node(t_tree *previous)
 	new_node = malloc(sizeof(t_tree));
 	if (!new_node)
 		terminate_program(MALLOC);
+	new_node->type = BRANCH_NODE;
 	new_node->branch.operator = 0;
 	new_node->branch.left = NULL;
 	new_node->branch.right = NULL;
 	new_node->previous = previous;
 	return (new_node);
+}
+
+static char	**get_paths(t_data *data)
+{
+	char	*env_paths;
+	char	**paths;
+
+	env_paths = getenv("PATH");
+	if (!env_paths)
+		terminate_program(ENV_VAR);
+	paths = ft_split(env_paths, ':', &data->nb_paths);
+	if (!paths)
+		terminate_program(MALLOC);
+	return (paths);
 }
