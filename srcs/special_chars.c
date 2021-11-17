@@ -39,6 +39,30 @@ void	handle_amper(t_tree **current_node, char **str)
 	relink(current_node, operator);
 }
 
+/* Change this function, because:
+ * According to the maintainers of bash:
+ * The here document delimiter does not undergo any expansions except quote
+//removal, so the delimiter is the literal string `$PATH'.
+The here document delimiter does not undergo any expansions except quote
+		removal, so the delimiter is the literal string `$PATH'. The lines of the
+here-document undergo a different set of expansions, which happen after the
+check for the delimiter is performed, which means that you need to have a
+		line that consists solely of `$PATH' to terminate the here-document (as you
+discovered). I cannot see how you're going to be able to do anything useful
+with this construct; it just seems too clever by (more than) half.
+The delimiter is not what you think it is. The delimiter for a here-
+document is a shell word (which can include quoted substrings), and after
+it undergoes the appropriate quote removal, your delimiter is
+"ola\nI,\nola\nola" (using C string notation).
+
+Now, you're never going to be able to match this; it contains a newline.
+When the shell constructs the here-document body, it reads individual lines
+		from the input source and, after removing the trailing newline, tries to
+		match them against the delimiter (and backslash doesn't work to quote the
+newline). This will obviously never match a delimiter containing a newline.
+Some shells (e.g., yash) choose to make this a syntax error. Bash does not.
+*/
+
 /*
 **	Note: on heredoc, bash does not interpret the '$' as a variable expansion,
 **	that's why this function only calls handle_dollar_sign when it's not on
