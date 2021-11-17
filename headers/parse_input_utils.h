@@ -1,10 +1,10 @@
-#ifndef INPUT_PARSING_UTILS_H
-# define INPUT_PARSING_UTILS_H
+#ifndef PARSE_INPUT_UTILS_H
+# define PARSE_INPUT_UTILS_H
 
 # include "main.h"
 
-bool	is_special_char(char chr);
-bool	is_quote_char(char chr);
-bool	is_dollar_sign(char chr);
+int		skip_white_space(char *input);
+int	is_a_valid_command(t_data *data, char *cmd);
+int	is_in_dir(char *input, char *path, DIR *directory);
 
 #endif

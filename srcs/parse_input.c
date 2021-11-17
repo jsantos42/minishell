@@ -45,11 +45,16 @@ int	parse_input(t_data *data)
 	return (1);
 }
 
-///rewrite comment
 /*
-**	In the beginning it checks whether command has already been saved; if so, it
-**	assumes it is meant to read an argument and returns. Otherwise, tries to
-**	read a command and checks if it is a valid one.
+**	Starts by checking if it's reading a command or argument. If the matrix
+**	current_node->args is empty, it's reading the first argument of the node,
+**	meaning it should be reading a command. Otherwise, it assumes it's reading
+**	an argument and calls a somewhat similar function (read_argument). There are
+**	two main differences between them:
+**	1) In commands, quotes and variable expansion ('$') are not allowed, whereas
+**	in arguments they should be handled.
+**	2) The command must exist, hence here it calls is_a_valid_command before
+**	saving it in the matrix.
 */
 
 int	read_cmd_and_args(t_data *data, t_leaf_node *current_node, char **str)
@@ -81,8 +86,8 @@ int	read_cmd_and_args(t_data *data, t_leaf_node *current_node, char **str)
 }
 
 /*
-**	It should only save a new argument if there is
-**	anything to save (that is, if there's at least 1 char to save, i != 0).
+**	See comment of the previous function.
+**	Note that there's a check if i != 0 to avoid saving empty arguments.
 */
 
 int	read_argument(t_leaf_node *current_node, char **str)
@@ -109,15 +114,10 @@ int	read_argument(t_leaf_node *current_node, char **str)
 	return (1);
 }
 
-
-
-# define NEW_ARG	1
-# define NULLTERM	1
-
 /*
-**	Creates a new matrix, allocating enough memory to contain both the previous
+**	Creates a new_matrix, allocating enough memory to contain both the previous
 **	allocated argument strings* and the new argument. Frees the previous
-**	allocated matrix* and makes the current_node->args point to this new matrix.
+**	allocated matrix* and makes the current_node->args point to this new_matrix.
 **	Finally, it increases the number of arguments (note that this nb_args
 **	includes the command itself, which should be the first arg).
 **
@@ -126,19 +126,19 @@ int	read_argument(t_leaf_node *current_node, char **str)
 
 void	save_new_argument(t_leaf_node *current_node, char *new_arg)
 {
-	char	**new;
+	char	**new_matrix;
 	int		i;
 
-	new = NULL;
-	new = malloc(sizeof(char *) * (current_node->nb_args + NEW_ARG + NULLTERM));
-	if (!new)
+	new_matrix = NULL;
+	new_matrix = malloc(sizeof(char *) * (current_node->nb_args + NEW_ARG + NULLTERM));
+	if (!new_matrix)
 		terminate_program(MALLOC);
 	i = -1;
 	while (++i < current_node->nb_args)
-		new[i] = current_node->args[i];
-	new[i] = new_arg;
-	new[++i] = NULL;
+		new_matrix[i] = current_node->args[i];
+	new_matrix[i] = new_arg;
+	new_matrix[++i] = NULL;
 	free_if_not_null(current_node->args);
-	current_node->args = new;
+	current_node->args = new_matrix;
 	current_node->nb_args++;
 }

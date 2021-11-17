@@ -1,22 +1,64 @@
 #include "../headers/parse_input_utils.h"
 
-bool	is_special_char(char chr)
+int	skip_white_space(char *input)
 {
-	if (chr == '|' || chr == '&' || chr == '<' || chr == '>'
-	|| chr == '\\' || chr == ';')
-		return (true);
-	else
-		return (false);
-}
+	int	i;
 
-bool	is_quote_char(char chr)
-{
-	return (chr == '\'' || chr == '\"');
-}
-
-bool	is_dollar_sign(char chr)
-{
-	return (chr == '$');
+	i = -1;
+	while (input[++i] != '\0')
+	{
+		if (!ft_isspace(input[i]))
+			break ;
+	}
+	return (i);
 }
 
 
+
+
+
+int	is_a_valid_command(t_data *data, char *cmd)
+{
+	DIR	*directory;
+	int	iter;
+
+	iter = -1;
+	while (data->paths[++iter] != NULL)
+	{
+		directory = opendir(data->paths[iter]);
+		if (!directory)
+			terminate_program(OPENING_DIR);
+		if (is_in_dir(cmd, data->paths[iter], directory))
+			return (1);
+	}
+	return (0);
+}
+
+int	is_in_dir(char *input, char *path, DIR *directory)
+{
+	int	ret;
+
+	struct dirent *dir_struct;
+
+	dir_struct = NULL;
+	dir_struct = readdir(directory);
+	while (dir_struct)
+	{
+		if (ft_strncmp(input, dir_struct->d_name, ft_strlen(input) + 1) == 0)
+		{
+			ret = 1;
+			printf("The absolute path of the command is %s/%s\n", path, input);
+			break;
+		}
+		dir_struct = readdir(directory);
+	}
+	if (dir_struct == NULL)
+	{
+		ret = 0;
+		if (errno == EBADF || errno == EFAULT || errno == EIO)
+			terminate_program(READING_DIR);
+	}
+	if (closedir(directory) != 0)
+		terminate_program(CLOSING_DIR);
+	return (ret);
+}

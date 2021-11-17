@@ -16,7 +16,10 @@
 # include "parse_input.h"
 # include "parse_input_utils.h"
 # include "execute_input.h"
-# include "handle_special_chars.h"
+# include "special_chars.h"
+# include "special_chars_utils.h"
+# include "dollar_sign.h"
+# include "quote_char.h"
 
 t_data	*get_data(t_data *data);
 
