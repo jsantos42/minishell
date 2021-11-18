@@ -33,6 +33,12 @@ typedef struct s_context
 	int	fd_close;
 }	t_ctx;
 
+typedef struct s_proc_data
+{
+	pid_t	id;
+	int		fd_io[2];
+}	t_proc;
+
 typedef struct s_branch_node {
 	int				operator;
 	struct s_tree	*left;
@@ -67,7 +73,7 @@ typedef struct s_data {
 	t_tree	*tree;
 	bool	exit_cmd;
 	bool	illegal_input;
-	int		active_proc;
+	t_list	*plist;
 }	t_data;
 
 #endif

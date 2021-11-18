@@ -7,17 +7,28 @@ static void	execute_node(t_tree *node, t_ctx *ctx);
 static int	execute_leaf(t_leaf_node *leaf, t_ctx *ctx);
 static int	execute_branch(t_branch_node *branch, t_ctx *ctx);
 static char	*get_cmd_path(char *cmd, char **paths);
+static void	push_process(t_data *data, t_proc *p_data);
 
 void	execute_input(t_data *data)
 {
 	t_ctx	ctx;
+	size_t	iter;
 
 	ctx.fd_io[0] = STDIN_FILENO;
 	ctx.fd_io[1] = STDOUT_FILENO;
 	ctx.fd_close = -1;
 	execute_node(data->tree, &ctx);
-	while (data->active_proc--)
-		wait(NULL);
+	iter = ft_lstsize(data->plist);
+	while (iter--)
+	{
+		waitpid(((t_proc *)data->plist->content)->id, NULL, 0);
+		if (((t_proc *)data->plist->content)->fd_io[0] != STDIN_FILENO)
+			close(((t_proc *)data->plist->content)->fd_io[0]);
+		if (((t_proc *)data->plist->content)->fd_io[1] != STDOUT_FILENO)
+			close(((t_proc *)data->plist->content)->fd_io[1]);
+		data->plist = data->plist->next;
+	}
+	// 	wait(NULL);
 	// waits gona be here;
 	// wait while data->active_proc;
 }
@@ -33,16 +44,23 @@ static void	execute_node(t_tree *node, t_ctx *ctx)
 static int	execute_leaf(t_leaf_node *leaf, t_ctx *ctx)
 {
 	char	*cmd_path;
-	int		p_id;
+	t_proc	*p_data;
 	t_data	*data;
 
 	data = get_data(NULL);
+
 	cmd_path = get_cmd_path(leaf->args[0], data->paths);
 	if (!cmd_path)
 		return (-1);
 	
-	p_id = fork();
-	if (p_id == 0)
+	p_data = malloc(sizeof(t_proc));
+	if (!p_data)
+		terminate_program(MALLOC);
+	p_data->id = fork();
+	p_data->fd_io[0] = ctx->fd_io[0];
+	p_data->fd_io[1] = ctx->fd_io[1];
+
+	if (p_data->id == 0)
 	{
 		dup2(ctx->fd_io[0], STDIN_FILENO);
 		dup2(ctx->fd_io[1], STDOUT_FILENO);
@@ -51,8 +69,16 @@ static int	execute_leaf(t_leaf_node *leaf, t_ctx *ctx)
 			close(ctx->fd_close);
 		execve(cmd_path, leaf->args, data->envp);
 	}
-	data->active_proc++;
-	return (p_id);
+	push_process(data, p_data);
+	return (p_data->id);
+}
+
+static void	push_process(t_data *data, t_proc *p_data)
+{
+	if (!data->plist)
+		data->plist = ft_lstnew(p_data);
+	else
+		ft_lstadd_back(&data->plist, ft_lstnew(p_data));
 }
 
 static int	execute_branch(t_branch_node *branch, t_ctx *ctx)
@@ -72,9 +98,7 @@ static int	execute_branch(t_branch_node *branch, t_ctx *ctx)
 	right_ctx.fd_io[0] = p[READ_END];
 	right_ctx.fd_close = p[WRITE_END];
 	execute_node(branch->right, &right_ctx);
-	
-	close(p[WRITE_END]);
-	close(p[READ_END]);
+
 	return (0);
 }
 

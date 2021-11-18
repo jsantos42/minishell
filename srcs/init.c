@@ -13,6 +13,7 @@ void	init_data(t_data *data, int argc, char **argv, char **envp)
 	data->paths = get_paths(data);
 	data->tree = NULL;
 	data->exit_cmd = false;
+	data->plist = NULL;
 	get_data(data);
 }
 
