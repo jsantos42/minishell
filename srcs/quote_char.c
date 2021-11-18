@@ -21,6 +21,7 @@ bool	is_quote_char(char chr)
 **	subtract 1 because the iteration on the previous while goes one extra loop.
 */
 
+///this should interpret $!! subject: " inhibit all interpretation of a sequence of characters except for $
 char	*handle_quote_char(char *input, int *quote_pos)
 {
 	char	quote_type;

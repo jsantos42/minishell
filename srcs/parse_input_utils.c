@@ -17,6 +17,10 @@ int	skip_white_space(char *input)
 
 
 
+/*
+**	Do edge case for situations when the command is on the same folder (./minishell)
+*/
+
 int	is_a_valid_command(t_data *data, char *cmd)
 {
 	DIR	*directory;
