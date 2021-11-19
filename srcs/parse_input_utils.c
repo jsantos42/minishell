@@ -1,16 +1,9 @@
 #include "../headers/parse_input_utils.h"
 
-int	skip_white_space(char *input)
+void	skip_white_space(char *input, int *i)
 {
-	int	i;
-
-	i = -1;
-	while (input[++i] != '\0')
-	{
-		if (!ft_isspace(input[i]))
-			break ;
-	}
-	return (i);
+	while (input[*i] != '\0' && ft_isspace(input[*i]))
+		(*i)++;
 }
 
 

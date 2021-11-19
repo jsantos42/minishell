@@ -31,7 +31,7 @@ char	*handle_quote_char(char *input, int *quote_pos)
 	int		k;
 
 	quote_type = *(input + *quote_pos);
-	new_input = malloc(ft_strlen(input) - PAIR_OF_QUOTES + 1);
+	new_input = malloc(ft_strlen(input) + 1 - PAIR_OF_QUOTES);
 	if (!new_input)
 		terminate_program(MALLOC);
 	quotes_found = 0;

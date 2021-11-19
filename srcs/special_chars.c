@@ -9,30 +9,34 @@ bool	is_special_char(char chr)
 		return (false);
 }
 
-void	handle_pipe(t_tree **current_node, char **str)
+void	handle_pipe(t_tree **current_node, char *str, int *i)
 {
 	int	operator;
 
+//	this protection against escape should make the special char part of the argument
+//	if (*i != 0 && str[*i - 1] == '\\')
+//		return ;
 	operator = PIPE;
-	(*str)++;
-	if (**str == '|')
+	if (str[++*i] == '|')
 	{
 		operator = OR;
-		(*str)++;
+		(*i)++;
 	}
 	relink(current_node, operator);
 }
 
-void	handle_amper(t_tree **current_node, char **str)
+void	handle_amper(t_tree **current_node, char *str, int *i)
 {
 	int	operator;
 
+//	this protection against escape should make the special char part of the argument
+//	if (*i != 0 && str[*i - 1] == '\\')
+//		return ;
 	operator = 0;
-	(*str)++;
-	if (**str == '&')
+	if (str[++*i] == '&')
 	{
 		operator = AND;
-		(*str)++;
+		(*i)++;
 	}
 	else
 		terminate_program(RUN_BG);
@@ -69,57 +73,61 @@ Some shells (e.g., yash) choose to make this a syntax error. Bash does not.
 **	here_doc mode.
 */
 
-void	handle_input_redirection(t_tree **current_node, char **str)
+void	handle_input_redirection(t_tree **current_node, char **str, int *i)
 {
-	int	i;
+	int	old_i;
 
-	(*str)++;
-	if (**str == '<')
+//	this protection against escape should make the special char part of the argument
+//	if (*i != 0 && (*str)[*i - 1] == '\\')
+//		return ;
+	(*i)++;
+	if ((*str)[*i] == '<')
 	{
 		(*current_node)->leaf.here_doc = true;
-		(*str)++;
+		(*i)++;
 	}
-	*str += skip_white_space(*str);
-	i = -1;
-	while ((*str)[++i] != '\0'
-		   && !is_special_char((*str)[i])
-		   && !ft_isspace((*str)[i]))
+	skip_white_space(*str, i);
+	old_i = *i;
+	while ((*str)[*i] != '\0'
+		   && !is_special_char((*str)[*i])
+		   && !ft_isspace((*str)[*i]))
 	{
-		if (is_quote_char((*str)[i]))
+		if (is_quote_char((*str)[*i]))
 			*str = handle_quote_char(*str, &i);
-		else if (is_dollar_sign((*str)[i]) && !(*current_node)->leaf.here_doc)
+		else if (is_dollar_sign((*str)[*i]) && !(*current_node)->leaf.here_doc)
 			*str = handle_dollar_sign(*str, &i);
 	}
-	if (i != 0 && (*current_node)->leaf.here_doc == false)
-		(*current_node)->leaf.redir_input = ft_substr(*str, 0, i);
+	if (*i != old_i && (*current_node)->leaf.here_doc == false)
+		(*current_node)->leaf.redir_input = ft_substr(*str, old_i, *i);
 	else if (i != 0 && (*current_node)->leaf.here_doc == true)
-		(*current_node)->leaf.delimiter = ft_substr(*str, 0, i);
-	*str += i;
+		(*current_node)->leaf.delimiter = ft_substr(*str, old_i, *i);
 }
 
 
-void	handle_output_redirection(t_tree **current_node, char **str)
+void	handle_output_redirection(t_tree **current_node, char **str, int *i)
 {
-	int	i;
+	int	old_i;
 
-	(*str)++;
-	if (**str == '>')
+//	this protection against escape should make the special char part of the argument
+//	if (*i != 0 && (*str)[*i - 1] == '\\')
+//		return ;
+	(*i)++;
+	if ((*str)[*i] == '>')
 	{
 		(*current_node)->leaf.append_mode = true;
-		(*str)++;
+		(*i)++;
 	}
-	*str += skip_white_space(*str);
-	i = -1;
-	while ((*str)[++i] != '\0'
-		   && !is_special_char((*str)[i])
-		   && !ft_isspace((*str)[i]))
+	skip_white_space(*str, i);
+	old_i = *i;
+	while ((*str)[*i] != '\0'
+		   && !is_special_char((*str)[*i])
+		   && !ft_isspace((*str)[*i]))
 	{
-		if (is_quote_char((*str)[i]))
+		if (is_quote_char((*str)[*i]))
 			*str = handle_quote_char(*str, &i);
-		else if (is_dollar_sign((*str)[i]))
+		else if (is_dollar_sign((*str)[*i]))
 			*str = handle_dollar_sign(*str, &i);
 	}
-	if (i != 0)
-		(*current_node)->leaf.redir_output = ft_substr(*str, 0, i);
-	*str += i;
+	if (*i != old_i)
+		(*current_node)->leaf.redir_output = ft_substr(*str, old_i, *i);
 }

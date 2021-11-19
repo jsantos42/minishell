@@ -5,8 +5,7 @@
 **	pipe or an ampersand, then it will create a starting branch_node and this
 **	first leaf node will become the branch_node's left leaf_node (see types.h).
 **	2) The current_node will be the node that it will be working on. That way,
-**	data->tree will keep pointing to the tree starting point. The same reasoning
-**	applies to str, which will point to the current char to be parsed.
+**	data->tree will keep pointing to the tree starting point.
 **	3) The parser will work as long as there's input to parse and the input is
 **	legal.
 **	4) The input is white-space insensitive, so it can skip white space. If it
@@ -17,28 +16,28 @@
 int	parse_input(t_data *data)
 {
 	t_tree 	*current_node;
-	char	*str;
+	int		i;
 
 	data->tree = init_leaf_node(NULL);
 	current_node = data->tree;
-	str = data->input;
-	while (*str != '\0' && !data->illegal_input)
+	i = 0;
+	while (data->input[i] != '\0' && !data->illegal_input)
 	{
-		str += skip_white_space(str);
-		if (*str == '\\' || *str == ';')
+		skip_white_space(data->input, &i);
+		if (data->input[i] == '\\' || data->input[i] == ';')
 			terminate_program(SPECIAL_CHAR);
-		else if (*str == '|')
-			handle_pipe(&current_node, &str);
-		else if (*str == '&')
-			handle_amper(&current_node, &str);
-		else if (*str == '<')
-			handle_input_redirection(&current_node, &str);
-		else if (*str == '>')
-			handle_output_redirection(&current_node, &str);
-//		else if (*str == '(')
+		else if (data->input[i] == '|')
+			handle_pipe(&current_node, data->input, &i);
+		else if (data->input[i] == '&')
+			handle_amper(&current_node, data->input, &i);
+		else if (data->input[i] == '<')
+			handle_input_redirection(&current_node, &data->input, &i);
+		else if (data->input[i] == '>')
+			handle_output_redirection(&current_node, &data->input, &i);
+//		else if (data->input[i] == '(')
 			///missing condition for parenthesis
 		else
-			read_cmd_and_args(data, &current_node->leaf, &str);
+			read_cmd_and_args(data, &current_node->leaf, &i);
 	}
 	if (data->illegal_input)
 		return (0);
@@ -57,61 +56,54 @@ int	parse_input(t_data *data)
 **	saving it in the matrix.
 */
 
-int	read_cmd_and_args(t_data *data, t_leaf_node *current_node, char **str)
+void	read_cmd_and_args(t_data *data, t_leaf_node *current_node, int *i)
 {
-	int		i;
 	char	*cmd;
+	int		old_i;
 
 	if (current_node->args != NULL)
-		return (read_argument(current_node, str));
-	i = 0;
-	while ((*str)[i] != '\0'
-	&& !ft_isspace((*str)[i]) && !is_special_char((*str)[i])
-	&& !is_quote_char((*str)[i]) && !is_dollar_sign((*str)[i]))
-		i++;
-	cmd = ft_substr(*str, 0, i);
+		read_argument(data, current_node, i);
+	old_i = *i;
+	while (data->input[*i] != '\0'
+	&& !ft_isspace(data->input[*i]) && !is_special_char(data->input[*i])
+	&& !is_quote_char(data->input[*i]) && !is_dollar_sign(data->input[*i]))
+		(*i)++;
+	cmd = ft_substr(data->input, old_i, *i);
 	if (is_a_valid_command(data, cmd))
-	{
 		save_new_argument(current_node, cmd);
-		*str += i;
-		return (1);
-	}
 	else
 	{
 		printf("minishell: %s: command not found\n", cmd);
 		data->illegal_input	= true;
 		free(cmd);
-		return (0);
 	}
 }
 
 /*
 **	See comment of the previous function.
-**	Note that there's a check if i != 0 to avoid saving empty arguments.
+**	Note that there's a check if i != current_i to avoid saving empty arguments.
 */
 
-int	read_argument(t_leaf_node *current_node, char **str)
+void	read_argument(t_data *data, t_leaf_node *current_node, int *i)
 {
-	int i;
+	int		old_i;
 	char	*new_arg;
 
-	i = 0;
-	while ((*str)[i] != '\0'
-	&& !ft_isspace((*str)[i]) && !is_special_char((*str)[i]))
+	old_i = *i;
+	while (data->input[*i] != '\0'
+	&& !ft_isspace(data->input[*i]) && !is_special_char(data->input[*i]))
 	{
-		if (is_quote_char((*str)[i]))
-			*str = handle_quote_char(*str, &i);
-		else if (is_dollar_sign((*str)[i]))
-			*str = handle_dollar_sign(*str, &i);
-		i++;
+		if (is_quote_char(data->input[*i]))
+			data->input = handle_quote_char(&data->input, &i);
+		else if (is_dollar_sign(data->input[*i]))
+			data->input = handle_dollar_sign(&data->input, &i);
+		(*i)++;
 	}
-	if (i != 0)
+	if (*i != old_i)
 	{
-		new_arg = ft_substr(*str, 0, i);
+		new_arg = ft_substr(data->input, old_i, *i);
 		save_new_argument(current_node, new_arg);
-		*str += i;
 	}
-	return (1);
 }
 
 /*
