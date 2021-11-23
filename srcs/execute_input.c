@@ -4,33 +4,34 @@
 #define WRITE_END 1
 
 static void	execute_node(t_tree *node, t_ctx *ctx);
-static int	execute_leaf(t_leaf_node *leaf, t_ctx *ctx);
-static int	execute_branch(t_branch_node *branch, t_ctx *ctx);
+static void	execute_leaf(t_leaf_node *leaf, t_ctx *ctx);
+static void	execute_branch(t_branch_node *branch, t_ctx *ctx);
 static char	*get_cmd_path(char *cmd, char **paths);
-static void	push_process(t_data *data, t_proc *p_data);
+static void	ft_close_fds(t_list *plist);
 
 void	execute_input(t_data *data)
 {
-	t_ctx	ctx;
+	static t_ctx ctx = {.fd_io[0] = 0, .fd_io[1] = 1, .fd_close = -1};
 	size_t	iter;
+	int		status;
 
-	ctx.fd_io[0] = STDIN_FILENO;
-	ctx.fd_io[1] = STDOUT_FILENO;
-	ctx.fd_close = -1;
+	// The Recursion Summoner
 	execute_node(data->tree, &ctx);
+	
+	// Block execution of the main process until all childrens have been closed
 	iter = ft_lstsize(data->plist);
 	while (iter--)
 	{
-		waitpid(((t_proc *)data->plist->content)->id, NULL, 0);
+		waitpid(((t_proc *)data->plist->content)->id, &status, 0);
 		if (((t_proc *)data->plist->content)->fd_io[0] != STDIN_FILENO)
 			close(((t_proc *)data->plist->content)->fd_io[0]);
 		if (((t_proc *)data->plist->content)->fd_io[1] != STDOUT_FILENO)
 			close(((t_proc *)data->plist->content)->fd_io[1]);
 		data->plist = data->plist->next;
 	}
-	// 	wait(NULL);
-	// waits gona be here;
-	// wait while data->active_proc;
+	ft_lstclear(&data->plist, free);
+
+	data->status = WEXITSTATUS(status);
 }
 
 static void	execute_node(t_tree *node, t_ctx *ctx)
@@ -41,7 +42,7 @@ static void	execute_node(t_tree *node, t_ctx *ctx)
 		execute_branch(&node->branch, ctx);
 }
 
-static int	execute_leaf(t_leaf_node *leaf, t_ctx *ctx)
+static void	execute_leaf(t_leaf_node *leaf, t_ctx *ctx)
 {
 	char	*cmd_path;
 	t_proc	*p_data;
@@ -49,39 +50,28 @@ static int	execute_leaf(t_leaf_node *leaf, t_ctx *ctx)
 
 	data = get_data(NULL);
 
+	/// TODO: Get command path at parsing time
 	cmd_path = get_cmd_path(leaf->args[0], data->paths);
-	if (!cmd_path)
-		return (-1);
-	
+
 	p_data = malloc(sizeof(t_proc));
 	if (!p_data)
 		terminate_program(MALLOC);
-	p_data->id = fork();
 	p_data->fd_io[0] = ctx->fd_io[0];
 	p_data->fd_io[1] = ctx->fd_io[1];
+	p_data->id = fork();
 
 	if (p_data->id == 0)
 	{
-		dup2(ctx->fd_io[0], STDIN_FILENO);
-		dup2(ctx->fd_io[1], STDOUT_FILENO);
-		//dprintf(2, "CMD: %s;   FD_IN: %d,   FD_OUT: %d\n", leaf->args[0], ctx->fd_io[0], ctx->fd_io[1]);
-		if (ctx->fd_close >= 0)
-			close(ctx->fd_close);
+		if (dup2(ctx->fd_io[0], 0) == -1 || dup2(ctx->fd_io[1], 1) == -1)
+			terminate_program(DUP2);
+		ft_close_fds(data->plist);
 		execve(cmd_path, leaf->args, data->envp);
 	}
-	push_process(data, p_data);
-	return (p_data->id);
+	// Push the generated child infos to the process list
+	ft_lstadd_back(&data->plist, ft_lstnew(p_data));
 }
 
-static void	push_process(t_data *data, t_proc *p_data)
-{
-	if (!data->plist)
-		data->plist = ft_lstnew(p_data);
-	else
-		ft_lstadd_back(&data->plist, ft_lstnew(p_data));
-}
-
-static int	execute_branch(t_branch_node *branch, t_ctx *ctx)
+static void	execute_branch(t_branch_node *branch, t_ctx *ctx)
 {
 	int		p[2];
 	t_ctx	left_ctx;
@@ -98,10 +88,7 @@ static int	execute_branch(t_branch_node *branch, t_ctx *ctx)
 	right_ctx.fd_io[0] = p[READ_END];
 	right_ctx.fd_close = p[WRITE_END];
 	execute_node(branch->right, &right_ctx);
-
-	return (0);
 }
-
 
 static char	*get_cmd_path(char *cmd, char **paths)
 {
@@ -121,4 +108,21 @@ static char	*get_cmd_path(char *cmd, char **paths)
 		i++;
 	}
 	return (NULL);
+}
+
+static void	ft_close_fds(t_list *plist)
+{
+	int		iter;
+	t_list	*tmp;
+
+	iter = ft_lstsize(plist);
+	tmp = plist;
+	while (iter--)
+	{
+		if (((t_proc *)tmp->content)->fd_io[0] != 0)
+			close(((t_proc *)tmp->content)->fd_io[0]);
+		if (((t_proc *)tmp->content)->fd_io[1] != 1)
+			close(((t_proc *)tmp->content)->fd_io[1]);
+		tmp = tmp->next;
+	}
 }

@@ -8,6 +8,7 @@
 # include <dirent.h>
 # include <string.h>
 # include <sys/errno.h>
+# include "ansi_colors.h" // Color Macros
 # include "../libs/libft/include/libft.h" // this already includes stdlib.h and unistd.h
 # include "types.h"
 # include "terminate_and_free.h"

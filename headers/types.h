@@ -13,7 +13,8 @@ typedef enum e_errors {
 	CLOSING_DIR		= -6,
 	SPECIAL_CHAR	= -7,
 	UNCLOSED_QUOTES	= -8,
-	RUN_BG			= -9
+	RUN_BG			= -9,
+	DUP2			= -10
 }	t_errors;
 
 typedef enum e_relation {
@@ -56,13 +57,13 @@ typedef struct s_leaf_node {
 }	t_leaf_node;
 
 typedef struct s_tree {
+	t_node_type		type;
 	union {
 		t_branch_node	branch;
 		t_leaf_node		leaf;
 	};
-	t_node_type		type;
-	struct s_tree	*previous;
 	int				redir_io[2];
+	struct s_tree	*previous;
 }	t_tree;
 
 typedef struct s_data {
@@ -70,6 +71,7 @@ typedef struct s_data {
 	char	**paths;
 	char	**envp;
 	int		nb_paths;
+	int		status;
 	t_tree	*tree;
 	bool	exit_cmd;
 	bool	illegal_input;

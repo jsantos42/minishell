@@ -10,6 +10,7 @@ void	init_data(t_data *data, int argc, char **argv, char **envp)
 	data->envp = envp;
 	data->input = NULL;
 	data->nb_paths = 0;
+	data->status = 0;
 	data->paths = get_paths(data);
 	data->tree = NULL;
 	data->exit_cmd = false;
