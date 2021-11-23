@@ -13,25 +13,19 @@ bool	is_dollar_sign(char chr)
 
 void	handle_dollar_sign(t_data *data, int dollar_pos)
 {
-	char	*name;
-	char	*expanded;
-	size_t	name_len;
-	size_t	expanded_len;
+	t_dollar	dollar;
 	char	*new_input;
 
 //	this protection against escape should make the special char part of the argument
 //	if (dollar_pos != 0 && --dollar_pos == '\\')
 //		return ;
-	name_len = DOLLAR_SIGN + get_var_length(data->input + dollar_pos);
-	name = ft_substr(data->input, dollar_pos + 1, name_len);
-	expanded = getenv(name);
-	expanded_len = ft_strlen(expanded);
-	new_input = malloc(ft_strlen(data->input) - name_len + expanded_len + 1);
-	if (!new_input)
-		terminate_program(MALLOC);
-	new_input = replace_input(data->input, expanded, dollar_pos, name_len);
-	free(name);
-	free(expanded);
+	dollar.name_len = DOLLAR_SIGN + get_var_length(data->input + dollar_pos);
+	dollar.name = ft_substr(data->input, dollar_pos + 1, dollar.name_len);
+	dollar.expanded = getenv(dollar.name);
+	dollar.expanded_len = ft_strlen(dollar.expanded);
+	new_input = replace_input(data->input, &dollar, dollar_pos);
+	free(dollar.name);
+	free(dollar.expanded);
 	free(data->input);
 	data->input = new_input;
 }
@@ -57,22 +51,25 @@ int	get_var_length(char *var)
 **	the corresponding expanded value of VAR in the environment.
 */
 
-char	*replace_input(char *original, char *expanded, int dollar_pos, size_t name_len)
+char	*replace_input(char *original, t_dollar *dollar, int dollar_pos)
 {
 	char	*new;
 	int		i;
 	int		j;
 	int		k;
 
+	new = malloc(ft_strlen(original) - dollar->name_len + dollar->expanded_len + 1);
+	if (!new)
+		terminate_program(MALLOC);
 	i = 0;
 	j = 0;
 	while (original[i] != '\0' && i != dollar_pos)
 		new[j++] = original[i++];
-	while (name_len--)
+	while (dollar->name_len--)
 		i++;
 	k = 0;
-	while (expanded[k] != '\0')
-		new[j++] = expanded[k++];
+	while (dollar->expanded[k] != '\0')
+		new[j++] = dollar->expanded[k++];
 	while (original[i] != '\0')
 		new[j++] = original[i++];
 	new[j] = '\0';
