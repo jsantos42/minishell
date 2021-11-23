@@ -5,6 +5,8 @@
 # define  DOLLAR_SIGN 1
 
 bool	is_dollar_sign(char chr);
-char	*handle_dollar_sign(char *input, int *dollar_pos);
+void	handle_dollar_sign(t_data *data, int dollar_pos);
+int		get_var_length(char *var);
+char	*replace_input(char *original, char *expanded, int dollar_pos, size_t name_len);
 
 #endif

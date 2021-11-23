@@ -33,15 +33,16 @@ int	is_a_valid_command(t_data *data, char *cmd)
 
 int	is_in_dir(char *input, char *path, DIR *directory)
 {
-	int	ret;
+	size_t			input_len;
+	int				ret;
+	struct dirent	*dir_struct;
 
-	struct dirent *dir_struct;
-
+	input_len = ft_strlen(input);
 	dir_struct = NULL;
 	dir_struct = readdir(directory);
 	while (dir_struct)
 	{
-		if (ft_strncmp(input, dir_struct->d_name, ft_strlen(input) + 1) == 0)
+		if (ft_strncmp(input, dir_struct->d_name, input_len + 1) == 0)
 		{
 			ret = 1;
 			printf("The absolute path of the command is %s/%s\n", path, input);

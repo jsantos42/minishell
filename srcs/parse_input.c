@@ -96,7 +96,7 @@ void	read_argument(t_data *data, t_leaf_node *current_node, int *i)
 		if (is_quote_char(data->input[*i]))
 			data->input = handle_quote_char(&data->input, &i);
 		else if (is_dollar_sign(data->input[*i]))
-			data->input = handle_dollar_sign(&data->input, &i);
+			handle_dollar_sign(data, &i);
 		(*i)++;
 	}
 	if (*i != old_i)

@@ -5,42 +5,76 @@ bool	is_dollar_sign(char chr)
 	return (chr == '$');
 }
 
-void	handle_dollar_sign(t_data	*data, int dollar_pos)
+/*
+**	Finds the name of the variable, calculates it length, and calls
+**	replace_input in order to replace the previous input with one that has this
+**	variable expanded.
+*/
+
+void	handle_dollar_sign(t_data *data, int dollar_pos)
 {
-	char	*expanded_var;
-	size_t	new_input_size;
+	char	*name;
+	char	*expanded;
+	size_t	name_len;
+	size_t	expanded_len;
 	char	*new_input;
-	int		i;
-	int		j;
-	int		k;
 
 //	this protection against escape should make the special char part of the argument
 //	if (dollar_pos != 0 && --dollar_pos == '\\')
 //		return ;
-	if (dollar_pos == 0 || --dollar_pos != '\\')
-	{
-		expanded_var = get_expanded_var(
-				data);// get string corresponding to variable to expand (protect against failure)
-		new_input_size = ft_strlen(data->input) + ft_strlen(expanded_var) - DOLLAR_SIGN;
-		new_input = malloc(new_input_size + 1);
-		if (!new_input)
-			terminate_program(MALLOC);
-		i = 0;
-		k = 0;
-		while (data->input[i] != '\0' && input[i] != '$')
-			new_input[k++] = input[i++];
-		i++;
-		j = 0;
-		while (expanded_var[j] != '\0')
-			new_input[k++] = expanded_var[j++];
-		while (input[i] != '\0')
-			new_input[k++] = input[i++];
-		new_input[k] = '\0';
-		free(input);
+	name_len = DOLLAR_SIGN + get_var_length(data->input + dollar_pos);
+	name = ft_substr(data->input, dollar_pos + 1, name_len);
+	expanded = getenv(name);
+	expanded_len = ft_strlen(expanded);
+	new_input = malloc(ft_strlen(data->input) - name_len + expanded_len + 1);
+	if (!new_input)
+		terminate_program(MALLOC);
+	new_input = replace_input(data->input, expanded, dollar_pos, name_len);
+	free(name);
+	free(expanded);
+	free(data->input);
+	data->input = new_input;
+}
 
-		//this must finish on a space or special char
-		(void) input;
-		(void) dollar_pos;
-		return (input);//must return new_input
-	}
+/*
+**	Finds the length of the unexpanded VAR name and returns it.
+*/
+
+int	get_var_length(char *var)
+{
+	int	i;
+
+	i = 0;
+	while (var[i] != '\0'
+	&& !ft_isspace(var[i]) && !is_special_char(var[i])
+	&& !is_quote_char(var[i]) && !is_dollar_sign(var[i]))
+		i++;
+	return (i);
+}
+
+/*
+**	This replaces the data->input string with a copy that replaces "$VAR" with
+**	the corresponding expanded value of VAR in the environment.
+*/
+
+char	*replace_input(char *original, char *expanded, int dollar_pos, size_t name_len)
+{
+	char	*new;
+	int		i;
+	int		j;
+	int		k;
+
+	i = 0;
+	j = 0;
+	while (original[i] != '\0' && i != dollar_pos)
+		new[j++] = original[i++];
+	while (name_len--)
+		i++;
+	k = 0;
+	while (expanded[k] != '\0')
+		new[j++] = expanded[k++];
+	while (original[i] != '\0')
+		new[j++] = original[i++];
+	new[j] = '\0';
+	return (new);
 }
