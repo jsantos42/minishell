@@ -1,7 +1,7 @@
 #ifndef BUILTINS_H
 # define BUILTINS_H
 
-# include "types.h"
+# include "main.h"
 
 void	exec_builtin(t_leaf_node *leaf);
 

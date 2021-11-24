@@ -62,6 +62,7 @@ int	read_cmd_and_args(t_data *data, t_leaf_node *current_node, char **str)
 	int		i;
 	char	*cmd;
 
+	(void)data;
 	if (current_node->args != NULL)
 		return (read_argument(current_node, str));
 	i = 0;
@@ -70,19 +71,19 @@ int	read_cmd_and_args(t_data *data, t_leaf_node *current_node, char **str)
 	&& !is_quote_char((*str)[i]) && !is_dollar_sign((*str)[i]))
 		i++;
 	cmd = ft_substr(*str, 0, i);
-	if (is_a_valid_command(data, cmd))
-	{
+	// if (is_a_valid_command(data, cmd))
+	// {
 		save_new_argument(current_node, cmd);
 		*str += i;
 		return (1);
-	}
-	else
-	{
-		printf("minishell: %s: command not found\n", cmd);
-		data->illegal_input	= true;
-		free(cmd);
-		return (0);
-	}
+	// }
+	// else
+	// {
+	// 	printf("minishell: %s: command not found\n", cmd);
+	// 	data->illegal_input	= true;
+	// 	free(cmd);
+	// 	return (0);
+	// }
 }
 
 /*

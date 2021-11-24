@@ -1,10 +1,10 @@
 #include "../headers/main.h"
 
 static char *prompt[] = {
-	"\n\033[38;5;214m𓆉  Minishell $ ",
-	"\n\033[38;5;196m𓆉  Minishell $ ",
-	"\n\033[38;5;93m𓆉  Minishell $ ",
-	"\n\033[38;5;39m𓆉  Minishell $ "
+	"\033[38;5;214m𓆉  Minishell $ ",
+	"\033[38;5;196m𓆉  Minishell $ ",
+	"\033[38;5;93m𓆉  Minishell $ ",
+	"\033[38;5;39m𓆉  Minishell $ "
 	};
 
 int main(int argc, char **argv, char **envp)

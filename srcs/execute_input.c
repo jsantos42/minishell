@@ -114,6 +114,8 @@ static char	*get_cmd_path(char *cmd, char **paths)
 	char	*path;
 	int		i;
 
+	if (access(cmd, F_OK) == 0)
+		return (cmd);
 	i = 0;
 	while (paths[i])
 	{ 

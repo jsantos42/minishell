@@ -1,4 +1,4 @@
-#include "main.h"
+#include "../headers/builtins.h"
 
 bool	is_builtin(char *cmd)
 {
