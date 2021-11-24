@@ -17,6 +17,16 @@ typedef enum e_errors {
 	DUP2			= -10
 }	t_errors;
 
+typedef enum e_builtins {
+	__echo,
+	__cd,
+	__pwd,
+	__export,
+	__unset,
+	__env,
+	__exit
+}	t_builtins;
+
 typedef enum e_relation {
 	PIPE	= 1,
 	OR		= 2,
@@ -28,11 +38,6 @@ typedef enum e_node_type {
 	BRANCH_NODE	= 2
 }	t_node_type;
 
-typedef struct s_context
-{
-	int	fd_io[2];
-	int	fd_close;
-}	t_ctx;
 
 typedef struct s_proc_data
 {

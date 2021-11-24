@@ -6,6 +6,7 @@ static char *prompt[] = {
 	"\n\033[38;5;93m𓆉  Minishell $ ",
 	"\n\033[38;5;39m𓆉  Minishell $ "
 	};
+
 int main(int argc, char **argv, char **envp)
 {
 	t_data	data;
@@ -15,7 +16,7 @@ int main(int argc, char **argv, char **envp)
 	while (!data.exit_cmd)
 	{
 		data.input = readline(prompt[i]);
-		if (parse_input(&data))
+		if (data.input && parse_input(&data))
 			execute_input(&data);
 //		free_commands(data.commands);
 		free_if_not_null(data.input);

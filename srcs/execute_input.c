@@ -3,20 +3,26 @@
 #define READ_END 0
 #define WRITE_END 1
 
-static void	execute_node(t_tree *node, t_ctx *ctx);
-static void	execute_leaf(t_leaf_node *leaf, t_ctx *ctx);
-static void	execute_branch(t_branch_node *branch, t_ctx *ctx);
+static void	execute_node(t_tree *node, int *ctx);
+static void	execute_leaf(t_leaf_node *leaf, int *ctx);
+static void	execute_branch(t_branch_node *branch, int *ctx);
 static char	*get_cmd_path(char *cmd, char **paths);
 static void	ft_close_fds(t_list *plist);
 
+/*
+*	1) Starts by creating a base context to be shared by processes.
+*		𝘚𝘛𝘋𝘐𝘕 --𝘙𝘌𝘈𝘋-->[PROCESS]--𝘞𝘙𝘐𝘛𝘌-->𝘚𝘛𝘋𝘖𝘜𝘛
+*	2) Evoke the recursion core to traverse through the tree leafs and branches.
+*	3) Wait for all the launched processes to finish before returning control.
+*/
 void	execute_input(t_data *data)
 {
-	static t_ctx ctx = {.fd_io[0] = 0, .fd_io[1] = 1, .fd_close = -1};
-	size_t	iter;
+	int		ctx[2] = {0, 1};
 	int		status;
+	size_t	iter;
 
 	// The Recursion Summoner
-	execute_node(data->tree, &ctx);
+	execute_node(data->tree, ctx);
 	
 	// Block execution of the main process until all childrens have been closed
 	iter = ft_lstsize(data->plist);
@@ -34,7 +40,7 @@ void	execute_input(t_data *data)
 	data->status = WEXITSTATUS(status);
 }
 
-static void	execute_node(t_tree *node, t_ctx *ctx)
+static void	execute_node(t_tree *node, int *ctx)
 {
 	if (node->type == LEAF_NODE)
 		execute_leaf(&node->leaf, ctx);
@@ -42,7 +48,18 @@ static void	execute_node(t_tree *node, t_ctx *ctx)
 		execute_branch(&node->branch, ctx);
 }
 
-static void	execute_leaf(t_leaf_node *leaf, t_ctx *ctx)
+/*
+*	1) Get the command path for the executable file
+*	2) Create the child proccess by fork and allocate program data to be pushed
+*	to the active processes list.
+*	3) !CHILD PROCCESS!
+*		1. Copy the ctx FIFO to the proccess STDIO
+		2. Close all the oppened file descriptors, to make sure that no
+		loose end of the pipes will be left open
+		3. Execute the binary.
+*	4) Push the recent opened procces infos to the active proccess list.
+*/
+static void	execute_leaf(t_leaf_node *leaf, int *ctx)
 {
 	char	*cmd_path;
 	t_proc	*p_data;
@@ -50,44 +67,45 @@ static void	execute_leaf(t_leaf_node *leaf, t_ctx *ctx)
 
 	data = get_data(NULL);
 
-	/// TODO: Get command path at parsing time
 	cmd_path = get_cmd_path(leaf->args[0], data->paths);
 
 	p_data = malloc(sizeof(t_proc));
 	if (!p_data)
 		terminate_program(MALLOC);
-	p_data->fd_io[0] = ctx->fd_io[0];
-	p_data->fd_io[1] = ctx->fd_io[1];
+	p_data->fd_io[0] = ctx[0];
+	p_data->fd_io[1] = ctx[1];
 	p_data->id = fork();
 
 	if (p_data->id == 0)
 	{
-		if (dup2(ctx->fd_io[0], 0) == -1 || dup2(ctx->fd_io[1], 1) == -1)
+		if (dup2(ctx[0], 0) == -1 || dup2(ctx[1], 1) == -1)
 			terminate_program(DUP2);
 		ft_close_fds(data->plist);
-		execve(cmd_path, leaf->args, data->envp);
+		if (is_builtin(leaf->args[0]))
+			exec_builtin(leaf);
+		else {
+			execve(cmd_path, leaf->args, data->envp);
+			perror("No such a file or directory");
+		}
 	}
-	// Push the generated child infos to the process list
 	ft_lstadd_back(&data->plist, ft_lstnew(p_data));
 }
 
-static void	execute_branch(t_branch_node *branch, t_ctx *ctx)
+static void	execute_branch(t_branch_node *branch, int *ctx)
 {
-	int		p[2];
-	t_ctx	left_ctx;
-	t_ctx	right_ctx;
+	int	p[2];
+	int	left_ctx[2];
+	int	right_ctx[2];
 
 	pipe(p);
 
-	left_ctx = *ctx;
-	left_ctx.fd_io[1] = p[WRITE_END];
-	left_ctx.fd_close = p[READ_END];
-	execute_node(branch->left, &left_ctx);
+	left_ctx[0] = ctx[0];
+	left_ctx[1] = p[WRITE_END];
+	execute_node(branch->left, left_ctx);
 
-	right_ctx = *ctx;
-	right_ctx.fd_io[0] = p[READ_END];
-	right_ctx.fd_close = p[WRITE_END];
-	execute_node(branch->right, &right_ctx);
+	right_ctx[1] = ctx[1];
+	right_ctx[0] = p[READ_END];
+	execute_node(branch->right, right_ctx);
 }
 
 static char	*get_cmd_path(char *cmd, char **paths)
