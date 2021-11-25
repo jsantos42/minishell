@@ -1,13 +1,13 @@
 #include "../headers/builtins.h"
 
-void	builtin_echo(char **args)
+void	builtin_echo(char **args, int *ctx)
 {
 	int		iter;
 	bool	new_line;
 	bool	print_space;
 	
 	iter = 1;
-	if (!ft_strncmp(args[iter], "-n", 3))
+	if (args[iter] && !ft_strncmp(args[iter], "-n", 3))
 	{
 		new_line = false;
 		iter = 2;
@@ -18,13 +18,17 @@ void	builtin_echo(char **args)
 	while (args[iter])
 	{
 		if (print_space)
-			write(STDIN_FILENO, " ", 1);
+			write(ctx[1], " ", 1);
 		else
 			print_space = true;
-		write(STDIN_FILENO, args[iter], ft_strlen(args[iter]));
+		write(ctx[1], args[iter], ft_strlen(args[iter]));
 		iter++;
 	}
 	if (new_line)
-		write(STDOUT_FILENO, "\n", 1);
+		write(ctx[1], "\n", 1);
 }
 
+void	builtin_cd(char **args)
+{
+	chdir(args[1]);
+}
