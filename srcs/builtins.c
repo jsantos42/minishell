@@ -28,7 +28,118 @@ void	builtin_echo(char **args, int *ctx)
 		write(ctx[1], "\n", 1);
 }
 
+// static char *ft_get_prev_dir(char *path);
+
 void	builtin_cd(char **args)
 {
-	chdir(args[1]);
+	char	*absolute_path;
+	char	*cur_dir;
+	char	*prev_dir;
+	char	*home_dir;
+
+	cur_dir = getcwd(NULL, 0);
+	cur_dir = ft_strjoin(cur_dir, "/");
+
+	if(!ft_strncmp(args[1], "./", 2))
+		absolute_path = ft_strjoin(cur_dir, &args[1][2]);
+	else if(!ft_strncmp(args[1], "../", 3))
+		absolute_path = ft_strjoin(prev_dir, &args[1][3]);
+	else if(!ft_strncmp(args[1], "~/", 2))
+		absolute_path = ft_strjoin(home_dir, &args[1][2]);
+	else
+		absolute_path = args[1];
+	
+	if(chdir(absolute_path) == -1)
+		printf("Error changing directory");
+}
+
+// static char *ft_get_prev_dir(char *path)
+// {
+// 	int		len;
+// 	char	*prev_dir;
+
+// 	len = ft_strlen(path);
+// 	while(path[len] != '/')
+// 		len--;
+// 	prev_dir = ft_substr(path, 0, len);
+// 	return (prev_dir);
+// }
+
+void	builtin_env(int *ctx)
+{
+	t_list	*tmp;
+
+	tmp = get_data(NULL)->env;
+	while (tmp)
+	{	
+		if(((t_pair *)tmp->content)->value)
+		{
+			ft_putstr_fd(((t_pair *)tmp->content)->key, ctx[1]);
+			ft_putstr_fd("=", ctx[1]);
+			ft_putstr_fd(((t_pair *)tmp->content)->value, ctx[1]);
+			write(ctx[1], "\n", 1);
+		}
+		tmp = tmp->next;
+	}
+}
+
+void	builtin_export(t_data *data, char **args, int *ctx)
+{
+	t_pair	*pair;
+	char	**var;
+	int		splt_c;
+	t_list	*tmp;
+
+	if (!args[1])
+		print_env_vars(data->env, ctx);
+	else
+	{
+		pair = malloc(sizeof(t_pair));
+		if (args[1] != NULL && !ft_strchr(args[1], '='))
+		{
+			pair->key = ft_strdup(args[1]);
+			pair->value = NULL;
+		}
+		else
+		{
+			var = ft_split(args[1], '=', &splt_c);
+			pair->key = ft_strdup(var[0]);
+			pair->value = ft_strdup(var[1]);
+			free(var[0]);
+			free(var[1]);
+			free(var);
+			tmp = data->env;
+			while(tmp)
+			{
+				if(!ft_strncmp(((t_pair *)tmp->content)->key, pair->key, ft_strlen(pair->key)))
+				{
+					free(((t_pair *)tmp->content)->value);
+					((t_pair *)tmp->content)->value = pair->value;
+					free(pair->key);
+					return ;
+				}
+				tmp = tmp->next;
+			}
+		}
+		ft_lstadd_back(&data->env, ft_lstnew(pair));
+	}
+}
+
+void	print_env_vars(t_list *env, int *ctx)
+{
+	t_list	*tmp;
+
+	tmp = env;
+	while (tmp)
+	{
+		ft_putstr_fd("declare -x ", ctx[1]);
+		ft_putstr_fd(((t_pair *)tmp->content)->key, ctx[1]);
+		if(((t_pair *)tmp->content)->value)
+		{
+			ft_putstr_fd("=", ctx[1]);
+			ft_putstr_fd(((t_pair *)tmp->content)->value, ctx[1]);
+		}
+		write(ctx[1], "\n", 1);
+		tmp = tmp->next;
+	}
 }

@@ -45,6 +45,12 @@ typedef struct s_proc_data
 	int		fd_io[2];
 }	t_proc;
 
+typedef struct s_pair
+{
+	char *key;
+	char *value;
+}	t_pair;
+
 typedef struct s_branch_node {
 	int				operator;
 	struct s_tree	*left;
@@ -81,6 +87,7 @@ typedef struct s_data {
 	bool	exit_cmd;
 	bool	illegal_input;
 	t_list	*plist;
+	t_list	*env;
 }	t_data;
 
 #endif
