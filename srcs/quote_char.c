@@ -40,7 +40,7 @@ char	*handle_quote_char(char *input, int *quote_pos)
 	while (input[i] != '\0' && quotes_found < 2)
 	{
 		if (!(input[i] == quote_type
-			  && (i == 0 || input[i - 1] != '\\')))
+		&& (i == 0 || input[i - 1] != '\\')))
 			new_input[k++] = input[i];
 		else
 			(quotes_found)++;
@@ -59,5 +59,46 @@ char	*handle_quote_char(char *input, int *quote_pos)
 		new_input[k] = '\0';
 	}
 	free(input);
+	if (quote_type == '\"')
+		new_input = look_for_expansions(new_input, *quote_pos);
 	return (new_input);
 }
+
+
+char	*look_for_expansions(char *str, int i)
+{
+	while (str[i] != '\0')
+	{
+		if (is_dollar_sign(str[i]) && !is_escaped(str, i))
+			str = handle_dollar_sign(str, i);
+		else if (is_dollar_sign(str[i]) && is_escaped(str, i))
+			str = remove_escape_char(str, --i);
+		i++;
+	}
+	return (str);
+}
+
+#define ESCAPECHAR 1
+
+char	*remove_escape_char(char *str, int esc_pos)
+{
+	char	*new_input;
+	int		size;
+	int		i;
+	int		j;
+
+	size = ft_strlen(str) - ESCAPECHAR;
+	new_input = malloc(size + 1);
+	i = 0;
+	j = 0;
+	while (str[i] != '\0')
+	{
+		if (i == esc_pos)
+			j++;
+		new_input[j++] = str[i++];
+	}
+	new_input[j] = '\0';
+	return (new_input);
+}
+
+

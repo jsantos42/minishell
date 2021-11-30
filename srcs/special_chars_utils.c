@@ -26,3 +26,8 @@ void	relink(t_tree **current_node, int operator)
 	branch_node->branch.operator = operator;
 	*current_node = branch_node->branch.right;
 }
+
+bool	is_escaped(char *str, int i)
+{
+	return (i != 0 && str[i - 1] == '\\');
+}

@@ -11,23 +11,25 @@ bool	is_dollar_sign(char chr)
 **	variable expanded.
 */
 
-void	handle_dollar_sign(t_data *data, int dollar_pos)
+char	*handle_dollar_sign(char *input, int dollar_pos)
 {
-	t_dollar	dollar;
+	t_dollar	d;
 	char	*new_input;
 
 //	this protection against escape should make the special char part of the argument
 //	if (dollar_pos != 0 && --dollar_pos == '\\')
 //		return ;
-	dollar.name_len = DOLLAR_SIGN + get_var_length(data->input + dollar_pos);
-	dollar.name = ft_substr(data->input, dollar_pos + 1, dollar.name_len);
-	dollar.expanded = getenv(dollar.name);
-	dollar.expanded_len = ft_strlen(dollar.expanded);
-	new_input = replace_input(data->input, &dollar, dollar_pos);
-	free(dollar.name);
-	free(dollar.expanded);
-	free(data->input);
-	data->input = new_input;
+	d.name_len = DOLLAR_SIGN + get_var_length(input + dollar_pos);
+	d.name = ft_substr(input, dollar_pos + 1, d.name_len);
+	d.expanded = getenv(d.name);
+	if (!d.expanded)
+		d.expanded = ft_strdup("");
+	d.expanded_len = ft_strlen(d.expanded);
+	new_input = replace_input(input, &d, dollar_pos);
+	free(d.name);
+	free(d.expanded);
+	free(input);
+	return (new_input);
 }
 
 /*
