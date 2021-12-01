@@ -1,6 +1,7 @@
 minishell
 .idea/
 cmake-build-debug/
+.vscode/
 
 # Prerequisites
 *.d

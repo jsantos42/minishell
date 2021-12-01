@@ -22,6 +22,17 @@ typedef enum e_relation {
 	AND		= 3
 }	t_relation;
 
+typedef enum e_node_type {
+	LEAF_NODE	= 1,
+	BRANCH_NODE	= 2
+}	t_node_type;
+
+typedef struct s_context
+{
+	int	fd_io[2];
+	int	fd_close;
+}	t_ctx;
+
 typedef struct s_branch_node {
 	int				operator;
 	struct s_tree	*left;
@@ -43,16 +54,20 @@ typedef struct s_tree {
 		t_branch_node	branch;
 		t_leaf_node		leaf;
 	};
+	t_node_type		type;
 	struct s_tree	*previous;
+	int				redir_io[2];
 }	t_tree;
 
 typedef struct s_data {
 	char	*input;
 	char	**paths;
+	char	**envp;
 	int		nb_paths;
 	t_tree	*tree;
 	bool	exit_cmd;
 	bool	illegal_input;
+	int		active_proc;
 }	t_data;
 
 #endif

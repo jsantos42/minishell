@@ -45,7 +45,7 @@ int	is_in_dir(char *input, char *path, DIR *directory)
 		if (ft_strncmp(input, dir_struct->d_name, input_len + 1) == 0)
 		{
 			ret = 1;
-			printf("The absolute path of the command is %s/%s\n", path, input);
+			//printf("The absolute path of the command is %s/%s\n", path, input);
 			break;
 		}
 		dir_struct = readdir(directory);
