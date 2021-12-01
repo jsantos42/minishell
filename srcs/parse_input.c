@@ -20,6 +20,7 @@ int	parse_input(t_data *data)
 
 	data->tree = init_leaf_node(NULL);
 	current_node = data->tree;
+	data->illegal_input = false;
 	i = 0;
 	while (data->input[i] != '\0' && !data->illegal_input)
 	{
@@ -58,34 +59,6 @@ int	parse_input(t_data *data)
 
 void	read_cmd_and_args(t_data *data, t_leaf_node *current_node, int *i)
 {
-	char	*cmd;
-	int		old_i;
-
-	if (current_node->args != NULL)
-		read_argument(data, current_node, i);
-	old_i = *i;
-	while (data->input[*i] != '\0'
-	&& !ft_isspace(data->input[*i]) && !is_special_char(data->input[*i])
-	&& !is_quote_char(data->input[*i]) && !is_dollar_sign(data->input[*i]))
-		(*i)++;
-	cmd = ft_substr(data->input, old_i, *i);
-	if (is_a_valid_command(data, cmd))
-		save_new_argument(current_node, cmd);
-	else
-	{
-		printf("minishell: %s: command not found\n", cmd);
-		data->illegal_input	= true;
-		free(cmd);
-	}
-}
-
-/*
-**	See comment of the previous function.
-**	Note that there's a check if i != current_i to avoid saving empty arguments.
-*/
-
-void	read_argument(t_data *data, t_leaf_node *current_node, int *i)
-{
 	int		old_i;
 	char	*new_arg;
 
@@ -101,7 +74,7 @@ void	read_argument(t_data *data, t_leaf_node *current_node, int *i)
 	}
 	if (*i != old_i)
 	{
-		new_arg = ft_substr(data->input, old_i, *i);
+		new_arg = ft_substr(data->input, old_i, *i - old_i);
 		save_new_argument(current_node, new_arg);
 	}
 }
