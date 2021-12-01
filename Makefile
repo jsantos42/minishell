@@ -8,11 +8,12 @@ HEADERS =			headers
 SRCS_DIR = 			srcs
 OBJS_DIR =			objs
 LIBFT_DIR =			libs/libft
+RL_DIR =			libs/readline/lib
 
 SRCS =				$(wildcard $(SRCS_DIR)/*.c)
 OBJS =				$(addprefix $(OBJS_DIR)/,$(SRCS:.c=.o))
 LIBS =				$(LIBFT_DIR)/libft.a
-LINK =				readline
+LINK =				-L${RL_DIR} -lreadline
 
 $(NAME):			CFLAGS:= $(CFLAGS) -D BONUS=0
 bonus:				CFLAGS:= $(CFLAGS) -D BONUS=1
@@ -20,11 +21,11 @@ bonus:				CFLAGS:= $(CFLAGS) -D BONUS=1
 all:				$(NAME)
 
 $(NAME):			compile_libraries $(OBJS)
-						@$(CC) $(CFLAGS) -o $(NAME) -I $(HEADERS) -l$(LINK) $(LIBS) $(OBJS)
+						@$(CC) $(CFLAGS) -o $(NAME) -I $(HEADERS) $(LINK) $(LIBS) $(OBJS)
 						@echo "$(NAME) mandatory successfully compiled!"
 
 bonus:				compile_libraries $(OBJS)
-						@$(CC) $(CFLAGS) -o $(NAME) -I $(HEADERS) -l$(LINK) $(LIBS) $(OBJS)
+						@$(CC) $(CFLAGS) -o $(NAME) -I $(HEADERS) $(LINK) $(LIBS) $(OBJS)
 						@echo "$(NAME) bonus successfully compiled!"
 
 compile_libraries:

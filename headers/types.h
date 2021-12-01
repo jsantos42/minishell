@@ -13,8 +13,19 @@ typedef enum e_errors {
 	CLOSING_DIR		= -6,
 	SPECIAL_CHAR	= -7,
 	UNCLOSED_QUOTES	= -8,
-	RUN_BG			= -9
+	RUN_BG			= -9,
+	DUP2			= -10
 }	t_errors;
+
+typedef enum e_builtins {
+	__echo,
+	__cd,
+	__pwd,
+	__export,
+	__unset,
+	__env,
+	__exit
+}	t_builtins;
 
 typedef enum e_relation {
 	PIPE	= 1,
@@ -27,11 +38,17 @@ typedef enum e_node_type {
 	BRANCH_NODE	= 2
 }	t_node_type;
 
-typedef struct s_context
+typedef struct s_proc_data
 {
-	int	fd_io[2];
-	int	fd_close;
-}	t_ctx;
+	pid_t	id;
+	int		fd_io[2];
+}	t_proc;
+
+typedef struct s_pair
+{
+	char *key;
+	char *value;
+}	t_pair;
 
 typedef struct s_branch_node {
 	int				operator;
@@ -50,13 +67,13 @@ typedef struct s_leaf_node {
 }	t_leaf_node;
 
 typedef struct s_tree {
+	t_node_type		type;
 	union {
 		t_branch_node	branch;
 		t_leaf_node		leaf;
 	};
-	t_node_type		type;
-	struct s_tree	*previous;
 	int				redir_io[2];
+	struct s_tree	*previous;
 }	t_tree;
 
 typedef struct s_data {
@@ -64,10 +81,12 @@ typedef struct s_data {
 	char	**paths;
 	char	**envp;
 	int		nb_paths;
+	int		status;
 	t_tree	*tree;
 	bool	exit_cmd;
 	bool	illegal_input;
-	int		active_proc;
+	t_list	*plist;
+	t_list	*env;
 }	t_data;
 
 #endif

@@ -8,6 +8,7 @@
 # include <dirent.h>
 # include <string.h>
 # include <sys/errno.h>
+# include "ansi_colors.h" // Color Macros
 # include "../libs/libft/include/libft.h" // this already includes stdlib.h and unistd.h
 # include "types.h"
 # include "terminate_and_free.h"
@@ -15,6 +16,7 @@
 # include "parse_input.h"
 # include "parse_input_utils.h"
 # include "execute_input.h"
+# include "builtins.h"
 # include "special_chars.h"
 # include "special_chars_utils.h"
 # include "dollar_sign.h"
