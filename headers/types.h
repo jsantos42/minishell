@@ -38,12 +38,17 @@ typedef enum e_node_type {
 	BRANCH_NODE	= 2
 }	t_node_type;
 
-
 typedef struct s_proc_data
 {
 	pid_t	id;
 	int		fd_io[2];
 }	t_proc;
+
+typedef struct s_pair
+{
+	char *key;
+	char *value;
+}	t_pair;
 
 typedef struct s_branch_node {
 	int				operator;
@@ -81,6 +86,7 @@ typedef struct s_data {
 	bool	exit_cmd;
 	bool	illegal_input;
 	t_list	*plist;
+	t_list	*env;
 }	t_data;
 
 #endif

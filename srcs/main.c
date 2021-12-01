@@ -16,6 +16,7 @@ int main(int argc, char **argv, char **envp)
 	while (!data.exit_cmd)
 	{
 		data.input = readline(prompt[i]);
+		add_history(data.input);
 		if (data.input && parse_input(&data))
 			execute_input(&data);
 //		free_commands(data.commands);
