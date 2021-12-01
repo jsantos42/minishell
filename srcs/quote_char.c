@@ -29,7 +29,9 @@ char	*handle_quote_char(char *input, int *quote_pos)
 	int 	quotes_found;
 	int		i;
 	int		k;
+	int		original_quote_pos;
 
+	original_quote_pos = *quote_pos;
 	quote_type = *(input + *quote_pos);
 	new_input = malloc(ft_strlen(input) + 1 - PAIR_OF_QUOTES);
 	if (!new_input)
@@ -51,16 +53,13 @@ char	*handle_quote_char(char *input, int *quote_pos)
 		free(new_input);
 		terminate_program(UNCLOSED_QUOTES);
 	}
-	else
-	{
-		*quote_pos += k - 1;
-		while (input[i] != '\0')
-			new_input[k++] = input[i++];
-		new_input[k] = '\0';
-	}
+	*quote_pos += k - 1;
+	while (input[i] != '\0')
+		new_input[k++] = input[i++];
+	new_input[k] = '\0';
 	free(input);
 	if (quote_type == '\"')
-		new_input = look_for_expansions(new_input, *quote_pos);
+		new_input = look_for_expansions(new_input, original_quote_pos);
 	return (new_input);
 }
 
