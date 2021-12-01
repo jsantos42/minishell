@@ -15,7 +15,8 @@ static void	ft_close_fds(t_list *plist);
 *	2) Evoke the recursion core to traverse through the tree leafs and branches.
 *	3) Wait for all the launched processes to finish before returning control.
 */
-
+void	execute_input(t_data *data)
+{
 	int		ctx[2] = {0, 1};
 	int		status;
 	size_t	iter;
@@ -134,6 +135,7 @@ static void	ft_close_fds(t_list *plist)
 {
 	int		iter;
 	t_list	*tmp;
+
 	iter = ft_lstsize(plist);
 	tmp = plist;
 	while (iter--)
@@ -144,3 +146,4 @@ static void	ft_close_fds(t_list *plist)
 			close(((t_proc *)tmp->content)->fd_io[1]);
 		tmp = tmp->next;
 	}
+}
