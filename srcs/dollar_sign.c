@@ -15,19 +15,33 @@ char	*handle_dollar_sign(char *input, int dollar_pos)
 {
 	t_dollar	d;
 	char	*new_input;
+	t_data	*data;
+	bool	expand_status;
 
 //	this protection against escape should make the special char part of the argument
 //	if (dollar_pos != 0 && --dollar_pos == '\\')
 //		return ;
 	d.name_len = get_var_length(input + dollar_pos + DOLLAR_SIGN);
 	d.name = ft_substr(input, dollar_pos + DOLLAR_SIGN, d.name_len);
-	d.expanded = getenv(d.name);
+	if (ft_strncmp(d.name, "?", 2) == 0)
+	{
+		expand_status = true;
+		data = get_data(NULL);
+		d.expanded = ft_itoa(data->status);
+	}
+	else
+	{
+		expand_status = false;
+		d.expanded = getenv(d.name);
+	}
 	if (!d.expanded)
 		d.expanded = ft_strdup("");
 	d.expanded_len = ft_strlen(d.expanded);
 	new_input = replace_input(input, &d, dollar_pos);
 	free(d.name);
 	free(input);
+	if (expand_status)
+		free(d.expanded);
 	return (new_input);
 }
 
