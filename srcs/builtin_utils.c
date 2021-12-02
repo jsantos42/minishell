@@ -36,6 +36,6 @@ void	exec_builtin(t_leaf_node *leaf, int *ctx)
 	// 	builtin_unset(leaf->args);
 	else if (cmd == __env)
 		builtin_env(ctx);
-	// else if (cmd == __exit)
-	// 	builtin_exit(leaf->args);
+	else if (cmd == __exit)
+		builtin_exit();
 }

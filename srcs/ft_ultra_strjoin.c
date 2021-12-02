@@ -1,11 +1,11 @@
 #include <stdarg.h>
 #include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "main.h"
 
 char	*ft_ultra_strjoin(int count,...)
 {
 	char	*new;
+	char	*tmp;
 	va_list args;
 	int		size;
 	int		i;
@@ -14,15 +14,18 @@ char	*ft_ultra_strjoin(int count,...)
 	i = -1;
 	va_start(args, count);
 	while (++i < count)
-		size += strlen(va_arg(args, char *));
+		size += ft_strlen(va_arg(args, char *));
 	va_end(args);
-	va_start(args, count);
-	new = (char *)malloc(sizeof(char) * (size + 1));
-	if (new == NULL)
+	new = calloc(size + 1, sizeof(char));
+	if (!new)
 		return (NULL);
+	va_start(args, count);
 	i = -1;
 	while (++i < count)
-		strcat(new, va_arg(args, char *));
+	{
+		tmp = va_arg(args, char *);
+		ft_strlcat(new, tmp, size);
+	}
 	va_end(args);
 	return (new);
 }
