@@ -65,3 +65,11 @@ env
 cd -
 make
 exit
+env
+cd headers/
+ls
+env
+cd -
+cd -
+ls
+exit

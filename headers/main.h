@@ -10,6 +10,7 @@
 # include <sys/errno.h>
 # include "ansi_colors.h" // Color Macros
 # include "../libs/libft/include/libft.h" // this already includes stdlib.h and unistd.h
+# include "env.h"
 # include "types.h"
 # include "terminate_and_free.h"
 # include "init.h"
@@ -24,6 +25,10 @@
 
 t_data	*get_data(t_data *data);
 
-char	*ft_ultra_strjoin(int count,...);
+char	*ft_strnjoin(int count,...);
+
+void	*xmalloc(size_t size, char *file, int line);
+
+char	**ft_push_to_matrix(char **array, char *str);
 
 #endif
