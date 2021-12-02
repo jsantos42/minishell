@@ -25,9 +25,9 @@ int	parse_input(t_data *data)
 	while (data->input[i] != '\0' && !data->illegal_input)
 	{
 		skip_white_space(data->input, &i);
-		if (data->input[i] == '\\' || data->input[i] == ';')
-			terminate_program(SPECIAL_CHAR);
-		else if (data->input[i] == '|')
+//		if (data->input[i] == '\\' || data->input[i] == ';')
+//			terminate_program(SPECIAL_CHAR);
+		if (data->input[i] == '|')
 			handle_pipe(&current_node, data->input, &i);
 		else if (data->input[i] == '&')
 			handle_amper(&current_node, data->input, &i);
@@ -63,11 +63,14 @@ void	read_cmd_and_args(t_data *data, t_leaf_node *current_node, int *i)
 	char	*new_arg;
 
 	old_i = *i;
-	while (data->input[*i] != '\0'
-	&& !ft_isspace(data->input[*i]) && !is_special_char(data->input[*i]))
+	while (data->input[*i] != '\0' && !ft_isspace(data->input[*i]))
 	{
 		if (is_quote_char(data->input[*i]))
 			data->input = handle_quote_char(data->input, i);
+		else if (is_escaped(data->input, *i))
+			data->input = remove_escape_char(data->input, i);
+		else if (is_special_char(data->input[*i]) && !is_escaped(data->input, *i))
+			break ;
 		else if (is_dollar_sign(data->input[*i]))
 			data->input = handle_dollar_sign(data->input, *i);
 		(*i)++;

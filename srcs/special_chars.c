@@ -2,8 +2,8 @@
 
 bool	is_special_char(char chr)
 {
-	if (chr == '|' || chr == '&' || chr == '<' || chr == '>'
-		|| chr == '\\' || chr == ';')
+	if (chr == '|' || chr == '&' || chr == '<' || chr == '>')
+		//|| chr == '\\' || chr == ';')
 		return (true);
 	else
 		return (false);

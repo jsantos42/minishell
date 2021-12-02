@@ -71,7 +71,7 @@ char	*look_for_expansions(char *str, int i)
 		if (is_dollar_sign(str[i]) && !is_escaped(str, i))
 			str = handle_dollar_sign(str, i);
 		else if (is_dollar_sign(str[i]) && is_escaped(str, i))
-			str = remove_escape_char(str, --i);
+			str = remove_escape_char(str, &i);
 		i++;
 	}
 	return (str);
@@ -79,7 +79,12 @@ char	*look_for_expansions(char *str, int i)
 
 #define ESCAPECHAR 1
 
-char	*remove_escape_char(char *str, int esc_pos)
+/*
+**	Receives the str from which to remove the escape char, and the index of the
+**	escaped character (NOT the '\\' itself, the next one).
+*/
+
+char	*remove_escape_char(char *str, int *escaped_char)
 {
 	char	*new_input;
 	int		size;
@@ -92,11 +97,12 @@ char	*remove_escape_char(char *str, int esc_pos)
 	j = 0;
 	while (str[i] != '\0')
 	{
-		if (i == esc_pos)
-			j++;
+		if (i == *escaped_char - 1 || (i == *escaped_char && *escaped_char == 0))
+			i++;
 		new_input[j++] = str[i++];
 	}
 	new_input[j] = '\0';
+	(*escaped_char)--;
 	return (new_input);
 }
 
