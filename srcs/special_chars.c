@@ -13,9 +13,6 @@ void	handle_pipe(t_tree **current_node, char *str, int *i)
 {
 	int	operator;
 
-//	this protection against escape should make the special char part of the argument
-//	if (*i != 0 && str[*i - 1] == '\\')
-//		return ;
 	operator = PIPE;
 	if (str[++*i] == '|')
 	{
@@ -29,9 +26,6 @@ void	handle_amper(t_tree **current_node, char *str, int *i)
 {
 	int	operator;
 
-//	this protection against escape should make the special char part of the argument
-//	if (*i != 0 && str[*i - 1] == '\\')
-//		return ;
 	operator = 0;
 	if (str[++*i] == '&')
 	{
@@ -77,9 +71,6 @@ void	handle_input_redirection(t_tree **current_node, char **str, int *i)
 {
 	int	old_i;
 
-//	this protection against escape should make the special char part of the argument
-//	if (*i != 0 && (*str)[*i - 1] == '\\')
-//		return ;
 	(*i)++;
 	if ((*str)[*i] == '<')
 	{
@@ -108,9 +99,6 @@ void	handle_output_redirection(t_tree **current_node, char **str, int *i)
 {
 	int	old_i;
 
-//	this protection against escape should make the special char part of the argument
-//	if (*i != 0 && (*str)[*i - 1] == '\\')
-//		return ;
 	(*i)++;
 	if ((*str)[*i] == '>')
 	{
