@@ -1,41 +1,39 @@
 #include "../headers/builtins.h"
 
+#define INPUT 0
+#define OUTPUT 1
+#define PIPELINE 2
+#define TRUE 1
+#define FALSE 0
+
 bool	is_builtin(char *cmd)
 {
-	static char *builtins[] = {
-		"echo", "cd", "pwd", "export", "unset", "env", "exit", NULL};
-	int	iter;
-
-	iter = -1;
-	while (builtins[++iter])
-		if (!ft_strncmp(cmd, builtins[iter], ft_strlen(cmd)))
-			return (true);
+	if (strstr("__echo__cd__pwd__export__unset__env__exit__", cmd))
+		return (true);
 	return (false);
 }
 
-void	exec_builtin(t_leaf_node *leaf, int *ctx)
+int	exec_builtin(t_leaf_node *leaf, int *ctx)
 {
-	static char *builtins[] = {
+	const char *keys[8] = {
 		"echo", "cd", "pwd", "export", "unset", "env", "exit", NULL};
+	ft_builtin	builtin[8] = {
+		__echo, __cd, __pwd, __export, __unset, __env, __exit, NULL};
 	int cmd;
+	int	ret;
 
 	cmd = -1;
-	while(builtins[++cmd])
-		if (!ft_strncmp(builtins[cmd], leaf->args[0], ft_strlen(leaf->args[0])))
-			break;
+	while(keys[++cmd])
+		if (!ft_strncmp(keys[cmd], leaf->args[0], ft_strlen(leaf->args[0])))
+			ret = builtin[cmd](leaf->args, ctx);
 
-	if (cmd == __echo)
-		builtin_echo(leaf->args, ctx);
-	else if (cmd == __cd)
-		builtin_cd(leaf->args);
-	// else if (cmd == __pwd)
-	// 	builtin_pwd(leaf->args);
-	else if (cmd == __export)
-		builtin_export(get_data(NULL), leaf->args, ctx);
-	// else if (cmd == __unset)
-	// 	builtin_unset(leaf->args);
-	else if (cmd == __env)
-		builtin_env(ctx);
-	else if (cmd == __exit)
-		builtin_exit();
+	if (ctx[INPUT] != STDIN_FILENO)
+		close(ctx[INPUT]);
+	if (ctx[OUTPUT] != STDOUT_FILENO)
+		close(ctx[OUTPUT]);
+
+	if (ctx[PIPELINE] == TRUE)
+		exit(EXIT_SUCCESS);
+	
+	return (ret);
 }

@@ -18,13 +18,13 @@ typedef enum e_errors {
 }	t_errors;
 
 typedef enum e_builtins {
-	__echo,
-	__cd,
-	__pwd,
-	__export,
-	__unset,
-	__env,
-	__exit
+	__ECHO,
+	__CD,
+	__PWD,
+	__EXPORT,
+	__UNSET,
+	__ENV,
+	__EXIT
 }	t_builtins;
 
 typedef enum e_relation {

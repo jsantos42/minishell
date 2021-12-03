@@ -65,3 +65,83 @@ env
 cd -
 make
 exit
+ls
+exit | echo a
+echo a
+echo a | echo b
+ls
+ls | grep a | grep b
+exit
+echo a
+echo a | grep a
+ls
+cd ..
+ls
+cd ..
+ls
+cd headers/
+ls
+env
+cd headers
+ls
+exit
+exit
+ls
+exit | echo a
+ls
+ls | grep a
+ls
+exit
+exit
+exit
+echo a
+echo a | echo b
+ls
+ls | echo a
+ls
+exit
+cd headers/
+ls
+cd ..
+l
+exit
+exit
+exit
+cd | grep a
+exit
+ls | grep a
+exit
+exit | grep a
+ls
+exit
+ls -la | exit | grep a
+exit
+ls | grep a
+ls | exit | grep a
+ls
+exit
+exit
+ls | exit
+ls
+exit
+echo a
+echo a | echo b
+ls | grep a
+echo lasd | grep a
+exit
+ls
+ls | grep a
+exit | ls
+exit
+exit
+echo a
+exit
+echo a
+echo a | echo b
+ls | grep a | wc -c
+ls | exit
+exit | ls
+exit
+ls
+echo a | ls
+exit

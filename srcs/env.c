@@ -97,6 +97,7 @@ char	*get_env_var(char *key)
 {
 	t_list	*tmp;
 
+
 	tmp = get_data(NULL)->env.list;
 	while(tmp)
 	{
@@ -107,10 +108,12 @@ char	*get_env_var(char *key)
 	return (NULL);
 }
 
-int	builtin_export(t_data *data, char **args, int *ctx)
+int	__export(char **args, int *ctx)
 {
 	t_pair	*pair;
+	t_data	*data;
 
+	data = get_data(NULL);
 	if (!args[1])
 	{
 		print_env_vars(data->env.list, ctx);
@@ -127,10 +130,11 @@ int	builtin_export(t_data *data, char **args, int *ctx)
 	return (0);
 }
 
-void	builtin_env(int *ctx)
+int	__env(char **args, int *ctx)
 {
 	t_list	*tmp;
 
+	(void)args;
 	tmp = get_data(NULL)->env.list;
 	while (tmp)
 	{	
@@ -143,4 +147,12 @@ void	builtin_env(int *ctx)
 		}
 		tmp = tmp->next;
 	}
+	return (1);
+}
+
+int	__unset(char **args, int *ctx)
+{
+	(void)args;
+	(void)ctx;
+	return (0);
 }

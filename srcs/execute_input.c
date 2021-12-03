@@ -1,11 +1,16 @@
 #include "../headers/execute_input.h"
 
 #define READ_END 0
+#define INPUT 0
 #define WRITE_END 1
+#define OUTPUT 1
+#define PIPELINE 2
+#define TRUE 1
+#define FALSE 0
 
-static void	execute_node(t_tree *node, int *ctx);
-static void	execute_leaf(t_leaf_node *leaf, int *ctx);
-static void	execute_branch(t_branch_node *branch, int *ctx);
+static void	execute_pipeline(t_tree *node, int *ctx);
+static void	execute_leaf(t_tree *node, int *ctx);
+static void	execute_branch(t_tree *node, int *ctx);
 static char	*get_cmd_path(char *cmd, char **paths);
 static void	ft_close_fds(t_list *plist);
 
@@ -17,12 +22,14 @@ static void	ft_close_fds(t_list *plist);
 */
 void	execute_input(t_data *data)
 {
-	int		ctx[2] = {0, 1};
+	int		ctx[3] = {0, 1, 0};
 	int		status;
 	size_t	iter;
 
-	// The Recursion Summoner
-	execute_node(data->tree, ctx);
+	if (data->tree->type == LEAF_NODE)
+		execute_leaf(data->tree, ctx);
+	else
+		execute_pipeline(data->tree, ctx);
 
 	// Block execution of the main process until all childrens have been closed
 	iter = ft_lstsize(data->plist);
@@ -36,16 +43,15 @@ void	execute_input(t_data *data)
 		data->plist = data->plist->next;
 	}
 	ft_lstclear(&data->plist, free);
-
 	data->status = WEXITSTATUS(status);
 }
 
-static void	execute_node(t_tree *node, int *ctx)
+static void	execute_pipeline(t_tree *node, int *ctx)
 {
 	if (node->type == LEAF_NODE)
-		execute_leaf(&node->leaf, ctx);
+		execute_leaf(node, ctx);
 	else if (node->type == BRANCH_NODE)
-		execute_branch(&node->branch, ctx);
+		execute_branch(node, ctx);
 }
 
 /*
@@ -59,56 +65,55 @@ static void	execute_node(t_tree *node, int *ctx)
 		3. Execute the binary.
 *	4) Push the recent opened procces infos to the active proccess list.
 */
-static void	execute_leaf(t_leaf_node *leaf, int *ctx)
+static void	execute_leaf(t_tree *node, int *ctx)
 {
 	char	*cmd_path;
 	t_proc	*p_data;
 	t_data	*data;
 
 	data = get_data(NULL);
+	cmd_path = get_cmd_path(node->leaf.args[0], data->paths);
 
-	cmd_path = get_cmd_path(leaf->args[0], data->paths);
-
-	if (is_builtin(leaf->args[0]))
-	{
-		exec_builtin(leaf, ctx);
-		if (ctx[1] != 1)
-			close(ctx[1]);
-	}
+	if (!ctx[PIPELINE] && is_builtin(node->leaf.args[0]))
+		data->status = exec_builtin(&node->leaf, ctx);
 	else
 	{
 		p_data = xmalloc(sizeof(t_proc), __FILE__, __LINE__);
-		p_data->fd_io[0] = ctx[0];
-		p_data->fd_io[1] = ctx[1];
+		p_data->fd_io[INPUT] = ctx[INPUT];
+		p_data->fd_io[OUTPUT] = ctx[OUTPUT];
 		p_data->id = fork();
 
 		if (p_data->id == 0)
 		{
-			if (dup2(ctx[0], 0) == -1 || dup2(ctx[1], 1) == -1)
+			if (dup2(ctx[INPUT], 0) == -1 || dup2(ctx[OUTPUT], 1) == -1)
 				terminate_program(DUP2);
 			ft_close_fds(data->plist);
-			execve(cmd_path, leaf->args, data->env.array);
+			if (is_builtin(node->leaf.args[0]))
+				exec_builtin(&node->leaf, ctx);
+			execve(cmd_path, node->leaf.args, data->env.array);
 			perror("No such a file or directory");
 		}
 		ft_lstadd_back(&data->plist, ft_lstnew(p_data));
 	}
 }
 
-static void	execute_branch(t_branch_node *branch, int *ctx)
+static void	execute_branch(t_tree *node, int *ctx)
 {
 	int	p[2];
-	int	left_ctx[2];
-	int	right_ctx[2];
+	int	left_ctx[3];
+	int	right_ctx[3];
 
 	pipe(p);
 
-	left_ctx[0] = ctx[0];
-	left_ctx[1] = p[WRITE_END];
-	execute_node(branch->left, left_ctx);
+	left_ctx[INPUT] = ctx[INPUT];
+	left_ctx[OUTPUT] = p[WRITE_END];
+	left_ctx[PIPELINE] = TRUE;
+	execute_pipeline(node->branch.left, left_ctx);
 
-	right_ctx[1] = ctx[1];
-	right_ctx[0] = p[READ_END];
-	execute_node(branch->right, right_ctx);
+	right_ctx[OUTPUT] = ctx[OUTPUT];
+	right_ctx[INPUT] = p[READ_END];
+	right_ctx[PIPELINE] = TRUE;
+	execute_pipeline(node->branch.right, right_ctx);
 }
 
 static char	*get_cmd_path(char *cmd, char **paths)

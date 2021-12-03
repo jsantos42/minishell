@@ -65,11 +65,53 @@ env
 cd -
 make
 exit
-env
+ls
+exit | echo a
+echo a
+echo a | echo b
+ls
+ls | grep a | grep b
+exit
+echo a
+echo a | grep a
+ls
+cd ..
+ls
+cd ..
+ls
 cd headers/
 ls
 env
-cd -
+cd headers
+ls
+exit
+exit
+ls
+exit | echo a
+ls
+ls | grep a
+ls
+exit
+exit
+exit
+echo a
+echo a | echo b
+ls
+ls | echo a
+ls
+exit
+cd headers/
+ls
+cd ..
+l
+sls
+ls
 cd -
 ls
+cd | echo a
+ls
+exit | echo a
+ls -la | exit | grep a
+ls
+cd ~ | ls | grep a
 exit
