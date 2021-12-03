@@ -26,4 +26,6 @@
 
 t_data	*get_data(t_data *data);
 
+char	*ft_ultra_strjoin(int count,...);
+
 #endif

@@ -32,25 +32,17 @@ void	builtin_echo(char **args, int *ctx)
 
 void	builtin_cd(char **args)
 {
-	char	*absolute_path;
 	char	*cur_dir;
-	char	*prev_dir;
-	char	*home_dir;
+	char	*path;
 
 	cur_dir = getcwd(NULL, 0);
-	cur_dir = ft_strjoin(cur_dir, "/");
 
-	if(!ft_strncmp(args[1], "./", 2))
-		absolute_path = ft_strjoin(cur_dir, &args[1][2]);
-	else if(!ft_strncmp(args[1], "../", 3))
-		absolute_path = ft_strjoin(prev_dir, &args[1][3]);
-	else if(!ft_strncmp(args[1], "~/", 2))
-		absolute_path = ft_strjoin(home_dir, &args[1][2]);
+	if (!ft_strncmp(args[1], "./", 2) || !ft_strncmp(args[1], "../", 3))
+		path = ft_ultra_strjoin(3, cur_dir, "/", args[1]);
 	else
-		absolute_path = args[1];
-	
-	if(chdir(absolute_path) == -1)
-		printf("Error changing directory");
+		path = args[1];
+	if(chdir(path) == -1)
+		printf("Error changing directory\n");
 }
 
 // static char *ft_get_prev_dir(char *path)
@@ -142,4 +134,10 @@ void	print_env_vars(t_list *env, int *ctx)
 		write(ctx[1], "\n", 1);
 		tmp = tmp->next;
 	}
+}
+
+void	builtin_exit(void)
+{
+	write_history(".history");
+	exit(EXIT_SUCCESS);
 }

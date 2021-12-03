@@ -13,6 +13,7 @@ int main(int argc, char **argv, char **envp)
 	int		i = 0;
 
 	init_data(&data, argc, argv, envp);
+	read_history(".history");
 	while (!data.exit_cmd)
 	{
 		data.input = readline(prompt[i]);
