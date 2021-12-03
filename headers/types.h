@@ -33,6 +33,14 @@ typedef enum e_relation {
 	AND		= 3
 }	t_relation;
 
+typedef struct s_env
+{
+	int		nb_vars;
+	t_list	*list;
+	char	**envp;
+	char	**array;
+}	t_env;
+
 typedef enum e_node_type {
 	LEAF_NODE	= 1,
 	BRANCH_NODE	= 2
@@ -79,13 +87,12 @@ typedef struct s_tree {
 typedef struct s_data {
 	char	*input;
 	char	**paths;
-	char	**envp;
+	t_env	env;
 	int		nb_paths;
 	int		status;
 	t_tree	*tree;
 	bool	exit_cmd;
 	t_list	*plist;
-	t_list	*env;
 }	t_data;
 
 #endif

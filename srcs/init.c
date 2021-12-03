@@ -1,17 +1,13 @@
 #include "../headers/init.h"
 
 static char	**get_paths(t_data *data);
-static t_list *ft_init_env(char **envp);
 
 void	init_data(t_data *data, int argc, char **argv, char **envp)
 {
 	if (argc > 1)
 		exit(0);
 	(void) argv;
-	data->envp = envp;
 	data->input = NULL;
-//	data->paths = NULL;
-	data->nb_paths = 0;
 	data->status = 0;
 	data->paths = get_paths(data);
 	data->tree = NULL;
@@ -69,29 +65,4 @@ static char	**get_paths(t_data *data)
 	if (!paths)
 		terminate_program(MALLOC);
 	return (paths);
-}
-
-static t_list *ft_init_env(char **envp)
-{
-	int		iter;
-	int		tmp;
-	t_list	*env_list;
-	char	**line;
-	t_pair	*pair;
-
-	env_list = NULL;
-	iter = -1;
-	while(envp[++iter])
-	{	pair = malloc(sizeof(t_pair));
-		if (!pair)
-			terminate_program(MALLOC);
-		line = ft_split(envp[iter], '=', &tmp);
-		pair->key = ft_strdup(line[0]);
-		pair->value = ft_strdup(line[1]);
-		ft_lstadd_back(&env_list, ft_lstnew(pair));
-		free(line[0]);
-		free(line[1]);
-		free(line);
-	}
-	return (env_list);
 }

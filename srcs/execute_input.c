@@ -70,12 +70,14 @@ static void	execute_leaf(t_leaf_node *leaf, int *ctx)
 	cmd_path = get_cmd_path(leaf->args[0], data->paths);
 
 	if (is_builtin(leaf->args[0]))
+	{
 		exec_builtin(leaf, ctx);
+		if (ctx[1] != 1)
+			close(ctx[1]);
+	}
 	else
 	{
-		p_data = malloc(sizeof(t_proc));
-		if (!p_data)
-			terminate_program(MALLOC);
+		p_data = xmalloc(sizeof(t_proc), __FILE__, __LINE__);
 		p_data->fd_io[0] = ctx[0];
 		p_data->fd_io[1] = ctx[1];
 		p_data->id = fork();
@@ -85,7 +87,7 @@ static void	execute_leaf(t_leaf_node *leaf, int *ctx)
 			if (dup2(ctx[0], 0) == -1 || dup2(ctx[1], 1) == -1)
 				terminate_program(DUP2);
 			ft_close_fds(data->plist);
-			execve(cmd_path, leaf->args, data->envp);
+			execve(cmd_path, leaf->args, data->env.array);
 			perror("No such a file or directory");
 		}
 		ft_lstadd_back(&data->plist, ft_lstnew(p_data));
