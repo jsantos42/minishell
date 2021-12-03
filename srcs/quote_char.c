@@ -74,36 +74,3 @@ char	*look_for_expansions(char *str, int i)
 	}
 	return (str);
 }
-
-#define ESCAPECHAR 1
-
-/*
-**	Receives the str from which to remove the escape char, and the index of the
-**	escaped character (NOT the '\\' itself, the next one).
-*/
-
-char	*remove_escape_char(char *str, int *escaped_char)
-{
-	char	*new_input;
-	int		size;
-	int		i;
-	int		j;
-
-	size = ft_strlen(str);
-	if (str[*escaped_char] == '\\' || str[*escaped_char - 2] == '\\') ///not working with echo \\\ a, and need to protect againsta index 0
-		return (str);
-	new_input = malloc(size - ESCAPECHAR + 1);
-	i = 0;
-	j = 0;
-	while (str[i] != '\0')
-	{
-		if (i == *escaped_char - 1 || (i == 0 && *escaped_char == 0))
-			i++;
-		new_input[j++] = str[i++];
-	}
-	new_input[j] = '\0';
-	(*escaped_char)--;
-	return (new_input);
-}
-
-

@@ -20,6 +20,8 @@ int	parse_input(t_data *data)
 	t_tree 	*current_node;
 	int		i;
 
+	if (!data->input)
+		return (0);
 	data->tree = init_leaf_node(NULL);
 	current_node = data->tree;
 	i = 0;

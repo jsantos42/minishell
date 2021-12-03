@@ -17,7 +17,6 @@ int main(int argc, char **argv, char **envp)
 	{
 		data.input = readline(prompt[i]);
 		add_history(data.input);
-//		if (data.input && parse_input(&data)) //on parse_input, protect against empty input
 		if (parse_input(&data))
 			execute_input(&data);
 //		free_commands(data.commands);
