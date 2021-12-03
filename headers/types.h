@@ -84,7 +84,6 @@ typedef struct s_data {
 	int		status;
 	t_tree	*tree;
 	bool	exit_cmd;
-	bool	illegal_input;
 	t_list	*plist;
 	t_list	*env;
 }	t_data;

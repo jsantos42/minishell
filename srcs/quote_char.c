@@ -21,7 +21,6 @@ bool	is_quote_char(char chr)
 **	subtract 1 because the iteration on the previous while goes one extra loop.
 */
 
-///this should interpret $!! subject: " inhibit all interpretation of a sequence of characters except for $
 char	*handle_quote_char(char *input, int *quote_pos)
 {
 	char	quote_type;
@@ -33,7 +32,7 @@ char	*handle_quote_char(char *input, int *quote_pos)
 
 	original_quote_pos = *quote_pos;
 	quote_type = *(input + *quote_pos);
-	new_input = malloc(ft_strlen(input) + 1 - PAIR_OF_QUOTES);
+	new_input = malloc(ft_strlen(input) - 2 * QUOTE_CHAR + 1);
 	if (!new_input)
 		terminate_program(MALLOC);
 	quotes_found = 0;
@@ -41,11 +40,10 @@ char	*handle_quote_char(char *input, int *quote_pos)
 	k = 0;
 	while (input[i] != '\0' && quotes_found < 2)
 	{
-		if (!(input[i] == quote_type
-		&& (i == 0 || input[i - 1] != '\\')))
-			new_input[k++] = input[i];
-		else
+		if (input[i] == quote_type && !is_escaped(input, i))
 			(quotes_found)++;
+		else
+			new_input[k++] = input[i];
 		i++;
 	}
 	if (quotes_found < 2)
@@ -53,7 +51,7 @@ char	*handle_quote_char(char *input, int *quote_pos)
 		free(new_input);
 		terminate_program(UNCLOSED_QUOTES);
 	}
-	*quote_pos += k - 1;
+	*quote_pos += k - QUOTE_CHAR;
 	while (input[i] != '\0')
 		new_input[k++] = input[i++];
 	new_input[k] = '\0';
@@ -91,13 +89,15 @@ char	*remove_escape_char(char *str, int *escaped_char)
 	int		i;
 	int		j;
 
-	size = ft_strlen(str) - ESCAPECHAR;
-	new_input = malloc(size + 1);
+	size = ft_strlen(str);
+	if (str[*escaped_char] == '\\' || str[*escaped_char - 2] == '\\') ///not working with echo \\\ a, and need to protect againsta index 0
+		return (str);
+	new_input = malloc(size - ESCAPECHAR + 1);
 	i = 0;
 	j = 0;
 	while (str[i] != '\0')
 	{
-		if (i == *escaped_char - 1 || (i == *escaped_char && *escaped_char == 0))
+		if (i == *escaped_char - 1 || (i == 0 && *escaped_char == 0))
 			i++;
 		new_input[j++] = str[i++];
 	}

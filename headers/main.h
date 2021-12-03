@@ -21,6 +21,7 @@
 # include "special_chars_utils.h"
 # include "dollar_sign.h"
 # include "quote_char.h"
+# include "semicomma.h"
 
 t_data	*get_data(t_data *data);
 

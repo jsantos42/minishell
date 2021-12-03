@@ -6,11 +6,13 @@
 **	first leaf node will become the branch_node's left leaf_node (see types.h).
 **	2) The current_node will be the node that it will be working on. That way,
 **	data->tree will keep pointing to the tree starting point.
-**	3) The parser will work as long as there's input to parse and the input is
-**	legal.
+**	3) The parser will work as long as there's input to parse.
 **	4) The input is white-space insensitive, so it can skip white space. If it
-**	finds a special char ('|', '&', '<', '>', '\\', ';') it handles it,
-**	otherwise it reads arguments (the first of which should be a command).
+**	finds a special char ('|', '&', '<', '>') it handles it, otherwise it reads
+**	arguments (the first of which should be a command).
+**	5) Before returning, checks whether the last char was an escape char (which
+**	would mean that it was a newline char). If so, returns 0, since according to
+**	the subject this is not supposed to be interpreted.
 */
 
 int	parse_input(t_data *data)
@@ -20,13 +22,10 @@ int	parse_input(t_data *data)
 
 	data->tree = init_leaf_node(NULL);
 	current_node = data->tree;
-	data->illegal_input = false;
 	i = 0;
-	while (data->input[i] != '\0' && !data->illegal_input)
+	while (data->input[i] != '\0')
 	{
 		skip_white_space(data->input, &i);
-//		if (data->input[i] == '\\' || data->input[i] == ';')
-//			terminate_program(SPECIAL_CHAR);
 		if (data->input[i] == '|')
 			handle_pipe(&current_node, data->input, &i);
 		else if (data->input[i] == '&')
@@ -35,26 +34,32 @@ int	parse_input(t_data *data)
 			handle_input_redirection(&current_node, &data->input, &i);
 		else if (data->input[i] == '>')
 			handle_output_redirection(&current_node, &data->input, &i);
-//		else if (data->input[i] == '(')
-			///missing condition for parenthesis
+		else if (is_semicomma(data->input[i]) && !is_escaped(data->input, i))
+			terminate_program(SPECIAL_CHAR);
 		else
 			read_cmd_and_args(data, &current_node->leaf, &i);
 	}
-	if (data->illegal_input)
-		return (0);
+//	if (is_escaped(data->input, i))
+//		terminate_program(SPECIAL_CHAR);
+//	return (0);
 	return (1);
 }
 
 /*
-**	Starts by checking if it's reading a command or argument. If the matrix
-**	current_node->args is empty, it's reading the first argument of the node,
-**	meaning it should be reading a command. Otherwise, it assumes it's reading
-**	an argument and calls a somewhat similar function (read_argument). There are
-**	two main differences between them:
-**	1) In commands, quotes and variable expansion ('$') are not allowed, whereas
-**	in arguments they should be handled.
-**	2) The command must exist, hence here it calls is_a_valid_command before
-**	saving it in the matrix.
+**	Reads an argument until it either finds the end of the input or an
+**	unescaped space char, both of which would mean the end of the current
+**	argument.
+**	If it finds a quote_char, it handles it (the protection against an escaped
+**	quote_char is inside that function).
+**	If it finds other escaped char, it removes it (note that it still iterates
+**	to the next char, so the the now unescaped char will not be interpreted).
+**	If if finds a dollar sign, it expands the given variable name.
+**	If it finds a semicomma or a special char it breaks, since it's the end of
+**	that argument.
+**
+**	Note: in principle, the first argument should be a command. The existence of
+**	this command (either as a builtin or in the system) will only be checked on
+**	the execution part.
 */
 
 void	read_cmd_and_args(t_data *data, t_leaf_node *current_node, int *i)
@@ -63,16 +68,17 @@ void	read_cmd_and_args(t_data *data, t_leaf_node *current_node, int *i)
 	char	*new_arg;
 
 	old_i = *i;
-	while (data->input[*i] != '\0' && !ft_isspace(data->input[*i]))
+	while (data->input[*i] != '\0' && (!ft_isspace(data->input[*i])
+		|| (ft_isspace(data->input[*i]) && is_escaped(data->input, *i))))
 	{
 		if (is_quote_char(data->input[*i]))
 			data->input = handle_quote_char(data->input, i);
 		else if (is_escaped(data->input, *i))
 			data->input = remove_escape_char(data->input, i);
-		else if (is_special_char(data->input[*i]) && !is_escaped(data->input, *i))
-			break ;
 		else if (is_dollar_sign(data->input[*i]))
 			data->input = handle_dollar_sign(data->input, *i);
+		else if (is_semicomma(data->input[*i]) || is_special_char(data->input[*i]))
+			break ;
 		(*i)++;
 	}
 	if (*i != old_i)
