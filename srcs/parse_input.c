@@ -10,9 +10,6 @@
 **	4) The input is white-space insensitive, so it can skip white space. If it
 **	finds a special char ('|', '&', '<', '>') it handles it, otherwise it reads
 **	arguments (the first of which should be a command).
-**	5) Before returning, checks whether the last char was an escape char (which
-**	would mean that it was a newline char). If so, returns 0, since according to
-**	the subject this is not supposed to be interpreted.
 */
 
 int	parse_input(t_data *data)
@@ -41,9 +38,6 @@ int	parse_input(t_data *data)
 		else
 			read_cmd_and_args(data, &current_node->leaf, &i);
 	}
-//	if (is_escaped(data->input, i))
-//		terminate_program(SPECIAL_CHAR);
-//	return (0);
 	return (1);
 }
 
@@ -58,6 +52,11 @@ int	parse_input(t_data *data)
 **	If if finds a dollar sign, it expands the given variable name.
 **	If it finds a semicomma or a special char it breaks, since it's the end of
 **	that argument.
+**	5) Before saving the new_arg, checks if the input has ended and, if so, if
+**	the last char was an escape char. If that's the case, it calls the function
+**	check_for_nl_char to decide whether to remove the escaped escaped char or to
+**	throw an error message, since according to the subject, the nl char is not
+**	supposed to be interpreted.
 **
 **	Note: in principle, the first argument should be a command. The existence of
 **	this command (either as a builtin or in the system) will only be checked on
@@ -83,12 +82,15 @@ void	read_cmd_and_args(t_data *data, t_leaf_node *current_node, int *i)
 			break ;
 		(*i)++;
 	}
+	if (data->input[*i] == '\0' && is_escaped(data->input, *i))
+		data->input = check_for_nl_char(data->input, i);
 	if (*i != old_i)
 	{
 		new_arg = ft_substr(data->input, old_i, *i - old_i);
 		save_new_argument(current_node, new_arg);
 	}
 }
+
 
 /*
 **	Creates a new_matrix, allocating enough memory to contain both the previous

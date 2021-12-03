@@ -6,7 +6,8 @@
 **
 **	NOTE: the first condition is needed for those cases with multiple contiguous
 **	escape chars (ex: escaping an escape char "\\", escaping an escape char
-**	followed by escaping any other char "\\\a", etc.).
+**	followed by escaping any other char "\\\a", etc.). This same conditions does
+**	not interfere with the edge case of "\\" at the end of the input string.
 */
 
 char	*remove_escape_char(char *str, int *escaped_char)
@@ -26,7 +27,8 @@ char	*remove_escape_char(char *str, int *escaped_char)
 	{
 		if (i == *escaped_char - 1 || (i == 0 && *escaped_char == 0))
 			i++;
-		new_input[j++] = str[i++];
+		else
+			new_input[j++] = str[i++];
 	}
 	new_input[j] = '\0';
 	(*escaped_char)--;

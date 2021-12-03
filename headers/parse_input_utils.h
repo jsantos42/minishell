@@ -4,7 +4,6 @@
 # include "main.h"
 
 void	skip_white_space(char *input, int *i);
-int	is_a_valid_command(t_data *data, char *cmd);
-int	is_in_dir(char *input, char *path, DIR *directory);
+char	*check_for_nl_char(char *input, int *i);
 
 #endif
