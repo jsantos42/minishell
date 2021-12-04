@@ -78,6 +78,7 @@ void	init_signals(t_data *data)
 {
 	(void)data;
 	signal(SIGINT, handle_signals);
+	signal(SIGQUIT, SIG_IGN);
 //	data->sa.sa_sigaction = handle_signals;
 //	sigaction(SIGINT, &data->sa, NULL);
 //	data->sa.sa_flags = SA_SIGINFO;

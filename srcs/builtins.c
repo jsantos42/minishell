@@ -73,5 +73,6 @@ void	builtin_cd(char **args)
 void	builtin_exit(void)
 {
 	write_history(".history");
+	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	exit(EXIT_SUCCESS);
 }

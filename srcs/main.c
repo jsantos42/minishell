@@ -23,8 +23,11 @@ int main(int argc, char **argv, char **envp)
 			dup2(data.stdin_fd, STDIN_FILENO);
 			write(STDIN_FILENO, "\n", 1);
 			data.sigint_received = false;
+			continue ;
 		}
-		if (parse_input(&data))
+		if (!data.input)
+			builtin_exit();
+		if (ft_strncmp(data.input, "", 1) != 0 && parse_input(&data))
 			execute_input(&data);
 //		free_commands(data.commands);
 		free_if_not_null(data.input);
