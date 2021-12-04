@@ -18,6 +18,12 @@ int main(int argc, char **argv, char **envp)
 	{
 		data.input = readline(prompt[i]);
 		add_history(data.input);
+		if (data.sigint_received)
+		{
+			dup2(data.stdin_fd, STDIN_FILENO);
+			write(STDIN_FILENO, "\n", 1);
+			data.sigint_received = false;
+		}
 		if (parse_input(&data))
 			execute_input(&data);
 //		free_commands(data.commands);

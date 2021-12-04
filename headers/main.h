@@ -25,6 +25,7 @@
 # include "redirect_output.h"
 # include "quote_char.h"
 # include "semicomma.h"
+# include "signals.h"
 # include "special_chars.h"
 # include "special_chars_utils.h"
 # include "terminate_and_free.h"

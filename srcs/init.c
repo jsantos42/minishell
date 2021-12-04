@@ -11,10 +11,13 @@ void	init_data(t_data *data, int argc, char **argv, char **envp)
 	data->status = 0;
 	data->paths = get_paths(data);
 	data->tree = NULL;
+	data->stdin_fd = 0;
+	data->sigint_received = false;
 	data->exit_cmd = false;
 	data->plist = NULL;
 	data->env = ft_init_env(envp);
 	get_data(data);
+	init_signals(data);
 }
 
 t_tree	*init_leaf_node(t_tree *previous)
@@ -65,4 +68,17 @@ static char	**get_paths(t_data *data)
 	if (!paths)
 		terminate_program(MALLOC);
 	return (paths);
+}
+
+/*
+**	Initiates the signal handling command.
+*/
+
+void	init_signals(t_data *data)
+{
+	(void)data;
+	signal(SIGINT, handle_signals);
+//	data->sa.sa_sigaction = handle_signals;
+//	sigaction(SIGINT, &data->sa, NULL);
+//	data->sa.sa_flags = SA_SIGINFO;
 }

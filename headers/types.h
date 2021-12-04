@@ -91,6 +91,8 @@ typedef struct s_data {
 	int		nb_paths;
 	int		status;
 	t_tree	*tree;
+	int		stdin_fd;
+	bool	sigint_received;
 	bool	exit_cmd;
 	t_list	*plist;
 }	t_data;
