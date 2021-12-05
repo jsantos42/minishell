@@ -1,36 +1,44 @@
 #include "../headers/signals.h"
 
-void	handle_signals(int signal)
+/*
+**	Hijacks the default response to the SIGINT and SIGQUIT signals. According to
+**	the subject:
+**	 - ctrl-C should print a new prompt on a newline.
+**	 - ctrl-D should exit the shell.
+**	 - ctrl-\ should do nothing.
+*/
+
+void	init_signals(void)
+{
+	signal(SIGINT, sigint_handler);
+	signal(SIGQUIT, SIG_IGN);
+}
+
+/*
+**	These next two functions work together. When the program receives a SIGINT,
+**	sigint_handler is called and closes the STDIN file descriptor and switch the
+**	sigint_received flag. Before closing the STDIN it stores a copy on data.
+**
+**	On the other hand when the sigint_received flag is on, the main function
+**	calls get_new_prompt_line to recover the STDIN fd to the origin and turning
+**	off the flag.
+*/
+
+void	sigint_handler(int signal)
 {
 	t_data	*data;
 
+	(void)signal;
 	data = get_data(NULL);
-	if (signal == SIGINT)
-	{
-		data->stdin_fd = dup(STDIN_FILENO);
-		data->sigint_received = true;
-		close(STDIN_FILENO);
-	}
-//		ctrl-Cprint a new prompt on a newline.
-//		◦ctrl-Dexit the shell.
-//		◦ctrl-\do nothing.
-
+	data->stdin_fd = dup(STDIN_FILENO);
+	data->sigint_received = true;
+	close(STDIN_FILENO);
 }
 
-
-
-/*
-** The main function could act like server in minishell.
- * The execution process is a fork itself, and when its forked, it sends its pid
- * to the main process (save it in t_data).
-** Everytime a new process is forked (execution of it), it sends a signal to the
- * execution process, informing it of its existence and passing pid to info->si_pid.
-** Everytime those forked processes end, they also inform the execution process
- * that they are quitting.
-** Main only knows whether the execution process is running, and when it gets a
- * signal it can interrupt it.
- * The execution process keeps a record of the pids that needs to kill in case
- * it receives a signal from main. If the execution process is running, it then
- * prints ^C (in case of SIGINT).
- * attention to segfault when ctrD
-*/
+void	get_new_prompt_line(t_data *data)
+{
+	dup2(data->stdin_fd, STDIN_FILENO);
+	write(STDIN_FILENO, "\n", 1);
+	data->sigint_received = false;
+	close(data->stdin_fd);
+}

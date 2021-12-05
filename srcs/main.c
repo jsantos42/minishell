@@ -1,48 +1,62 @@
 #include "../headers/main.h"
 
-static char *prompt[] = {
-	"\033[38;5;214m𓆉  Minishell $ ",
-	"\033[38;5;196m𓆉  Minishell $ ",
-	"\033[38;5;93m𓆉  Minishell $ ",
-	"\033[38;5;39m𓆉  Minishell $ "
-	};
+static void	check_for_arguments(int argc, char **argv);
+/*
+ *	1) Checks for arguments, which are not expected by the program.
+**	2) Initiates the data structure.
+**	3) Sets the program to read the history from a given file.
+**	4) If the sigint_received flag is on, it means the program has received a
+**	SIGINT signal, and calls get_new_prompt_line.
+**	5) If the input is NULL, it means the program received an EOF (Ctrl-D), and
+**	it calls the built-in exit command to end the program.
+**	6) In case the input is not an empty string, it parses and executes it.
+*/
 
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
-	int		i = 0;
 
-	init_data(&data, argc, argv, envp);
+	check_for_arguments(argc, argv);
+	init_data(&data, envp);
 	read_history(".history");
-	while (!data.exit_cmd)
+	while (1)
 	{
-		data.input = readline(prompt[i]);
+		data.input = readline("\033[38;5;214m𓆉  Minishell $ ");
 		add_history(data.input);
 		if (data.sigint_received)
-		{
-			dup2(data.stdin_fd, STDIN_FILENO);
-			write(STDIN_FILENO, "\n", 1);
-			data.sigint_received = false;
-			continue ;
-		}
-		if (!data.input)
+			get_new_prompt_line(&data);
+		else if (!data.input)
 			builtin_exit();
-		if (ft_strncmp(data.input, "", 1) != 0 && parse_input(&data))
+		else if (ft_strncmp(data.input, "", 1) != 0)
+		{
+			parse_input(&data);
 			execute_input(&data);
-//		free_commands(data.commands);
-		free_if_not_null(data.input);
-		data.input = NULL;
-		i = i != 3 ? i + 1 : 0;
+		}
+		data.input = free_if_not_null(data.input);
 	}
-	free_data();
-	return (0);
 }
+
+static void	check_for_arguments(int argc, char **argv)
+{
+	(void)argv;
+	if (argc > 1)
+	{
+		printf("Minishell does not require arguments. Please try again.\n");
+		exit(0);
+	}
+}
+
+/*
+**	This is a singleton to get the data variable available everywhere in the
+**	code at the call of a function, avoiding the need to pass data as an
+**	argument for every function.
+*/
 
 t_data	*get_data(t_data *data)
 {
-	static t_data *static_data = NULL;
+	static t_data	*static_data = NULL;
 
-	if (!static_data && data)
+	if (!static_data)
 		static_data = data;
 	return (static_data);
 }

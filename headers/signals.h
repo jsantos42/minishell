@@ -3,6 +3,8 @@
 
 # include "main.h"
 
-void	handle_signals(int signal);
+void	init_signals(void);
+void	sigint_handler(int signal);
+void	get_new_prompt_line(t_data *data);
 
 #endif
