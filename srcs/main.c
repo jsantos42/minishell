@@ -26,7 +26,7 @@ int	main(int argc, char **argv, char **envp)
 		if (data.sigint_received)
 			get_new_prompt_line(&data);
 		else if (!data.input)
-			builtin_exit();
+			__exit(NULL, NULL);
 		else if (ft_strncmp(data.input, "", 1) != 0)
 		{
 			parse_input(&data);
