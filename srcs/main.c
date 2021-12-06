@@ -18,11 +18,10 @@ int	main(int argc, char **argv, char **envp)
 
 	check_for_arguments(argc, argv);
 	init_data(&data, envp);
-	read_history(".history");
+	init_history();
 	while (1)
 	{
 		data.input = readline("\033[38;5;214m𓆉  Minishell $ ");
-		add_history(data.input);
 		if (data.sigint_received)
 			get_new_prompt_line(&data);
 		else if (!data.input)
@@ -31,6 +30,8 @@ int	main(int argc, char **argv, char **envp)
 		{
 			parse_input(&data);
 			execute_input(&data);
+			add_history(data.input);
+			write_history(".history");
 		}
 		data.input = free_if_not_null(data.input);
 	}

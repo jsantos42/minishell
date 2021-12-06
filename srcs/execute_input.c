@@ -94,7 +94,8 @@ static void	execute_leaf(t_tree *node, int *ctx)
 			if (is_builtin(node->leaf.args[0]))
 				exec_builtin(&node->leaf, ctx);
 			execve(cmd_path, node->leaf.args, data->env.array);
-			perror("No such a file or directory");
+				perror("No such a file or directory");
+				exit(EXIT_FAILURE);
 		}
 		ft_lstadd_back(&data->plist, ft_lstnew(p_data));
 	}

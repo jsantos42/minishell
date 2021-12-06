@@ -64,7 +64,6 @@ int	__exit(char **args, int *ctx)
 {
 	(void)args;
 	(void)ctx;
-	write_history(".history");
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	exit(EXIT_SUCCESS);
 	return(0);
@@ -72,7 +71,12 @@ int	__exit(char **args, int *ctx)
 
 int	__pwd(char **args, int *ctx)
 {
+	char	*cwd;
+	
 	(void)args;
 	(void)ctx;
+	cwd = getcwd(NULL, 0);
+	printf("%s\n", cwd);
+	free(cwd);
 	return (0);
 }

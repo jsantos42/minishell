@@ -48,3 +48,14 @@ t_tree	*init_branch_node(t_tree *previous)
 	new_node->previous = previous;
 	return (new_node);
 }
+
+void	init_history(void)
+{
+	if (access(".history", F_OK) == 0)
+		read_history(".history");
+	else
+	{
+		open(".history", O_CREAT | O_APPEND | O_WRONLY, 0644);
+		read_history(".history");
+	}
+}
