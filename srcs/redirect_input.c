@@ -53,7 +53,7 @@ void	handle_input_redirection(t_tree **current_node, char **str, int *i)
 		(*i)++;
 	}
 	if (*i != old_i && (*current_node)->leaf.here_doc == false)
-		(*current_node)->leaf.redir_input = ft_substr(*str, old_i, *i);
+		(*current_node)->leaf.redir_input = ft_substr(*str, old_i, *i - old_i);
 	else if (i != 0 && (*current_node)->leaf.here_doc == true)
-		(*current_node)->leaf.delimiter = ft_substr(*str, old_i, *i);
+		(*current_node)->leaf.delimiter = ft_substr(*str, old_i, *i - old_i);
 }

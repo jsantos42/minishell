@@ -23,5 +23,5 @@ void	handle_output_redirection(t_tree **current_node, char **str, int *i)
 		(*i)++;
 	}
 	if (*i != old_i)
-		(*current_node)->leaf.redir_output = ft_substr(*str, old_i, *i);
+		(*current_node)->leaf.redir_output = ft_substr(*str, old_i, *i - old_i);
 }
