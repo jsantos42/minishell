@@ -50,6 +50,7 @@ void	handle_input_redirection(t_tree **current_node, char **str, int *i)
 			*str = handle_quote_char(*str, i);
 		else if (is_dollar_sign((*str)[*i]) && !(*current_node)->leaf.here_doc)
 			*str = handle_dollar_sign(*str, *i);
+		(*i)++;
 	}
 	if (*i != old_i && (*current_node)->leaf.here_doc == false)
 		(*current_node)->leaf.redir_input = ft_substr(*str, old_i, *i);

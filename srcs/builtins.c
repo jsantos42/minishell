@@ -1,6 +1,6 @@
 #include "../headers/builtins.h"
 
-void	builtin_echo(char **args, int *ctx)
+int	__echo(char **args, int *ctx)
 {
 	int		iter;
 	bool	new_line;
@@ -26,18 +26,19 @@ void	builtin_echo(char **args, int *ctx)
 	}
 	if (new_line)
 		write(ctx[1], "\n", 1);
+	return (0);
 }
 
 // static char *ft_get_prev_dir(char *path);
 
-void	builtin_cd(char **args)
+int	__cd(char **args, int *ctx)
 {
 	char	*cur_dir;
 	char	*old_pwd;
 	char	*path;
 
 	cur_dir = get_env_var("PWD");
-
+	(void)ctx;
 	if (!args[1] || !ft_strncmp(args[1], "~", 2))
 		path = get_env_var("HOME");
 	else if (!ft_strncmp(args[1], "-", 2))
@@ -53,26 +54,25 @@ void	builtin_cd(char **args)
 	{
 		update_env_var("OLDPWD", old_pwd);
 		update_env_var("PWD", getcwd(NULL, 0));
+		return (0);
 	}
-	else
-		printf("Error changing directory\n");
+	printf("Error changing directory\n");
+	return (1);
 }
 
-// static char *ft_get_prev_dir(char *path)
-// {
-// 	int		len;
-// 	char	*prev_dir;
-
-// 	len = ft_strlen(path);
-// 	while(path[len] != '/')
-// 		len--;
-// 	prev_dir = ft_substr(path, 0, len);
-// 	return (prev_dir);
-// }
-
-void	builtin_exit(void)
+int	__exit(char **args, int *ctx)
 {
+	(void)args;
+	(void)ctx;
 	write_history(".history");
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	exit(EXIT_SUCCESS);
+	return(0);
+}
+
+int	__pwd(char **args, int *ctx)
+{
+	(void)args;
+	(void)ctx;
+	return (0);
 }

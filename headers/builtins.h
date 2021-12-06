@@ -3,14 +3,24 @@
 
 # include "main.h"
 
-void	exec_builtin(t_leaf_node *leaf, int *ctx);
+typedef int	(*ft_builtin)(char **args, int *ctx);
+
+int	exec_builtin(t_leaf_node *leaf, int *ctx);
 
 bool	is_builtin(char *cmd);
 
-void	builtin_echo(char **args, int *ctx);
+int	__echo(char **args, int *ctx);
 
-void	builtin_cd(char **args);
+int	__cd(char **args, int *ctx);
 
-void	builtin_exit(void);
+int	__pwd(char **args, int *ctx);
+
+int	__export(char **args, int *ctx);
+
+int	__unset(char **args, int *ctx);
+
+int	__env(char **args, int *ctx);
+
+int	__exit(char **args, int *ctx);
 
 #endif // !BUILTINS_H
