@@ -37,8 +37,8 @@ int	__cd(char **args, int *ctx)
 	char	*old_pwd;
 	char	*path;
 
-	cur_dir = get_env_var("PWD");
 	(void)ctx;
+	cur_dir = get_env_var("PWD");
 	if (!args[1] || !ft_strncmp(args[1], "~", 2))
 		path = get_env_var("HOME");
 	else if (!ft_strncmp(args[1], "-", 2))
@@ -54,9 +54,11 @@ int	__cd(char **args, int *ctx)
 	{
 		update_env_var("OLDPWD", old_pwd);
 		update_env_var("PWD", getcwd(NULL, 0));
+		free(path);
 		return (0);
 	}
-	printf("Error changing directory\n");
+	printf("%s: Error changing directory\n", path);
+	free(path);
 	return (1);
 }
 

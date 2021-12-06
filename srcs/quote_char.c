@@ -34,7 +34,7 @@ char	*handle_quote_char(char *input, int *quote_pos)
 	quote_type = *(input + *quote_pos);
 	new_input = malloc(ft_strlen(input) - 2 * QUOTE_CHAR + 1);
 	if (!new_input)
-		terminate_program(MALLOC);
+		terminate_program("", MALLOC);
 	quotes_found = 0;
 	i = 0;
 	k = 0;
@@ -49,7 +49,7 @@ char	*handle_quote_char(char *input, int *quote_pos)
 	if (quotes_found < 2)
 	{
 		free(new_input);
-		terminate_program(UNCLOSED_QUOTES);
+		terminate_program("", UNCLOSED_QUOTES);
 	}
 	*quote_pos += k - QUOTE_CHAR;
 	while (input[i] != '\0')

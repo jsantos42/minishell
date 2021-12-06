@@ -20,7 +20,7 @@ t_tree	*init_leaf_node(t_tree *previous)
 	new_node = NULL;
 	new_node = malloc(sizeof(t_tree));
 	if (!new_node)
-		terminate_program(MALLOC);
+		terminate_program("", MALLOC);
 	new_node->type = LEAF_NODE;
 	new_node->leaf.args = NULL;
 	new_node->leaf.nb_args = 0;
@@ -40,7 +40,7 @@ t_tree	*init_branch_node(t_tree *previous)
 	new_node = NULL;
 	new_node = malloc(sizeof(t_tree));
 	if (!new_node)
-		terminate_program(MALLOC);
+		terminate_program("", MALLOC);
 	new_node->type = BRANCH_NODE;
 	new_node->branch.operator = 0;
 	new_node->branch.left = NULL;

@@ -34,7 +34,7 @@ int	parse_input(t_data *data)
 		else if (data->input[i] == '>')
 			handle_output_redirection(&current_node, &data->input, &i);
 		else if (is_semicomma(data->input[i]) && !is_escaped(data->input, i))
-			terminate_program(SPECIAL_CHAR);
+			terminate_program("", SPECIAL_CHAR);
 		else
 			read_cmd_and_args(data, &current_node->leaf, &i);
 	}
@@ -110,7 +110,7 @@ void	save_new_argument(t_leaf_node *current_node, char *new_arg)
 	new_matrix = NULL;
 	new_matrix = malloc(sizeof(char *) * (current_node->nb_args + NEW_ARG + NULLTERM));
 	if (!new_matrix)
-		terminate_program(MALLOC);
+		terminate_program("", MALLOC);
 	i = -1;
 	while (++i < current_node->nb_args)
 		new_matrix[i] = current_node->args[i];

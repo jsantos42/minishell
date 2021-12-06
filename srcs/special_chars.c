@@ -32,6 +32,6 @@ void	handle_amper(t_tree **current_node, char *str, int *i)
 		(*i)++;
 	}
 	else
-		terminate_program(RUN_BG);
+		terminate_program("", RUN_BG);
 	relink(current_node, operator);
 }

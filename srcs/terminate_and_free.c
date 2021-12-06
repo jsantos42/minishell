@@ -1,9 +1,8 @@
 #include "../headers/terminate_and_free.h"
 
-void	terminate_program(int error)
+void	terminate_program(char *name, int error)
 {
 	free_data();
-	printf("ERROR\n");
 	if (error == MALLOC)
 		printf("Memory allocation failed.\n");
 	else if (error == ENV_VAR)
@@ -23,6 +22,10 @@ void	terminate_program(int error)
 		printf("Minishell should not interpret unclosed quotes.\n");
 	else if (error == RUN_BG)
 		printf("Minishell should not deal with job control. Did you mean '&&'?\n");
+	else if (error == DUP2)
+		printf("%s: Error copying file descriptors\n", name);
+	else if (error == CMD_NOT_FOUND)
+		printf("%s: command not found\n", name);
 	exit(error);
 }
 

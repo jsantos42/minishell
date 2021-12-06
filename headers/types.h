@@ -14,7 +14,8 @@ typedef enum e_errors {
 	SPECIAL_CHAR	= -7,
 	UNCLOSED_QUOTES	= -8,
 	RUN_BG			= -9,
-	DUP2			= -10
+	DUP2			= -10,
+	CMD_NOT_FOUND	= -11
 }	t_errors;
 
 typedef enum e_builtins {
