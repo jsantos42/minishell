@@ -145,3 +145,14 @@ exit
 ls
 echo a | ls
 exit
+echo a> testfile
+echo a > testfile
+cat < testfile
+echo abcd > testfile
+echo abcd> testfile
+cat testfile
+ect < testfile | grep a
+catt < testfile | grep a
+cat < testfile | grep a
+exit | ls
+exit
