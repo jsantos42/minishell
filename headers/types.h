@@ -86,7 +86,6 @@ typedef struct s_tree {
 
 typedef struct s_data {
 	char	*input;
-	char	**paths;
 	t_env	env;
 	int		nb_paths;
 	int		status;

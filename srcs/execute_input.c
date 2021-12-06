@@ -11,7 +11,7 @@
 static void	execute_pipeline(t_tree *node, int *ctx);
 static void	execute_leaf(t_tree *node, int *ctx);
 static void	execute_branch(t_tree *node, int *ctx);
-static char	*get_cmd_path(char *cmd, char **paths);
+static char	*get_cmd_path(char *cmd);
 static void	ft_close_fds(t_list *plist);
 static void	open_files(t_leaf_node *leaf, int *ctx);
 
@@ -73,7 +73,7 @@ static void	execute_leaf(t_tree *node, int *ctx)
 	t_data	*data;
 
 	data = get_data(NULL);
-	cmd_path = get_cmd_path(node->leaf.args[0], data->paths);
+	cmd_path = get_cmd_path(node->leaf.args[0]);
 
 	open_files(&node->leaf, ctx);
 
@@ -119,25 +119,29 @@ static void	execute_branch(t_tree *node, int *ctx)
 	execute_pipeline(node->branch.right, right_ctx);
 }
 
-static char	*get_cmd_path(char *cmd, char **paths)
+static char	*get_cmd_path(char *cmd)
 {
-	char	*part_path;
+	char	**paths;
 	char	*path;
+	t_data	*data;
 	int		i;
 
 	if (access(cmd, F_OK) == 0)
 		return (cmd);
+	
+	data = get_data(NULL);
+	paths = ft_split(get_env_var("PATH"), ':', NULL);
+
 	i = 0;
 	while (paths[i])
 	{
-		part_path = ft_strjoin(paths[i], "/");
-		path = ft_strjoin(part_path, cmd);
-		free(part_path);
+		path = ft_strnjoin(3, paths[i], "/", cmd);
 		if (access(path, F_OK) == 0)
 			return (path);
 		free(path);
 		i++;
 	}
+
 	return (NULL);
 }
 

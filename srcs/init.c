@@ -1,7 +1,5 @@
 #include "../headers/init.h"
 
-static char	**get_paths(t_data *data);
-
 void	init_data(t_data *data, int argc, char **argv, char **envp)
 {
 	if (argc > 1)
@@ -9,7 +7,6 @@ void	init_data(t_data *data, int argc, char **argv, char **envp)
 	(void) argv;
 	data->input = NULL;
 	data->status = 0;
-	data->paths = get_paths(data);
 	data->tree = NULL;
 	data->exit_cmd = false;
 	data->plist = NULL;
@@ -51,18 +48,4 @@ t_tree	*init_branch_node(t_tree *previous)
 	new_node->branch.right = NULL;
 	new_node->previous = previous;
 	return (new_node);
-}
-
-static char	**get_paths(t_data *data)
-{
-	char	*env_paths;
-	char	**paths;
-
-	env_paths = getenv("PATH");
-	if (!env_paths)
-		terminate_program(ENV_VAR);
-	paths = ft_split(env_paths, ':', &data->nb_paths);
-	if (!paths)
-		terminate_program(MALLOC);
-	return (paths);
 }
