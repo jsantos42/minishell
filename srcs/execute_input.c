@@ -13,6 +13,7 @@ static void	execute_leaf(t_tree *node, int *ctx);
 static void	execute_branch(t_tree *node, int *ctx);
 static char	*get_cmd_path(char *cmd, char **paths);
 static void	ft_close_fds(t_list *plist);
+static void	open_files(t_leaf_node *leaf, int *ctx);
 
 /*
 *	1) Starts by creating a base context to be shared by processes.
@@ -22,7 +23,7 @@ static void	ft_close_fds(t_list *plist);
 */
 void	execute_input(t_data *data)
 {
-	int		ctx[3] = {0, 1, 0};
+	int		ctx[3] = {0, 1, FALSE};
 	int		status;
 	size_t	iter;
 
@@ -73,6 +74,8 @@ static void	execute_leaf(t_tree *node, int *ctx)
 
 	data = get_data(NULL);
 	cmd_path = get_cmd_path(node->leaf.args[0], data->paths);
+
+	open_files(&node->leaf, ctx);
 
 	if (!ctx[PIPELINE] && is_builtin(node->leaf.args[0]))
 		data->status = exec_builtin(&node->leaf, ctx);
@@ -153,4 +156,15 @@ static void	ft_close_fds(t_list *plist)
 			close(((t_proc *)tmp->content)->fd_io[1]);
 		tmp = tmp->next;
 	}
+}
+
+static void	open_files(t_leaf_node *leaf, int *ctx)
+{
+	if (leaf->redir_input)
+		ctx[INPUT] = open(leaf->redir_input, O_RDONLY, 0);
+
+	if (leaf->redir_output && leaf->append_mode)
+		ctx[OUTPUT] = open(leaf->redir_output, O_CREAT | O_APPEND | O_WRONLY, 0644);
+	else if (leaf->redir_output)
+		ctx[OUTPUT] = open(leaf->redir_output, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 }

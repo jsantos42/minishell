@@ -33,7 +33,7 @@ int	exec_builtin(t_leaf_node *leaf, int *ctx)
 		close(ctx[OUTPUT]);
 
 	if (ctx[PIPELINE] == TRUE)
-		exit(EXIT_SUCCESS);
+		exit(ret);
 	
 	return (ret);
 }
