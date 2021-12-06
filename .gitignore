@@ -3,6 +3,7 @@ minishell
 cmake-build-debug/
 readline/
 .vscode/
+.history
 
 # Prerequisites
 *.d
