@@ -27,11 +27,6 @@ int	exec_builtin(t_leaf_node *leaf, int *ctx)
 		if (!ft_strncmp(keys[cmd], leaf->args[0], ft_strlen(leaf->args[0])))
 			ret = builtin[cmd](leaf->args, ctx);
 
-	if (ctx[INPUT] != STDIN_FILENO)
-		close(ctx[INPUT]);
-	if (ctx[OUTPUT] != STDOUT_FILENO)
-		close(ctx[OUTPUT]);
-
 	if (ctx[PIPELINE] == TRUE)
 		exit(ret);
 	

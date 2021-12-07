@@ -47,12 +47,6 @@ typedef enum e_node_type {
 	BRANCH_NODE	= 2
 }	t_node_type;
 
-typedef struct s_proc_data
-{
-	pid_t	id;
-	int		fd_io[2];
-}	t_proc;
-
 typedef struct s_pair
 {
 	char *key;
