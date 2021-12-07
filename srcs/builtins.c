@@ -5,7 +5,7 @@ int	__echo(char **args, int *ctx)
 	int		iter;
 	bool	new_line;
 	bool	print_space;
-	
+
 	iter = 1;
 	if (args[iter] && !ft_strncmp(args[iter], "-n", 3))
 	{
@@ -29,37 +29,48 @@ int	__echo(char **args, int *ctx)
 	return (0);
 }
 
-// static char *ft_get_prev_dir(char *path);
+static char	*get_dir_path(char *arg);
 
 int	__cd(char **args, int *ctx)
 {
-	char	*cur_dir;
 	char	*old_pwd;
 	char	*path;
 
 	(void)ctx;
-	cur_dir = get_env_var("PWD");
-	if (!args[1] || !ft_strncmp(args[1], "~", 2))
-		path = get_env_var("HOME");
-	else if (!ft_strncmp(args[1], "-", 2))
-		path = get_env_var("OLDPWD");
-	else if (!ft_strncmp(args[1], "~/", 2))
-		path = ft_strnjoin(3, get_env_var("HOME"), "/", &args[1][2]);
-	else if (!ft_strncmp(args[1], "./", 2) || !ft_strncmp(args[1], "../", 3))
-		path = ft_strnjoin(3, cur_dir, "/", args[1]);
-	else
-		path = args[1];
+	path = get_dir_path(args[1]);
 	old_pwd = getcwd(NULL, 0);
-	if(chdir(path) != -1)
+	if (chdir(path) != -1)
 	{
 		update_env_var("OLDPWD", old_pwd);
 		update_env_var("PWD", getcwd(NULL, 0));
 		free(path);
 		return (0);
 	}
-	printf("%s: Error changing directory\n", path);
+	if (errno == ENOTDIR)
+		printf("Minishell: cd: %s: Not a directory\n", path);
+	else if (errno == ENOENT)
+		printf("Minishell: cd: %s: No such file or directory\n", path);
+	else if (errno == EACCES)
+		printf("Minishell: cd: %s: Permission denied\n", path);
 	free(path);
 	return (1);
+}
+
+static char	*get_dir_path(char *path)
+{
+	char	*cur_dir;
+
+	cur_dir = getcwd(NULL, 0);
+	if (!path || !ft_strncmp(path, "~", 2))
+		return (get_env_var("HOME"));
+	else if (!ft_strncmp(path, "-", 2))
+		return (get_env_var("OLDPWD"));
+	else if (!ft_strncmp(path, "~/", 2))
+		return (ft_strnjoin(3, get_env_var("HOME"), "/", path));
+	else if (!ft_strncmp(path, "./", 2) || !ft_strncmp(path, "../", 3))
+		return (ft_strnjoin(3, cur_dir, "/", path));
+	else
+		return (path);
 }
 
 int	__exit(char **args, int *ctx)
@@ -68,13 +79,13 @@ int	__exit(char **args, int *ctx)
 	(void)ctx;
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	exit(EXIT_SUCCESS);
-	return(0);
+	return (0);
 }
 
 int	__pwd(char **args, int *ctx)
 {
 	char	*cwd;
-	
+
 	(void)args;
 	(void)ctx;
 	cwd = getcwd(NULL, 0);

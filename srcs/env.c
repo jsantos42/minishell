@@ -113,6 +113,7 @@ int	__export(char **args, int *ctx)
 	t_pair	*pair;
 	t_data	*data;
 
+	write(1, "!\n", 2);
 	data = get_data(NULL);
 	if (!args[1])
 	{
@@ -152,7 +153,23 @@ int	__env(char **args, int *ctx)
 
 int	__unset(char **args, int *ctx)
 {
-	(void)args;
+	t_env *env;
+	t_list *env_list;
+
 	(void)ctx;
+	env = &get_data(NULL)->env;
+	env_list = env->list;
+
+	while (env_list)
+	{	
+		if(!ft_strncmp(((t_pair *)env_list->next->content)->key, args[1], ft_strlen(args[1]) + 1))
+		{
+			free(((t_pair *)env_list->next->content)->key);
+			free(((t_pair *)env_list->next->content)->value);
+			env_list->next = env_list->next->next;
+			ft_lstdelone(env_list->next, free);
+		}
+		env_list = env_list->next;
+	}
 	return (0);
 }
