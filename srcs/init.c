@@ -7,6 +7,7 @@ void	init_data(t_data *data, char **envp)
 	data->tree = NULL;
 	data->stdin_fd = 0;
 	data->sigint_received = false;
+	data->escaped = false;
 	data->plist = NULL;
 	data->env = ft_init_env(envp);
 	get_data(data);

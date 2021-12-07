@@ -30,14 +30,16 @@ int	parse_input(t_data *data)
 		else if (data->input[i] == '&')
 			handle_amper(&current_node, data->input, &i);
 		else if (data->input[i] == '<')
-			handle_input_redirection(&current_node, &data->input, &i);
+			handle_input_redirection(&current_node, data, &i);
 		else if (data->input[i] == '>')
-			handle_output_redirection(&current_node, &data->input, &i);
-		else if (is_semicomma(data->input[i]) && !is_escaped(data->input, i))
-			terminate_program(SPECIAL_CHAR);
+			handle_output_redirection(&current_node, data, &i);
+		else if (is_escape_char(data->input[i]))
+			remove_escape_char(data, &i);
 		else
 			read_cmd_and_args(data, &current_node->leaf, &i);
 	}
+	if (data->escaped)
+		terminate_program(SPECIAL_CHAR);
 	return (1);
 }
 
@@ -48,13 +50,13 @@ int	parse_input(t_data *data)
 **	If it finds a quote_char, it handles it (the protection against an escaped
 **	quote_char is inside that function).
 **	If it finds other escaped char, it removes it (note that it still iterates
-**	to the next char, so the the now unescaped char will not be interpreted).
-**	If if finds a dollar sign, it expands the given variable name.
+**	to the next char, so the now unescaped char will not be interpreted).
+**	If it finds a dollar sign, it expands the given variable name.
 **	If it finds a semicomma or a special char it breaks, since it's the end of
 **	that argument.
 **	5) Before saving the new_arg, checks if the input has ended and, if so, if
 **	the last char was an escape char. If that's the case, it calls the function
-**	check_for_nl_char to decide whether to remove the escaped escaped char or to
+**	check_for_nl_char to decide whether to remove the escaped escape_char or to
 **	throw an error message, since according to the subject, the nl char is not
 **	supposed to be interpreted.
 **
@@ -70,20 +72,35 @@ void	read_cmd_and_args(t_data *data, t_leaf_node *current_node, int *i)
 
 	old_i = *i;
 	while (data->input[*i] != '\0' && (!ft_isspace(data->input[*i])
-		|| (ft_isspace(data->input[*i]) && is_escaped(data->input, *i))))
+		|| (ft_isspace(data->input[*i]) && data->escaped)))
 	{
-		if (is_quote_char(data->input[*i]))
-			data->input = handle_quote_char(data->input, i);
-		else if (is_escaped(data->input, *i))
-			data->input = remove_escape_char(data->input, i);
+		if (is_escape_char(data->input[*i]))
+			remove_escape_char(data, i);
+		else if (is_quote_char(data->input[*i]))
+			handle_quote_char(data, i);
 		else if (is_dollar_sign(data->input[*i]))
-			data->input = handle_dollar_sign(data->input, *i);
-		else if (is_semicomma(data->input[*i]) || is_special_char(data->input[*i]))
-			break ;
+			handle_dollar_sign(data, *i);
+		else if (is_special_char(data->input[*i])) //missing protection against escape here
+		{
+			if (data->escaped)
+				data->escaped = false;
+			else
+				break ;
+		}
+		else if (is_semicomma(data->input[*i]))
+		{
+			if (data->escaped)
+			{
+				data->escaped = false;
+				i++;
+			}
+			else
+				terminate_program(SPECIAL_CHAR);
+		}
+		else
+			data->escaped = false;
 		(*i)++;
 	}
-	if (data->input[*i] == '\0' && is_escaped(data->input, *i))
-		data->input = check_for_nl_char(data->input, i);
 	if (*i != old_i)
 	{
 		new_arg = ft_substr(data->input, old_i, *i - old_i);

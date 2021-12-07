@@ -12,7 +12,7 @@ typedef	struct s_dollar {
 }	t_dollar;
 
 bool	is_dollar_sign(char chr);
-char	*handle_dollar_sign(char *input, int dollar_pos);
+void	handle_dollar_sign(t_data *data, int dollar_pos);
 int		get_var_length(char *var);
 char	*replace_input(char *original, t_dollar *dollar, int dollar_pos);
 

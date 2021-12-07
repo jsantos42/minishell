@@ -92,6 +92,7 @@ typedef struct s_data {
 	t_tree	*tree;
 	int		stdin_fd;
 	bool	sigint_received;
+	bool	escaped;
 	t_list	*plist;
 }	t_data;
 

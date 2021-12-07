@@ -1,5 +1,15 @@
 #include "../headers/escape_char.h"
 
+bool	is_escape_char(char chr)
+{
+	return (chr == '\\');
+}
+
+bool	is_escaped(char *str, int i)
+{
+	return (i != 0 && str[i - 1] == '\\');
+}
+
 /*
 **	Receives the str from which to remove the escape char, and the index of the
 **	escaped character (NOT the '\\' itself, the next one).
@@ -10,27 +20,32 @@
 **	not interfere with the edge case of "\\" at the end of the input string.
 */
 
-char	*remove_escape_char(char *str, int *escaped_char)
+void	remove_escape_char(t_data *data, int *escaped_char)
 {
 	char	*new_input;
 	int		size;
 	int		i;
 	int		j;
 
-	size = ft_strlen(str);
-	if (str[*escaped_char] == '\\' && str[*escaped_char - 2] != '\\')
-		return (str);
+	if (data->escaped)
+	{
+		data->escaped = false;
+		return ;
+	}
+	size = ft_strlen(data->input);
 	new_input = malloc(size - ESCAPECHAR + 1);
 	i = 0;
 	j = 0;
-	while (str[i] != '\0')
+	while (data->input[i] != '\0')
 	{
-		if (i == *escaped_char - 1 || (i == 0 && *escaped_char == 0))
+		if (i == *escaped_char)
 			i++;
 		else
-			new_input[j++] = str[i++];
+			new_input[j++] = data->input[i++];
 	}
 	new_input[j] = '\0';
 	(*escaped_char)--;
-	return (new_input);
+	data->escaped = true;
+	free(data->input);
+	data->input = new_input;
 }

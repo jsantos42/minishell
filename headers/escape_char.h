@@ -5,6 +5,8 @@
 
 #define ESCAPECHAR 1
 
-char	*remove_escape_char(char *str, int *esc_pos);
+bool	is_escape_char(char chr);
+bool	is_escaped(char *str, int i);
+void	remove_escape_char(t_data *data, int *escaped_char);
 
 #endif

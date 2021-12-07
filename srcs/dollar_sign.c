@@ -11,22 +11,28 @@ bool	is_dollar_sign(char chr)
 **	variable expanded.
 */
 
-char	*handle_dollar_sign(char *input, int dollar_pos)
+void	handle_dollar_sign(t_data *data, int dollar_pos)
 {
 	t_dollar	d;
 	char	*new_input;
-	t_data	*data;
 	bool	expand_status;
 
-//	this protection against escape should make the special char part of the argument
-//	if (dollar_pos != 0 && --dollar_pos == '\\')
-//		return ;
-	d.name_len = get_var_length(input + dollar_pos + DOLLAR_SIGN);
-	d.name = ft_substr(input, dollar_pos + DOLLAR_SIGN, d.name_len);
+//	if (is_escaped() && data->escaped == true)
+//		go ahead;
+//		else if (is_escaped() && data->escaped == false)
+//			return ;
+//		else if (!is_escaped() && data->escaped == true)
+//			return ;
+	if (data->escaped)
+	{
+		data->escaped = false;
+		return ;
+	}
+	d.name_len = get_var_length(data->input + dollar_pos + DOLLAR_SIGN);
+	d.name = ft_substr(data->input, dollar_pos + DOLLAR_SIGN, d.name_len);
 	if (ft_strncmp(d.name, "?", 2) == 0)
 	{
 		expand_status = true;
-		data = get_data(NULL);
 		d.expanded = ft_itoa(data->status);
 	}
 	else
@@ -37,12 +43,12 @@ char	*handle_dollar_sign(char *input, int dollar_pos)
 	if (!d.expanded)
 		d.expanded = ft_strdup("");
 	d.expanded_len = ft_strlen(d.expanded);
-	new_input = replace_input(input, &d, dollar_pos);
+	new_input = replace_input(data->input, &d, dollar_pos);
 	free(d.name);
-	free(input);
 	if (expand_status)
 		free(d.expanded);
-	return (new_input);
+	free(data->input);
+	data->input = new_input;
 }
 
 /*

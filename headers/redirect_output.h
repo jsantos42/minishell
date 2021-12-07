@@ -3,6 +3,6 @@
 
 # include "main.h"
 
-void	handle_output_redirection(t_tree **current_node, char **str, int *i);
+void	handle_output_redirection(t_tree **current_node, t_data *data, int *i);
 
 #endif

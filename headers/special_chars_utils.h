@@ -4,6 +4,5 @@
 # include "main.h"
 
 void	relink(t_tree **current_node, int operator);
-bool	is_escaped(char *str, int i);
 
 #endif

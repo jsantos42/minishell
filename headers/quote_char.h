@@ -6,7 +6,7 @@
 # define QUOTE_CHAR 1
 
 bool	is_quote_char(char chr);
-char	*handle_quote_char(char *input, int *quote_pos);
-char	*look_for_expansions(char *str, int i);
+void	handle_quote_char(t_data *data, int *quote_pos);
+void	look_for_expansions(t_data *data, int i, int end);
 
 #endif
