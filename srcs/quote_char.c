@@ -32,6 +32,7 @@ void	handle_quote_char(t_data *data, int *quote_pos)
 
 	if (data->escaped)
 	{
+		(*quote_pos)++;
 		data->escaped = false;
 		return ;
 	}
@@ -69,6 +70,11 @@ void	handle_quote_char(t_data *data, int *quote_pos)
 }
 
 
+/*
+ *	End must stretch to the same amount as i, hence the subtraction followed by
+ *	the sum.
+*/
+
 void	look_for_expansions(t_data *data, int i, int end)
 {
 	while (i < end)
@@ -77,7 +83,11 @@ void	look_for_expansions(t_data *data, int i, int end)
 		&& (is_dollar_sign(data->input[i + 1]) || data->input[i + 1] == '\"'))
 			remove_escape_char(data, &i);
 		else if (is_dollar_sign(data->input[i]))
-			handle_dollar_sign(data, i);
+		{
+			end -= i;
+			handle_dollar_sign(data, &i);
+			end += i;
+		}
 		else
 			data->escaped = false;
 		i++;

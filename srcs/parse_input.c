@@ -25,6 +25,8 @@ int	parse_input(t_data *data)
 	while (data->input[i] != '\0')
 	{
 		skip_white_space(data->input, &i);
+//		if (is_escape_char(data->input[i]))
+//			remove_escape_char(data, &i);
 		if (data->input[i] == '|')
 			handle_pipe(&current_node, data->input, &i);
 		else if (data->input[i] == '&')
@@ -33,8 +35,6 @@ int	parse_input(t_data *data)
 			handle_input_redirection(&current_node, data, &i);
 		else if (data->input[i] == '>')
 			handle_output_redirection(&current_node, data, &i);
-		else if (is_escape_char(data->input[i]))
-			remove_escape_char(data, &i);
 		else
 			read_cmd_and_args(data, &current_node->leaf, &i);
 	}
@@ -79,7 +79,7 @@ void	read_cmd_and_args(t_data *data, t_leaf_node *current_node, int *i)
 		else if (is_quote_char(data->input[*i]))
 			handle_quote_char(data, i);
 		else if (is_dollar_sign(data->input[*i]))
-			handle_dollar_sign(data, *i);
+			handle_dollar_sign(data, i);
 		else if (is_special_char(data->input[*i])) //missing protection against escape here
 		{
 			if (data->escaped)
@@ -98,10 +98,12 @@ void	read_cmd_and_args(t_data *data, t_leaf_node *current_node, int *i)
 				terminate_program(SPECIAL_CHAR);
 		}
 		else
+		{
 			data->escaped = false;
-		(*i)++;
+			(*i)++;
+		}
 	}
-	if (*i != old_i)
+	if (*i != old_i) ///this gets an advance old_i
 	{
 		new_arg = ft_substr(data->input, old_i, *i - old_i);
 		save_new_argument(current_node, new_arg);

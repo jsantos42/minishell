@@ -30,6 +30,7 @@ void	remove_escape_char(t_data *data, int *escaped_char)
 	if (data->escaped)
 	{
 		data->escaped = false;
+		(*escaped_char)++;
 		return ;
 	}
 	size = ft_strlen(data->input);
@@ -44,7 +45,7 @@ void	remove_escape_char(t_data *data, int *escaped_char)
 			new_input[j++] = data->input[i++];
 	}
 	new_input[j] = '\0';
-	(*escaped_char)--;
+//	(*escaped_char)--;
 	data->escaped = true;
 	free(data->input);
 	data->input = new_input;

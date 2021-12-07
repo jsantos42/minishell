@@ -28,9 +28,9 @@ int	main(int argc, char **argv, char **envp)
 			__exit(NULL, NULL);
 		else if (ft_strncmp(data.input, "", 1) != 0)
 		{
+			add_history(data.input);
 			parse_input(&data);
 			execute_input(&data);
-			add_history(data.input);
 			write_history(".history");
 		}
 		data.input = free_if_not_null(data.input);

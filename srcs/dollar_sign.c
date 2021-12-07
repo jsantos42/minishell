@@ -11,7 +11,7 @@ bool	is_dollar_sign(char chr)
 **	variable expanded.
 */
 
-void	handle_dollar_sign(t_data *data, int dollar_pos)
+void	handle_dollar_sign(t_data *data, int *dollar_pos)
 {
 	t_dollar	d;
 	char	*new_input;
@@ -26,10 +26,11 @@ void	handle_dollar_sign(t_data *data, int dollar_pos)
 	if (data->escaped)
 	{
 		data->escaped = false;
+		(*dollar_pos)++;
 		return ;
 	}
-	d.name_len = get_var_length(data->input + dollar_pos + DOLLAR_SIGN);
-	d.name = ft_substr(data->input, dollar_pos + DOLLAR_SIGN, d.name_len);
+	d.name_len = get_var_length(data->input + *dollar_pos + DOLLAR_SIGN);
+	d.name = ft_substr(data->input, *dollar_pos + DOLLAR_SIGN, d.name_len);
 	if (ft_strncmp(d.name, "?", 2) == 0)
 	{
 		expand_status = true;
@@ -43,8 +44,9 @@ void	handle_dollar_sign(t_data *data, int dollar_pos)
 	if (!d.expanded)
 		d.expanded = ft_strdup("");
 	d.expanded_len = ft_strlen(d.expanded);
-	new_input = replace_input(data->input, &d, dollar_pos);
+	new_input = replace_input(data->input, &d, *dollar_pos);
 	free(d.name);
+	*dollar_pos += d.expanded_len;
 	if (expand_status)
 		free(d.expanded);
 	free(data->input);
