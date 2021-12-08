@@ -24,7 +24,7 @@ int	exec_builtin(t_leaf_node *leaf, int *ctx)
 
 	cmd = -1;
 	while(keys[++cmd])
-		if (!ft_strncmp(keys[cmd], leaf->args[0], ft_strlen(leaf->args[0])))
+		if (!ft_strncmp(keys[cmd], leaf->args[0], ft_strlen(keys[cmd]) + 1))
 			ret = builtin[cmd](leaf->args, ctx);
 
 	if (ctx[PIPELINE] == TRUE)
