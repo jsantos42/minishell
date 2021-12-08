@@ -25,7 +25,7 @@ void	handle_quote_char(t_data *data, int *quote_pos)
 {
 	char	quote_type;
 	char	*new_input;
-	int 	quotes_found;
+	bool	closing_quote;
 	int		i;
 	int		j;
 	int		original_quote_pos;
@@ -41,27 +41,28 @@ void	handle_quote_char(t_data *data, int *quote_pos)
 	new_input = malloc(ft_strlen(data->input) - 2 * QUOTE_CHAR + 1);
 	if (!new_input)
 		terminate_program(MALLOC);
-	quotes_found = 0;
+	closing_quote = false;
 	i = 0;
 	j = 0;
 	while (i != *quote_pos)
 		new_input[j++] = data->input[i++];
-	while (data->input[i] != '\0' && quotes_found < 2)
+	while (!closing_quote && data->input[++i] != '\0')
 	{
 		if (data->input[i] == quote_type && !is_escaped(data->input, i))
-			(quotes_found)++;
+			closing_quote = true;
 		else
+		{
 			new_input[j++] = data->input[i];
-		i++;
+			(*quote_pos)++;
+		}
 	}
-	if (quotes_found < 2)
+	if (!closing_quote)
 	{
 		free(new_input);
 		terminate_program(UNCLOSED_QUOTES);
 	}
-	*quote_pos += j - QUOTE_CHAR;
-	while (data->input[i] != '\0')
-		new_input[j++] = data->input[i++];
+	while (data->input[++i] != '\0')
+		new_input[j++] = data->input[i];
 	new_input[j] = '\0';
 	free(data->input);
 	data->input = new_input;
@@ -84,9 +85,8 @@ void	look_for_expansions(t_data *data, int i, int end)
 			remove_escape_char(data, &i);
 		else if (is_dollar_sign(data->input[i]))
 		{
-			end -= i;
-			handle_dollar_sign(data, &i);
-			end += i;
+			end -= get_var_length(data->input + i + DOLLAR_SIGN);
+			end += handle_dollar_sign(data, &i);
 		}
 		else
 			data->escaped = false;

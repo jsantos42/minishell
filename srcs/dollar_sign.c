@@ -8,26 +8,20 @@ bool	is_dollar_sign(char chr)
 /*
 **	Finds the name of the variable, calculates it length, and calls
 **	replace_input in order to replace the previous input with one that has this
-**	variable expanded.
+**	variable expanded. Returns the number of added chars.
 */
 
-void	handle_dollar_sign(t_data *data, int *dollar_pos)
+int	handle_dollar_sign(t_data *data, int *dollar_pos)
 {
 	t_dollar	d;
 	char	*new_input;
 	bool	expand_status;
 
-//	if (is_escaped() && data->escaped == true)
-//		go ahead;
-//		else if (is_escaped() && data->escaped == false)
-//			return ;
-//		else if (!is_escaped() && data->escaped == true)
-//			return ;
 	if (data->escaped)
 	{
 		data->escaped = false;
 		(*dollar_pos)++;
-		return ;
+		return (0);
 	}
 	d.name_len = get_var_length(data->input + *dollar_pos + DOLLAR_SIGN);
 	d.name = ft_substr(data->input, *dollar_pos + DOLLAR_SIGN, d.name_len);
@@ -51,6 +45,7 @@ void	handle_dollar_sign(t_data *data, int *dollar_pos)
 		free(d.expanded);
 	free(data->input);
 	data->input = new_input;
+	return (d.expanded_len - d.name_len - DOLLAR_SIGN);
 }
 
 /*

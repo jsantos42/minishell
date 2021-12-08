@@ -83,7 +83,10 @@ void	read_cmd_and_args(t_data *data, t_leaf_node *current_node, int *i)
 		else if (is_special_char(data->input[*i])) //missing protection against escape here
 		{
 			if (data->escaped)
+			{
 				data->escaped = false;
+				(*i)++;
+			}
 			else
 				break ;
 		}
@@ -92,7 +95,7 @@ void	read_cmd_and_args(t_data *data, t_leaf_node *current_node, int *i)
 			if (data->escaped)
 			{
 				data->escaped = false;
-				i++;
+				(*i)++;
 			}
 			else
 				terminate_program(SPECIAL_CHAR);
