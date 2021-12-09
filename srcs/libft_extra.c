@@ -58,29 +58,17 @@ char	**ft_push_to_matrix(char **array, char *str)
 	iter = -1;
 	while(array[++iter])
 		new[iter] = array[iter];
-	array[iter++] = str;
-	new[iter] = NULL;
+	new[iter] = str;
+	new[++iter] = NULL;
 	free(array);
 	return (new);
 }
 
-char	**ft_matrix_del_one(char **array, int	index)
+void	ft_matrix_del_one(char **array, int index)
 {
-	char	**new;
-	int		iter;
-
-	iter = -1;
-	while(array[++iter])
-		;
-	new = xmalloc(sizeof(char *) * iter, __FILE__, __LINE__);
-	iter = -1;
-	while(++iter != index)
-		new[iter] = array[iter];
-	free(array[++iter]);
-	new[iter] = array[iter];
-	while(array[++iter])
-		new[iter] = array[iter];
-	new[iter] = NULL;
-	free(array);
-	return (new);
+	while (array[index + 1])
+	{
+		array[index] = array[index + 1];
+		index++;
+	}
 }

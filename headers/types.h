@@ -37,7 +37,7 @@ typedef enum e_relation {
 typedef struct s_env
 {
 	int		nb_vars;
-	t_list	*list;
+	t_list	**list;
 	char	**envp;
 	char	**array;
 }	t_env;
@@ -53,7 +53,8 @@ typedef struct s_pair
 	char *value;
 }	t_pair;
 
-typedef struct s_branch_node {
+typedef struct s_branch_node
+{
 	int				operator;
 	struct s_tree	*left;
 	struct s_tree	*right;

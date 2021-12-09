@@ -38,6 +38,6 @@ void	*xmalloc(size_t size, char *file, int line);
 
 char	**ft_push_to_matrix(char **array, char *str);
 
-char	**ft_matrix_del_one(char **array, int	index);
+void	ft_matrix_del_one(char **array, int	index);
 
 #endif
