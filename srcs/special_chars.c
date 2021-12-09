@@ -2,10 +2,7 @@
 
 bool	is_special_char(char chr)
 {
-	if (chr == '|' || chr == '&' || chr == '<' || chr == '>')
-		return (true);
-	else
-		return (false);
+	return (chr == '|' || chr == '&' || chr == '<' || chr == '>');
 }
 
 void	handle_pipe(t_tree **current_node, char *str, int *i)
@@ -13,7 +10,7 @@ void	handle_pipe(t_tree **current_node, char *str, int *i)
 	int	operator;
 
 	operator = PIPE;
-	if (str[++*i] == '|')
+	if (str[++(*i)] == '|')
 	{
 		operator = OR;
 		(*i)++;
@@ -26,7 +23,7 @@ void	handle_amper(t_tree **current_node, char *str, int *i)
 	int	operator;
 
 	operator = 0;
-	if (str[++*i] == '&')
+	if (str[++(*i)] == '&')
 	{
 		operator = AND;
 		(*i)++;

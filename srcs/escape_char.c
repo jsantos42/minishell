@@ -13,29 +13,18 @@ bool	is_escaped(char *str, int i)
 /*
 **	Receives the str from which to remove the escape char, and the index of the
 **	escaped character (NOT the '\\' itself, the next one). Returns the number of
- *	chars removed.
-**
-**	NOTE: the first condition is needed for those cases with multiple contiguous
-**	escape chars (ex: escaping an escape char "\\", escaping an escape char
-**	followed by escaping any other char "\\\a", etc.). This same conditions does
-**	not interfere with the edge case of "\\" at the end of the input string.
+**	chars removed.
 */
 
 int	remove_escape_char(t_data *data, int *escaped_char)
 {
 	char	*new_input;
-	int		size;
 	int		i;
 	int		j;
 
 	if (data->escaped)
-	{
-		data->escaped = false;
-		(*escaped_char)++;
-		return (0);
-	}
-	size = ft_strlen(data->input);
-	new_input = malloc(size - ESCAPECHAR + 1);
+		return (escape(data, escaped_char));
+	new_input = malloc(ft_strlen(data->input) - ESCAPECHAR + 1);
 	i = 0;
 	j = 0;
 	while (data->input[i] != '\0')
@@ -50,4 +39,16 @@ int	remove_escape_char(t_data *data, int *escaped_char)
 	free(data->input);
 	data->input = new_input;
 	return (1);
+}
+
+/*
+**	This function is called if the data->escaped flag is on. If so, it turns off
+**	the flag and advances the iterator.
+*/
+
+int	escape(t_data *data, int *i)
+{
+	data->escaped = false;
+	(*i)++;
+	return (0);
 }

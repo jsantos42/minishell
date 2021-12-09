@@ -33,7 +33,7 @@ Some shells (e.g., yash) choose to make this a syntax error. Bash does not.
 void	handle_input_redirection(t_tree **current_node, t_data *data, int *i)
 {
 	char	*redir;
-	t_flags	flags;
+	bool	interpret_dollar;
 
 	(*i)++;
 	if (data->input[*i] == '<')
@@ -42,8 +42,8 @@ void	handle_input_redirection(t_tree **current_node, t_data *data, int *i)
 		(*i)++;
 	}
 	skip_white_space(data->input, i);
-	flags.interpret_dollar = !(*current_node)->leaf.here_doc;
-	redir = parser_core(data, i, &flags);
+	interpret_dollar = !(*current_node)->leaf.here_doc;
+	redir = parser_core(data, i, interpret_dollar);
 	if ((*current_node)->leaf.here_doc)
 		(*current_node)->leaf.delimiter = redir;
 	else

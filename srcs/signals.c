@@ -18,7 +18,6 @@ void	init_signals(void)
 **	These next two functions work together. When the program receives a SIGINT,
 **	sigint_handler is called and closes the STDIN file descriptor and switch the
 **	sigint_received flag. Before closing the STDIN it stores a copy on data.
-**
 **	On the other hand when the sigint_received flag is on, the main function
 **	calls get_new_prompt_line to recover the STDIN fd to the origin and turning
 **	off the flag.

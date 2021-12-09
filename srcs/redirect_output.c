@@ -3,7 +3,6 @@
 void	handle_output_redirection(t_tree **current_node, t_data *data, int *i)
 {
 	char	*redir;
-	t_flags	flags;
 
 	(*i)++;
 	if (data->input[*i] == '>')
@@ -12,7 +11,6 @@ void	handle_output_redirection(t_tree **current_node, t_data *data, int *i)
 		(*i)++;
 	}
 	skip_white_space(data->input, i);
-	flags.interpret_dollar = true;
-	redir = parser_core(data, i, &flags);
+	redir = parser_core(data, i, true);
 	(*current_node)->leaf.redir_output = redir;
 }

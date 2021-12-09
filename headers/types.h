@@ -3,8 +3,6 @@
 
 # include "main.h"
 
-# define PROMPT "minishell-1.0$ "
-
 typedef enum e_errors {
 	MALLOC			= -1,
 	ENV_VAR			= -2,
@@ -57,10 +55,6 @@ typedef struct s_pair
 	char *key;
 	char *value;
 }	t_pair;
-
-typedef	struct s_flags {
-	bool	interpret_dollar;
-}	t_flags;
 
 typedef struct s_branch_node {
 	int				operator;

@@ -18,11 +18,7 @@ int	handle_dollar_sign(t_data *data, int *dollar_pos)
 	bool	expand_status;
 
 	if (data->escaped)
-	{
-		data->escaped = false;
-		(*dollar_pos)++;
-		return (0);
-	}
+		return (escape(data, dollar_pos));
 	d.name_len = get_var_length(data->input + *dollar_pos + DOLLAR_SIGN);
 	d.name = ft_substr(data->input, *dollar_pos + DOLLAR_SIGN, d.name_len);
 	if (ft_strncmp(d.name, "?", 2) == 0)

@@ -30,6 +30,8 @@
 # include "special_chars_utils.h"
 # include "terminate_and_free.h"
 
+# define PROMPT "\033[38;5;214m𓆉  Minishell $ "
+
 t_data	*get_data(t_data *data);
 
 char	*ft_strnjoin(int count,...);

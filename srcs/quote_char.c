@@ -31,8 +31,7 @@ void	handle_quote_char(t_data *data, int *opening_quote)
 
 	if (data->escaped)
 	{
-		(*opening_quote)++;
-		data->escaped = false;
+		escape(data, opening_quote);
 		return ;
 	}
 	quote_type = *(data->input + *opening_quote);
