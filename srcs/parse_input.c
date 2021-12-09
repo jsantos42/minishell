@@ -68,8 +68,10 @@ int	parse_input(t_data *data)
 void	read_cmd_and_args(t_data *data, t_leaf_node *current_node, int *i)
 {
 	char	*new_arg;
+	t_flags	flags;
 
-	new_arg = parser_core(data, i);
+	flags.interpret_dollar = true;
+	new_arg = parser_core(data, i, &flags);
 	if (new_arg)
 		save_new_argument(current_node, new_arg);
 }

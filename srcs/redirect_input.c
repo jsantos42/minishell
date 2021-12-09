@@ -32,7 +32,8 @@ Some shells (e.g., yash) choose to make this a syntax error. Bash does not.
 
 void	handle_input_redirection(t_tree **current_node, t_data *data, int *i)
 {
-	int	old_i;
+	char	*redir;
+	t_flags	flags;
 
 	(*i)++;
 	if (data->input[*i] == '<')
@@ -41,19 +42,10 @@ void	handle_input_redirection(t_tree **current_node, t_data *data, int *i)
 		(*i)++;
 	}
 	skip_white_space(data->input, i);
-	old_i = *i;
-	while (data->input[*i] != '\0'
-		   && !is_special_char(data->input[*i])
-		   && !ft_isspace(data->input[*i]))
-	{
-		if (is_quote_char(data->input[*i]))
-			handle_quote_char(data, i);
-		else if (is_dollar_sign(data->input[*i]) && !(*current_node)->leaf.here_doc)
-			handle_dollar_sign(data, i);
-		(*i)++;
-	}
-	if (*i != old_i && (*current_node)->leaf.here_doc == false)
-		(*current_node)->leaf.redir_input = ft_substr(data->input, old_i, *i - old_i);
-	else if (i != 0 && (*current_node)->leaf.here_doc == true)
-		(*current_node)->leaf.delimiter = ft_substr(data->input, old_i, *i - old_i);
+	flags.interpret_dollar = !(*current_node)->leaf.here_doc;
+	redir = parser_core(data, i, &flags);
+	if ((*current_node)->leaf.here_doc)
+		(*current_node)->leaf.delimiter = redir;
+	else
+		(*current_node)->leaf.redir_input = redir;
 }

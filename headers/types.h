@@ -58,6 +58,10 @@ typedef struct s_pair
 	char *value;
 }	t_pair;
 
+typedef	struct s_flags {
+	bool	interpret_dollar;
+}	t_flags;
+
 typedef struct s_branch_node {
 	int				operator;
 	struct s_tree	*left;

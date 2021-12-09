@@ -4,6 +4,6 @@
 # include "main.h"
 
 void	skip_white_space(char *input, int *i);
-char	*parser_core(t_data *data, int *i);
+char	*parser_core(t_data *data, int *i, t_flags *flags);
 
 #endif

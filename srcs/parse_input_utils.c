@@ -6,7 +6,9 @@ void	skip_white_space(char *input, int *i)
 		(*i)++;
 }
 
-char	*parser_core(t_data *data, int *i)
+
+
+char	*parser_core(t_data *data, int *i, t_flags *flags)
 {
 	int old_i;
 	char *str;
@@ -19,7 +21,7 @@ char	*parser_core(t_data *data, int *i)
 			remove_escape_char(data, i);
 		else if (is_quote_char(data->input[*i]))
 			handle_quote_char(data, i);
-		else if (is_dollar_sign(data->input[*i]))
+		else if (is_dollar_sign(data->input[*i]) && flags->interpret_dollar)
 			handle_dollar_sign(data, i);
 		else if (is_special_char(data->input[*i])) //missing protection against escape here
 		{
