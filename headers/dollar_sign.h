@@ -1,10 +1,10 @@
 #ifndef DOLLAR_SIGN_H
-#define DOLLAR_SIGN_H
+# define DOLLAR_SIGN_H
 
 # include "main.h"
 # define  DOLLAR_SIGN 1
 
-typedef	struct s_dollar {
+typedef struct s_dollar {
 	char	*name;
 	char	*expanded;
 	int		name_len;

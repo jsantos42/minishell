@@ -26,7 +26,7 @@ void	save_new_argument(t_leaf_node *current_node, char *new_arg)
 	int		i;
 	size_t	size;
 
-	size =  current_node->nb_args + NEW_ARG + NULLTERM;
+	size = current_node->nb_args + NEW_ARG + NULLTERM;
 	new_matrix = NULL;
 	new_matrix = malloc(size * sizeof(char *));
 	if (!new_matrix)

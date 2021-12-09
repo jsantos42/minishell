@@ -3,7 +3,7 @@
 
 # include "main.h"
 
-#define ESCAPECHAR 1
+# define ESCAPECHAR 1
 
 bool	is_escape_char(char chr);
 bool	is_escaped(char *str, int i);

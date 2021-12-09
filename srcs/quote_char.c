@@ -67,7 +67,6 @@ void	handle_quote_char(t_data *data, int *opening_quote)
 	data->input = new_input;
 }
 
-
 /*
 **	If the input string is changed, both the iterator i (initially marking the
 **	opening_quote position) and the end (marking the closing quote position)
@@ -79,7 +78,7 @@ void	look_for_expansions(t_data *data, int i, int *end)
 	while (i < *end)
 	{
 		if (is_escape_char(data->input[i])
-		&& (is_dollar_sign(data->input[i + 1]) || data->input[i + 1] == '\"'))
+			&& (is_dollar_sign(data->input[i + 1]) || data->input[i + 1] == '\"'))
 			*end -= remove_escape_char(data, &i);
 		else if (is_dollar_sign(data->input[i]))
 			*end += handle_dollar_sign(data, &i);

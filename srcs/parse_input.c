@@ -21,7 +21,7 @@
 
 int	parse_input(t_data *data)
 {
-	t_tree 	*current_node;
+	t_tree	*current_node;
 	int		i;
 
 	data->tree = init_leaf_node(NULL);
@@ -84,8 +84,8 @@ void	read_cmd_and_args(t_data *data, t_leaf_node *current_node, int *i)
 
 char	*parser_core(t_data *data, int *i, bool interpret_dollar)
 {
-	int old_i;
-	char *str;
+	int		old_i;
+	char	*str;
 
 	old_i = *i;
 	while (data->input[*i] != '\0' && !data->forbidden_chars
@@ -99,7 +99,7 @@ char	*parser_core(t_data *data, int *i, bool interpret_dollar)
 		else if (is_dollar_sign(data->input[*i]) && interpret_dollar)
 			handle_dollar_sign(data, i);
 		else if (is_special_char(data->input[*i]) && !data->escaped)
-			break;
+			break ;
 		else if (is_semicomma(data->input[*i]) && !data->escaped)
 			data->forbidden_chars = true;
 		else

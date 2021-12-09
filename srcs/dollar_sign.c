@@ -14,8 +14,8 @@ bool	is_dollar_sign(char chr)
 int	handle_dollar_sign(t_data *data, int *dollar_pos)
 {
 	t_dollar	d;
-	char	*new_input;
-	bool	expand_status;
+	char		*new_input;
+	bool		expand_status;
 
 	if (data->escaped)
 		return (escape(data, dollar_pos));
@@ -54,8 +54,9 @@ int	get_var_length(char *var)
 
 	i = 0;
 	while (var[i] != '\0'
-	&& !ft_isspace(var[i]) && !is_special_char(var[i])
-	&& !is_quote_char(var[i]) && !is_dollar_sign(var[i]) && !is_escape_char(var[i]))
+		&& !ft_isspace(var[i]) && !is_special_char(var[i])
+		&& !is_quote_char(var[i]) && !is_dollar_sign(var[i])
+		&& !is_escape_char(var[i]))
 		i++;
 	return (i);
 }
@@ -82,7 +83,6 @@ char	*replace_input(char *original, t_dollar *d, int dollar_pos)
 	while (original[i] != '\0' && i != dollar_pos)
 		new[j++] = original[i++];
 	i += d->name_len + DOLLAR_SIGN;
-//	i++;
 	k = 0;
 	while (d->expanded[k] != '\0')
 		new[j++] = d->expanded[k++];
