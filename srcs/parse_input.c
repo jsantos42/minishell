@@ -11,32 +11,29 @@
 **	4) The input is white-space insensitive, so it can skip white space. If it
 **	finds a special char ('|', '&', '<', '>') it handles it, otherwise it reads
 **	arguments (the first of which should be a command).
-**	5) After parsing all the input, checks if the flag data->escaped is on,
-**	which would mean that the last character was a non-escaped escape char, aka
-**	a new_line char. i
-**	5) Before saving the new_arg, checks if the input has ended and, if so, if
-**	the last char was an escape char. If that's the case, it throws an error
-**	message, since according to the subject, the nl char is not supposed to be
-**	interpreted.
+**	5) After parsing all the input, checks if it is valid by looking for invalid
+**	chars (according to the subject):
+**		- If the input has ended and the flag data->escaped is on, that means
+**		that the last character was a non-escaped escape char (new_line char);
+**		- Other forbidden chars appear in the input, such as ';' or the
+**		run_in_background '&'.
 */
 
-void	parse_input(t_data *data)
+int	parse_input(t_data *data)
 {
 	t_tree 	*current_node;
 	int		i;
 
-	if (!data->input)
-		return ;
 	data->tree = init_leaf_node(NULL);
 	current_node = data->tree;
 	i = 0;
-	while (data->input[i] != '\0')
+	while (data->input[i] != '\0' && !data->forbidden_chars)
 	{
 		skip_white_space(data->input, &i);
 		if (data->input[i] == '|')
 			handle_pipe(&current_node, data->input, &i);
 		else if (data->input[i] == '&')
-			handle_amper(&current_node, data->input, &i);
+			handle_amper(&current_node, data, data->input, &i);
 		else if (data->input[i] == '<')
 			handle_input_redirection(&current_node, data, &i);
 		else if (data->input[i] == '>')
@@ -44,8 +41,12 @@ void	parse_input(t_data *data)
 		else
 			read_cmd_and_args(data, &current_node->leaf, &i);
 	}
-	if (data->escaped)
-		terminate_program(SPECIAL_CHAR);
+	if ((data->input[i] == '\0' && data->escaped) || data->forbidden_chars)
+	{
+		printf("Semicomma, nl, run_in_background chars and unclose quotes are not allowed\n");
+		return (0);
+	}
+	return (1);
 }
 
 /*
@@ -87,7 +88,7 @@ char	*parser_core(t_data *data, int *i, bool interpret_dollar)
 	char *str;
 
 	old_i = *i;
-	while (data->input[*i] != '\0'
+	while (data->input[*i] != '\0' && !data->forbidden_chars
 		   && (!ft_isspace(data->input[*i])
 			   || (ft_isspace(data->input[*i]) && data->escaped)))
 	{
@@ -100,7 +101,7 @@ char	*parser_core(t_data *data, int *i, bool interpret_dollar)
 		else if (is_special_char(data->input[*i]) && !data->escaped)
 			break;
 		else if (is_semicomma(data->input[*i]) && !data->escaped)
-			terminate_program(SPECIAL_CHAR);
+			data->forbidden_chars = true;
 		else
 		{
 			data->escaped = false;

@@ -43,7 +43,10 @@ void	handle_quote_char(t_data *data, int *opening_quote)
 			closing_quote = i;
 	}
 	if (!closing_quote)
-		terminate_program(UNCLOSED_QUOTES);
+	{
+		data->forbidden_chars = true;
+		return ;
+	}
 	if (quote_type == '\"')
 		look_for_expansions(data, *opening_quote, &closing_quote);
 	new_input = malloc(ft_strlen(data->input) - 2 * QUOTE_CHAR + 1);

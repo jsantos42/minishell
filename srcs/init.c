@@ -4,6 +4,7 @@ void	init_data(t_data *data, char **envp)
 {
 	data->input = NULL;
 	data->status = 0;
+	data->forbidden_chars = false;
 	data->tree = NULL;
 	data->stdin_fd = 0;
 	data->sigint_received = false;

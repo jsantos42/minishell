@@ -87,6 +87,7 @@ typedef struct s_data {
 	t_env	env;
 	int		nb_paths;
 	int		status;
+	bool	forbidden_chars;
 	t_tree	*tree;
 	int		stdin_fd;
 	bool	sigint_received;

@@ -33,11 +33,13 @@ int	main(int argc, char **argv, char **envp)
 		else if (ft_strncmp(data.input, "", NULLTERM) != 0)
 		{
 			add_history(data.input);
-			parse_input(&data);
-			execute_input(&data);
+			if (parse_input(&data))
+				execute_input(&data);
 			write_history(".history");
 		}
 		data.input = free_if_not_null(data.input);
+		//free_stuff but not all_data
+		data.forbidden_chars = false;
 	}
 }
 
