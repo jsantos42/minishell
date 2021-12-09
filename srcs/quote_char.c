@@ -25,11 +25,9 @@ void	handle_quote_char(t_data *data, int *opening_quote)
 {
 	char	quote_type;
 	char	*new_input;
-//	bool	closing_quote;
 	int		i;
 	int		j;
 	int		closing_quote;
-//	int		original_quote_pos;
 
 	if (data->escaped)
 	{
@@ -70,8 +68,9 @@ void	handle_quote_char(t_data *data, int *opening_quote)
 
 
 /*
- *	End must stretch to the same amount as i, hence the subtraction followed by
- *	the sum.
+**	If the input string is changed, both the iterator i (initially marking the
+**	opening_quote position) and the end (marking the closing quote position)
+**	must change too.
 */
 
 void	look_for_expansions(t_data *data, int i, int *end)
@@ -80,14 +79,13 @@ void	look_for_expansions(t_data *data, int i, int *end)
 	{
 		if (is_escape_char(data->input[i])
 		&& (is_dollar_sign(data->input[i + 1]) || data->input[i + 1] == '\"'))
-			remove_escape_char(data, &i);
+			*end -= remove_escape_char(data, &i);
 		else if (is_dollar_sign(data->input[i]))
-		{
-			*end -= get_var_length(data->input + i + DOLLAR_SIGN) + DOLLAR_SIGN;
 			*end += handle_dollar_sign(data, &i);
-		}
 		else
+		{
 			data->escaped = false;
-		i++;
+			i++;
+		}
 	}
 }
