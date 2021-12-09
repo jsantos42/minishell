@@ -35,7 +35,6 @@ void	handle_quote_char(t_data *data, int *opening_quote)
 		data->escaped = false;
 		return ;
 	}
-//	original_quote_pos = *opening_quote;
 	quote_type = *(data->input + *opening_quote);
 	closing_quote = 0;
 	i = *opening_quote;
@@ -58,7 +57,7 @@ void	handle_quote_char(t_data *data, int *opening_quote)
 		if (i == *opening_quote || i == closing_quote)
 			continue ;
 		new_input[++j] = data->input[i];
-		if (i > *opening_quote)
+		if (i > *opening_quote && i <= closing_quote)
 			(*opening_quote)++;
 	}
 	new_input[++j] = '\0';
