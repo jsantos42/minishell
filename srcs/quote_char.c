@@ -23,48 +23,38 @@ bool	is_quote_char(char chr)
 
 void	handle_quote_char(t_data *data, int *opening_quote)
 {
-	char	quote_type;
-	char	*new_input;
-	int		i;
-	int		j;
 	int		closing_quote;
+	char	*new_input;
 
 	if (data->escaped)
 	{
 		escape(data, opening_quote);
-		return ;
+		return;
 	}
-	quote_type = *(data->input + *opening_quote);
-	closing_quote = 0;
-	i = *opening_quote;
-	while (!closing_quote && data->input[++i] != '\0')
-	{
-		if (data->input[i] == quote_type && !is_escaped(data->input, i))
-			closing_quote = i;
-	}
+	closing_quote = get_closing_quote(data, *opening_quote);
 	if (!closing_quote)
-	{
-		data->forbidden_chars = true;
-		return ;
-	}
-	if (quote_type == '\"')
+		return;
+	if (data->input[*opening_quote] == '\"')
 		look_for_expansions(data, *opening_quote, &closing_quote);
-	new_input = malloc(ft_strlen(data->input) - 2 * QUOTE_CHAR + 1);
-	if (!new_input)
-		terminate_program(MALLOC);
-	i = -1;
-	j = -1;
-	while (data->input[++i] != '\0')
-	{
-		if (i == *opening_quote || i == closing_quote)
-			continue ;
-		new_input[++j] = data->input[i];
-		if (i > *opening_quote && i <= closing_quote)
-			(*opening_quote)++;
-	}
-	new_input[++j] = '\0';
+	new_input = remove_quotes(data, opening_quote, closing_quote);
 	free(data->input);
 	data->input = new_input;
+}
+
+int	get_closing_quote(t_data *data, int i)
+{
+	char	quote_type;
+	int		closing_quote;
+
+	quote_type = data->input[i];
+	closing_quote = 0;
+	while (data->input[++i] != '\0')
+	{
+		if (data->input[i] == quote_type && !is_escaped(data->input, i))
+			return (i);
+	}
+	data->forbidden_chars = true;
+	return (0);
 }
 
 /*
@@ -88,4 +78,27 @@ void	look_for_expansions(t_data *data, int i, int *end)
 			i++;
 		}
 	}
+}
+
+char	*remove_quotes(t_data *data, int *opening_quote, int closing_quote)
+{
+	char	*new_input;
+	int 	i;
+	int 	j;
+
+	new_input = malloc(ft_strlen(data->input) - 2 * QUOTE_CHAR + 1);
+	if (!new_input)
+		terminate_program(MALLOC);
+	i = -1;
+	j = -1;
+	while (data->input[++i] != '\0')
+	{
+		if (i == *opening_quote || i == closing_quote)
+			continue ;
+		new_input[++j] = data->input[i];
+		if (i > *opening_quote && i <= closing_quote)
+			(*opening_quote)++;
+	}
+	new_input[++j] = '\0';
+	return (new_input);
 }
