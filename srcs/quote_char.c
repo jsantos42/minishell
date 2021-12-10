@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   quote_char.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jsantos <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/10 19:58:17 by jsantos           #+#    #+#             */
+/*   Updated: 2021/12/10 19:58:28 by jsantos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../headers/quote_char.h"
 
 bool	is_quote_char(char chr)
@@ -29,11 +41,11 @@ void	handle_quote_char(t_data *data, int *opening_quote)
 	if (data->escaped)
 	{
 		escape(data, opening_quote);
-		return;
+		return ;
 	}
 	closing_quote = get_closing_quote(data, *opening_quote);
 	if (!closing_quote)
-		return;
+		return ;
 	if (data->input[*opening_quote] == '\"')
 		look_for_expansions(data, *opening_quote, &closing_quote);
 	new_input = remove_quotes(data, opening_quote, closing_quote);
@@ -41,13 +53,17 @@ void	handle_quote_char(t_data *data, int *opening_quote)
 	data->input = new_input;
 }
 
+/*
+**	Gets the position of the closing quote. If it doesn't find a closing quote,
+**	sets on the flag forbidden_chars, since the program should not handle
+**	unclosed quotes.
+*/
+
 int	get_closing_quote(t_data *data, int i)
 {
 	char	quote_type;
-	int		closing_quote;
 
 	quote_type = data->input[i];
-	closing_quote = 0;
 	while (data->input[++i] != '\0')
 	{
 		if (data->input[i] == quote_type && !is_escaped(data->input, i))
@@ -58,9 +74,9 @@ int	get_closing_quote(t_data *data, int i)
 }
 
 /*
-**	If the input string is changed, both the iterator i (initially marking the
-**	opening_quote position) and the end (marking the closing quote position)
-**	must change too.
+**	Looks for variables to expand inside the quoted string. It also updates the
+**	closing_quote position (which in this function is named 'end'). Note that
+**	this function is called only if the quote_type is '\"'.
 */
 
 void	look_for_expansions(t_data *data, int i, int *end)
@@ -68,7 +84,8 @@ void	look_for_expansions(t_data *data, int i, int *end)
 	while (i < *end)
 	{
 		if (is_escape_char(data->input[i])
-			&& (is_dollar_sign(data->input[i + 1]) || data->input[i + 1] == '\"'))
+			&& (is_dollar_sign(data->input[i + 1])
+				|| data->input[i + 1] == '\"'))
 			*end -= remove_escape_char(data, &i);
 		else if (is_dollar_sign(data->input[i]))
 			*end += handle_dollar_sign(data, &i);
@@ -83,8 +100,8 @@ void	look_for_expansions(t_data *data, int i, int *end)
 char	*remove_quotes(t_data *data, int *opening_quote, int closing_quote)
 {
 	char	*new_input;
-	int 	i;
-	int 	j;
+	int		i;
+	int		j;
 
 	new_input = malloc(ft_strlen(data->input) - 2 * QUOTE_CHAR + 1);
 	if (!new_input)
