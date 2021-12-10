@@ -9,39 +9,38 @@
 #define FALSE 0
 
 static void	execute_pipeline(t_tree *node, int *ctx);
-static void	execute_leaf(t_tree *node, int *ctx);
+static void	execute_leaf(t_data *data, t_leaf_node *leaf, int *ctx);
 static void	execute_branch(t_tree *node, int *ctx);
 static char	*get_cmd_path(char *cmd);
-static void	ft_close_fds(t_list *plist);
-static void	open_files(t_leaf_node *leaf, int *ctx);
+static void	ft_close_fds(int *ctx);
+static void	open_io_files(t_leaf_node *leaf, int *ctx);
 
 /*
 *	1) Starts by creating a base context to be shared by processes.
-*		𝘚𝘛𝘋𝘐𝘕 --𝘙𝘌𝘈𝘋-->[PROCESS]--𝘞𝘙𝘐𝘛𝘌-->𝘚𝘛𝘋𝘖𝘜𝘛
-*	2) Evoke the recursion core to traverse through the tree leafs and branches.
-*	3) Wait for all the launched processes to finish before returning control.
+*		ctx[0] = INPUT | ctx[1] = OUTPUT | ctx[3] = PIPELINE_FLAG
+*			𝘚𝘛𝘋𝘐𝘕 --𝘙𝘌𝘈𝘋-->[PROCESS]--𝘞𝘙𝘐𝘛𝘌-->𝘚𝘛𝘋𝘖𝘜𝘛
+*	2) If the tree is a single cmd, execute the leaf. Otherwise, evoke the
+*	recursion core to traverse through the tree leafs and branches.
+*	3) Block execution and wait for all the launched processes to finish
+*	before returning control. Clear the proccess list at the end.
+*	4) Update the status with the  exit code of the last process.
 */
 void	execute_input(t_data *data)
 {
-	int		ctx[3] = {0, 1, FALSE};
-	int		status;
-	size_t	iter;
+	int			*ctx;
+	int			status;
+	t_list		*active_proc;		
 
+	ctx = (int [3]){0, 1, FALSE};
 	if (data->tree->type == LEAF_NODE)
-		execute_leaf(data->tree, ctx);
+		execute_leaf(data, &data->tree->leaf, ctx);
 	else
 		execute_pipeline(data->tree, ctx);
-
-	// Block execution of the main process until all childrens have been closed
-	iter = ft_lstsize(data->plist);
-	while (iter--)
+	active_proc = data->plist;
+	while (active_proc)
 	{
-		waitpid(((t_proc *)data->plist->content)->id, &status, 0);
-		if (((t_proc *)data->plist->content)->fd_io[0] != STDIN_FILENO)
-			close(((t_proc *)data->plist->content)->fd_io[0]);
-		if (((t_proc *)data->plist->content)->fd_io[1] != STDOUT_FILENO)
-			close(((t_proc *)data->plist->content)->fd_io[1]);
-		data->plist = data->plist->next;
+		waitpid(*((pid_t *)active_proc->content), &status, 0);
+		active_proc = active_proc->next;
 	}
 	ft_lstclear(&data->plist, free);
 	data->status = WEXITSTATUS(status);
@@ -50,55 +49,56 @@ void	execute_input(t_data *data)
 static void	execute_pipeline(t_tree *node, int *ctx)
 {
 	if (node->type == LEAF_NODE)
-		execute_leaf(node, ctx);
+		execute_leaf(get_data(NULL), &node->leaf, ctx);
 	else if (node->type == BRANCH_NODE)
 		execute_branch(node, ctx);
 }
 
 /*
-*	1) Get the command path for the executable file
-*	2) Create the child proccess by fork and allocate program data to be pushed
-*	to the active processes list.
-*	3) !CHILD PROCCESS!
-*		1. Copy the ctx FIFO to the proccess STDIO
-		2. Close all the oppened file descriptors, to make sure that no
-		loose end of the pipes will be left open
-		3. Execute the binary.
-*	4) Push the recent opened procces infos to the active proccess list.
+*	1) Open the redicirection files if needed and overwrite the ctx FIFO.
+*	2) If the cmd is a builtin and is not inside a pipeline, execute the
+*	respective function inside the main process. Saving the result in the
+*	data->status. In this cenario, the exec_builtin does not exit!
+*	3) If the cmd is not null, create a Child process and push its PID to
+*	the active proccess list.
+*	4) !CHILD PROCCESS!
+*		1. Copy the ctx FIFO to the proccess STDIO.
+*		2. Close all the oppened file descriptors, to make sure that no
+*		loose ends of the pipes will be left open.
+*		3. If the cmd is a builtin, execute it and exit the child.
+*		4. Get the path to the binary of the comand by traversing and testing
+*		the paths avaible on env.
+*		5. Try to execute the given path, if the command exist and execve
+*		succeed, the child is exited by execve. Otherwise, the child is
+*		terminated with an error message.
+*	5) Close the used file descriptor that still open at the main process.
 */
-static void	execute_leaf(t_tree *node, int *ctx)
+static void	execute_leaf(t_data *data, t_leaf_node *leaf, int *ctx)
 {
 	char	*cmd_path;
-	t_proc	*p_data;
-	t_data	*data;
+	pid_t	*child;
 
-	data = get_data(NULL);
-	cmd_path = get_cmd_path(node->leaf.args[0]);
-
-	open_files(&node->leaf, ctx);
-
-	if (!ctx[PIPELINE] && is_builtin(node->leaf.args[0]))
-		data->status = exec_builtin(&node->leaf, ctx);
-	else
+	open_io_files(leaf, ctx);
+	if (!ctx[PIPELINE] && leaf->args && is_builtin(leaf->args[0]))
+		data->status = exec_builtin(leaf, ctx);
+	else if (leaf->args)
 	{
-		p_data = xmalloc(sizeof(t_proc), __FILE__, __LINE__);
-		p_data->fd_io[INPUT] = ctx[INPUT];
-		p_data->fd_io[OUTPUT] = ctx[OUTPUT];
-		p_data->id = fork();
-
-		if (p_data->id == 0)
+		child = xmalloc(sizeof(pid_t), __FILE__, __LINE__);
+		*child = fork();
+		if (*child == 0)
 		{
 			if (dup2(ctx[INPUT], 0) == -1 || dup2(ctx[OUTPUT], 1) == -1)
-				terminate_program(DUP2);
-			ft_close_fds(data->plist);
-			if (is_builtin(node->leaf.args[0]))
-				exec_builtin(&node->leaf, ctx);
-			execve(cmd_path, node->leaf.args, data->env.array);
-				perror("No such a file or directory");
-				exit(EXIT_FAILURE);
+				terminate_program(leaf->args[0], DUP2);
+			ft_close_fds(ctx);
+			if (is_builtin(leaf->args[0]))
+				exec_builtin(leaf, ctx);
+			cmd_path = get_cmd_path(leaf->args[0]);
+			execve(cmd_path, leaf->args, data->env.array);
+			terminate_program(leaf->args[0], CMD_NOT_FOUND);
 		}
-		ft_lstadd_back(&data->plist, ft_lstnew(p_data));
+		ft_lstadd_back(&data->plist, ft_lstnew(child));
 	}
+	ft_close_fds(ctx);
 }
 
 static void	execute_branch(t_tree *node, int *ctx)
@@ -108,12 +108,10 @@ static void	execute_branch(t_tree *node, int *ctx)
 	int	right_ctx[3];
 
 	pipe(p);
-
 	left_ctx[INPUT] = ctx[INPUT];
 	left_ctx[OUTPUT] = p[WRITE_END];
 	left_ctx[PIPELINE] = TRUE;
 	execute_pipeline(node->branch.left, left_ctx);
-
 	right_ctx[OUTPUT] = ctx[OUTPUT];
 	right_ctx[INPUT] = p[READ_END];
 	right_ctx[PIPELINE] = TRUE;
@@ -124,52 +122,45 @@ static char	*get_cmd_path(char *cmd)
 {
 	char	**paths;
 	char	*path;
-	t_data	*data;
 	int		i;
 
-	if (access(cmd, F_OK) == 0)
-		return (cmd);
-	
-	data = get_data(NULL);
-	paths = ft_split(get_env_var("PATH"), ':', NULL);
-
-	i = 0;
-	while (paths[i])
+	if (!ft_strchr(cmd, '/'))
 	{
-		path = ft_strnjoin(3, paths[i], "/", cmd);
-		if (access(path, F_OK) == 0)
-			return (path);
-		free(path);
-		i++;
+		i = 0;
+		paths = ft_split(get_env_var("PATH"), ':', NULL);
+		while (paths[i])
+		{
+			path = ft_strnjoin(3, paths[i], "/", cmd);
+			if (access(path, X_OK) == 0)
+				return (path);
+			free(paths[i]);
+			free(path);
+			i++;
+		}
 	}
-
+	else if (access(cmd, X_OK) == 0)
+		return (cmd);
 	return (NULL);
 }
 
-static void	ft_close_fds(t_list *plist)
+static void	ft_close_fds(int *ctx)
 {
-	int		iter;
-	t_list	*tmp;
-
-	iter = ft_lstsize(plist);
-	tmp = plist;
-	while (iter--)
-	{
-		if (((t_proc *)tmp->content)->fd_io[0] != 0)
-			close(((t_proc *)tmp->content)->fd_io[0]);
-		if (((t_proc *)tmp->content)->fd_io[1] != 1)
-			close(((t_proc *)tmp->content)->fd_io[1]);
-		tmp = tmp->next;
-	}
+	if (ctx[INPUT] != STDIN_FILENO)
+		close(ctx[INPUT]);
+	if (ctx[OUTPUT] != STDOUT_FILENO)
+		close(ctx[OUTPUT]);
 }
 
-static void	open_files(t_leaf_node *leaf, int *ctx)
+static void	open_io_files(t_leaf_node *leaf, int *ctx)
 {
-	if (leaf->redir_input)
-		ctx[INPUT] = open(leaf->redir_input, O_RDONLY, 0);
+	const char	*redir_in = leaf->redir_input;
+	const char	*redir_out = leaf->redir_output;
+	const bool	append_mode = leaf->append_mode;
 
-	if (leaf->redir_output && leaf->append_mode)
-		ctx[OUTPUT] = open(leaf->redir_output, O_CREAT | O_APPEND | O_WRONLY, 0644);
-	else if (leaf->redir_output)
-		ctx[OUTPUT] = open(leaf->redir_output, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+	if (redir_in)
+		ctx[INPUT] = open(redir_in, O_RDONLY, 0);
+	if (redir_out && append_mode)
+		ctx[OUTPUT] = open(redir_out, O_CREAT | O_APPEND | O_WRONLY, 0644);
+	else if (redir_out)
+		ctx[OUTPUT] = open(redir_out, O_CREAT | O_TRUNC | O_WRONLY, 0644);
 }

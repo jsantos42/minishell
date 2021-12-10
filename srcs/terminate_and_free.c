@@ -1,19 +1,15 @@
 #include "../headers/terminate_and_free.h"
 
-void	terminate_program(int error)
+void	terminate_program(char *name, int error)
 {
 	free_data();
 	printf("ERROR\n");
 	if (error == MALLOC)
 		printf("Memory allocation failed.\n");
-	else if (error == ENV_VAR)
-		printf("There's no such variable in the current environment.\n");
-	else if (error == OPENING_DIR)
-		printf("Could not open a directory.\n");
-	else if (error == READING_DIR)
-		printf("Could not read a directory.\n");
-	else if (error == CLOSING_DIR)
-		printf("Could not close a directory.\n");
+	else if (error == DUP2)
+		printf("%s: Error copying file descriptors\n", name);
+	else if (error == CMD_NOT_FOUND)
+		printf("%s: command not found\n", name);
 	exit(error);
 }
 

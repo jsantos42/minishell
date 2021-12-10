@@ -7,15 +7,16 @@ t_env	ft_init_env(char **envp)
 	t_env	env;
 
 	env.nb_vars = -1;
-	while(envp[++env.nb_vars])
+	while (envp[++env.nb_vars])
 		;
 	env.array = xmalloc(sizeof(char *) * (env.nb_vars + 1), __FILE__, __LINE__);
-	env.list = NULL;
+	env.list = xmalloc(sizeof(t_list *), __FILE__, __LINE__);
+	*env.list = NULL;
 	iter = -1;
-	while(envp[++iter])
+	while (envp[++iter])
 	{	
 		env_var = build_var_pair(envp[iter]);
-		ft_lstadd_back(&env.list, ft_lstnew(env_var));
+		ft_lstadd_back(env.list, ft_lstnew(env_var));
 		env.array[iter] = ft_strdup(envp[iter]);
 	}
 	env.array[iter] = NULL;
@@ -36,74 +37,86 @@ t_pair	*build_var_pair(char *envp_var)
 	return (var);
 }
 
-bool	is_env_var(t_env *env, char *key)
+bool	is_env_var(t_list *env_list, char *key)
 {
-	t_list	*tmp;
+	t_pair	*var;
 
-	tmp = env->list;
-	while (tmp)
+	while (env_list)
 	{
-		if (!ft_strncmp(((t_pair *)tmp->content)->key, key, ft_strlen(key) + 1))
+		var = ((t_pair *)env_list->content);
+		if (!ft_strncmp(var->key, key, ft_strlen(key) + 1))
 			return (true);
-		tmp = tmp->next;
+		env_list = env_list->next;
 	}
 	return (false);
 }
 
 int	update_env_var(char *key, char *new_value)
 {
-	t_list	*tmp;
-	int		iter;
-	t_env	*env;
+	t_list	*env_list;
+	char	**env_array;
+	t_pair	*var;
 
-	env = &get_data(NULL)->env;
-	tmp = env->list;
-	iter = -1;
-	while(++iter < env->nb_vars)
+	env_list = *(get_data(NULL)->env.list);
+	env_array = get_data(NULL)->env.array;
+	while (env_list)
 	{
-		if ((!ft_strncmp(((t_pair *)tmp->content)->key, key, ft_strlen(key) + 1)))
+		var = ((t_pair *)env_list->content);
+		if ((!ft_strncmp(var->key, key, ft_strlen(key) + 1)) && new_value)
 		{
-			free(env->array[iter]);
-			env->array[iter] = ft_strnjoin(3, key, "=", new_value);
-			free(((t_pair *)tmp->content)->value);
-			((t_pair *)tmp->content)->value = ft_strdup(new_value);
+			free(*env_array);
+			*env_array = ft_strnjoin(3, key, "=", new_value);
+			if (var->value)
+				free(var->value);
+			var->value = ft_strdup(new_value);
 			return (0);
 		}
-		tmp = tmp->next;
+		env_list = env_list->next;
+		env_array++;
 	}
 	return (1);
 }
 
-void	print_env_vars(t_list *env, int *ctx)
+void	ft_swap_list(t_list **fst_node, t_list **sec_node)
 {
 	t_list	*tmp;
 
-	tmp = env;
-	while (tmp)
+	tmp = *fst_node;
+	*fst_node = *sec_node;
+	*sec_node = tmp;
+}
+
+void	print_env_vars(t_list *env_list, int *ctx)
+{
+	t_pair	*var;
+
+	while (env_list)
 	{
+		var = ((t_pair *)env_list->content);
 		ft_putstr_fd("declare -x ", ctx[1]);
-		ft_putstr_fd(((t_pair *)tmp->content)->key, ctx[1]);
-		if(((t_pair *)tmp->content)->value)
+		ft_putstr_fd(var->key, ctx[1]);
+		if (var->value)
 		{
 			ft_putstr_fd("=", ctx[1]);
-			ft_putstr_fd(((t_pair *)tmp->content)->value, ctx[1]);
+			ft_putstr_fd(var->value, ctx[1]);
 		}
 		write(ctx[1], "\n", 1);
-		tmp = tmp->next;
+		env_list = env_list->next;
 	}
 }
 
 char	*get_env_var(char *key)
 {
-	t_list	*tmp;
+	t_list	*env_list;
+	t_pair	*var;
 
-
-	tmp = get_data(NULL)->env.list;
-	while(tmp)
+	env_list = *(get_data(NULL)->env.list);
+	while (env_list)
 	{
-		if(!ft_strncmp(((t_pair *)tmp->content)->key, key, ft_strlen(key) + 1))
-			return (((t_pair *)tmp->content)->value);
-		tmp = tmp->next;
+		var = ((t_pair *)env_list->content);
+		if (!ft_strncmp(var->key, key, ft_strlen(key) + 1))
+			return (var->value);
+		env_list = env_list->next;
 	}
 	return (NULL);
 }
@@ -112,47 +125,88 @@ int	__export(char **args, int *ctx)
 {
 	t_pair	*pair;
 	t_data	*data;
+	int		iter;
 
 	data = get_data(NULL);
 	if (!args[1])
 	{
-		print_env_vars(data->env.list, ctx);
+		print_env_vars(*(data->env.list), ctx);
 		return (0);
 	}
-	pair = build_var_pair(args[1]);
-	if (is_env_var(&data->env, pair->key))
-		update_env_var(pair->key, pair->value);
-	else
+	iter = 0;
+	while (args[++iter])
 	{
-		ft_lstadd_back(&data->env.list, ft_lstnew(pair));
-		data->env.array = ft_push_to_matrix(data->env.array, args[1]);
+		pair = build_var_pair(args[iter]);
+		if (is_env_var(*(data->env.list), pair->key))
+			update_env_var(pair->key, pair->value);
+		else
+		{
+			ft_lstadd_back(data->env.list, ft_lstnew(pair));
+			data->env.array = ft_push_to_matrix(data->env.array, args[iter]);
+			data->env.nb_vars++;
+		}
 	}
 	return (0);
 }
 
 int	__env(char **args, int *ctx)
 {
-	t_list	*tmp;
+	t_list	*env_list;
+	t_pair	*var;
 
 	(void)args;
-	tmp = get_data(NULL)->env.list;
-	while (tmp)
+	(void)ctx;
+	env_list = *(get_data(NULL)->env.list);
+	while (env_list)
 	{	
-		if(((t_pair *)tmp->content)->value)
-		{
-			ft_putstr_fd(((t_pair *)tmp->content)->key, ctx[1]);
-			ft_putstr_fd("=", ctx[1]);
-			ft_putstr_fd(((t_pair *)tmp->content)->value, ctx[1]);
-			write(ctx[1], "\n", 1);
-		}
-		tmp = tmp->next;
+		var = ((t_pair *)env_list->content);
+		if (var->value)
+			printf("%s=%s\n", var->key, var->value);
+		env_list = env_list->next;
 	}
 	return (1);
 }
 
 int	__unset(char **args, int *ctx)
 {
-	(void)args;
+	t_list	*env_list;
+	t_list	*env_list_prev;
+	t_pair	*var;
+	int		iter;
+
 	(void)ctx;
-	return (0);
+	env_list_prev = NULL;
+	env_list = *(get_data(NULL)->env.list);
+	iter = 0;
+	while (env_list)
+	{	
+		var = ((t_pair *)env_list->content);
+		if (!ft_strncmp(var->key, args[1], ft_strlen(var->key) + 1))
+		{
+			env_list_prev->next = env_list->next;
+			ft_lstdelone(env_list, del_env_var);
+			ft_matrix_del_one(get_data(NULL)->env.array, iter);
+			get_data(NULL)->env.nb_vars--;
+			return (0);
+		}
+		env_list_prev = env_list;
+		env_list = env_list->next;
+		iter++;
+	}
+	return (1);
+}
+
+void	del_env_var(void *env_var_void)
+{
+	t_pair	*env_var;
+
+	env_var = (t_pair *)env_var_void;
+	if (env_var)
+	{
+		if (env_var->key)
+			free(env_var->key);
+		if (env_var->value)
+			free(env_var->value);
+		free(env_var);
+	}
 }

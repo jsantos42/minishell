@@ -77,7 +77,7 @@ char	*replace_input(char *original, t_dollar *d, int dollar_pos)
 	size = ft_strlen(original) - DOLLAR_SIGN - d->name_len + d->expanded_len;
 	new = malloc(size + 1);
 	if (!new)
-		terminate_program(MALLOC);
+		terminate_program("", MALLOC);
 	i = 0;
 	j = 0;
 	while (original[i] != '\0' && i != dollar_pos)

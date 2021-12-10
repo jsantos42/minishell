@@ -3,11 +3,11 @@
 
 # include <dirent.h>
 # include <fcntl.h>
-# include <readline/history.h>
-# include <readline/readline.h>
 # include <stdbool.h>
 # include <stdio.h>
 # include <string.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 # include <sys/errno.h>
 # include "../libs/libft/include/libft.h" // this already includes stdlib.h and unistd.h
 # include "types.h"
@@ -39,5 +39,7 @@ char	*ft_strnjoin(int count,...);
 void	*xmalloc(size_t size, char *file, int line);
 
 char	**ft_push_to_matrix(char **array, char *str);
+
+void	ft_matrix_del_one(char **array, int	index);
 
 #endif

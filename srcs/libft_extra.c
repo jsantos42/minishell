@@ -58,8 +58,17 @@ char	**ft_push_to_matrix(char **array, char *str)
 	iter = -1;
 	while(array[++iter])
 		new[iter] = array[iter];
-	array[iter++] = str;
-	new[iter] = NULL;
+	new[iter] = str;
+	new[++iter] = NULL;
 	free(array);
 	return (new);
+}
+
+void	ft_matrix_del_one(char **array, int index)
+{
+	while (array[index + 1])
+	{
+		array[index] = array[index + 1];
+		index++;
+	}
 }

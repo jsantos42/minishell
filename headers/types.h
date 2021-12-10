@@ -12,7 +12,8 @@ typedef enum e_errors {
 	SPECIAL_CHAR	= -7,
 	UNCLOSED_QUOTES	= -8,
 	RUN_BG			= -9,
-	DUP2			= -10
+	DUP2			= -10,
+	CMD_NOT_FOUND	= -11
 }	t_errors;
 
 typedef enum e_builtins {
@@ -34,7 +35,7 @@ typedef enum e_relation {
 typedef struct s_env
 {
 	int		nb_vars;
-	t_list	*list;
+	t_list	**list;
 	char	**envp;
 	char	**array;
 }	t_env;
@@ -44,19 +45,14 @@ typedef enum e_node_type {
 	BRANCH_NODE	= 2
 }	t_node_type;
 
-typedef struct s_proc_data
-{
-	pid_t	id;
-	int		fd_io[2];
-}	t_proc;
-
 typedef struct s_pair
 {
 	char *key;
 	char *value;
 }	t_pair;
 
-typedef struct s_branch_node {
+typedef struct s_branch_node
+{
 	int				operator;
 	struct s_tree	*left;
 	struct s_tree	*right;
