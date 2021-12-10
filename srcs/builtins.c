@@ -62,15 +62,15 @@ static char	*get_dir_path(char *path)
 
 	cur_dir = getcwd(NULL, 0);
 	if (!path || !ft_strncmp(path, "~", 2))
-		return (get_env_var("HOME"));
+		return (ft_strdup(get_env_var("HOME")));
 	else if (!ft_strncmp(path, "-", 2))
-		return (get_env_var("OLDPWD"));
+		return (ft_strdup(get_env_var("OLDPWD")));
 	else if (!ft_strncmp(path, "~/", 2))
 		return (ft_strnjoin(3, get_env_var("HOME"), "/", path));
 	else if (!ft_strncmp(path, "./", 2) || !ft_strncmp(path, "../", 3))
 		return (ft_strnjoin(3, cur_dir, "/", path));
 	else
-		return (path);
+		return (ft_strdup(path));
 }
 
 int	__exit(char **args, int *ctx)

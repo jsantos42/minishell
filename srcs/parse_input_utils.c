@@ -30,7 +30,7 @@ void	save_new_argument(t_leaf_node *current_node, char *new_arg)
 	new_matrix = NULL;
 	new_matrix = malloc(size * sizeof(char *));
 	if (!new_matrix)
-		terminate_program(MALLOC);
+		terminate_program("", MALLOC);
 	i = -1;
 	while (++i < current_node->nb_args)
 		new_matrix[i] = current_node->args[i];

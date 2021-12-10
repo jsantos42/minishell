@@ -105,7 +105,7 @@ char	*remove_quotes(t_data *data, int *opening_quote, int closing_quote)
 
 	new_input = malloc(ft_strlen(data->input) - 2 * QUOTE_CHAR + 1);
 	if (!new_input)
-		terminate_program(MALLOC);
+		terminate_program("", MALLOC);
 	i = -1;
 	j = -1;
 	while (data->input[++i] != '\0')
