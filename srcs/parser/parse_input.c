@@ -43,7 +43,7 @@ int	parse_input(t_data *data)
 	{
 		skip_white_space(data->input, &i);
 		if (data->input[i] == '|')
-			handle_pipe(&current_node, data->input, &i);
+			handle_pipe(&current_node, data, data->input, &i);
 		else if (data->input[i] == '&')
 			handle_amper(&current_node, data, data->input, &i);
 		else if (data->input[i] == '<')
@@ -54,10 +54,7 @@ int	parse_input(t_data *data)
 			read_cmd_and_args(data, &current_node->leaf, &i);
 	}
 	if ((data->input[i] == '\0' && data->escaped) || data->forbidden_chars)
-	{
-		printf("Semicomma, nl, run_in_background chars and unclose quotes are not allowed\n");
-		return (0);
-	}
+		return (print_input_error());
 	return (1);
 }
 

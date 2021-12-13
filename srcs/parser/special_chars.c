@@ -17,7 +17,7 @@ bool	is_special_char(char chr)
 	return (chr == '|' || chr == '&' || chr == '<' || chr == '>');
 }
 
-void	handle_pipe(t_tree **current_node, char *str, int *i)
+void	handle_pipe(t_tree **current_node, t_data *data, char *str, int *i)
 {
 	int	operator;
 
@@ -26,9 +26,16 @@ void	handle_pipe(t_tree **current_node, char *str, int *i)
 	{
 		operator = OR;
 		(*i)++;
+		data->forbidden_chars = true;
 	}
 	relink(current_node, operator);
 }
+
+/*
+**	Handling && is bonus on the subject, and we decided not to go with it
+**	because of time constraints. But this function would allow to handle it,
+**	if it would not set the flag on.
+*/
 
 void	handle_amper(t_tree **current_node, t_data *data, char *str, int *i)
 {
@@ -40,7 +47,6 @@ void	handle_amper(t_tree **current_node, t_data *data, char *str, int *i)
 		operator = AND;
 		(*i)++;
 	}
-	else
-		data->forbidden_chars = true;
+	data->forbidden_chars = true;
 	relink(current_node, operator);
 }
