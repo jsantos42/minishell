@@ -17,7 +17,7 @@
 
 void	terminate_program(char *name, int error);
 void	free_data(void);
-//void	free_commands(t_cmd *commands);
-int	print_input_error(void);
+void	*free_tree(t_tree *tree);
+int		print_input_error(void);
 
 #endif

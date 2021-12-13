@@ -48,8 +48,7 @@ int	main(int argc, char **argv, char **envp)
 				execute_input(&data);
 			write_history(".history");
 		}
-		data.input = free_if_not_null(data.input);
-		//free_stuff but not all_data
+		free_data();
 		data.forbidden_chars = false;
 	}
 }
