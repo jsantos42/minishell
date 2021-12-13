@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   terminate_and_free.h                               :+:      :+:    :+:   */
+/*   error_utils.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsantos <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 14:48:03 by jsantos           #+#    #+#             */
-/*   Updated: 2021/12/13 14:48:21 by jsantos          ###   ########.fr       */
+/*   Updated: 2021/12/13 20:43:55 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,6 @@
 void	terminate_program(char *name, int error);
 void	free_data(void);
 //void	free_commands(t_cmd *commands);
-int	print_input_error(void);
+int		print_input_error(void);
 
 #endif

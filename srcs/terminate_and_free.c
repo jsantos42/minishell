@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   terminate_and_free.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsantos <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 14:43:21 by jsantos           #+#    #+#             */
-/*   Updated: 2021/12/13 14:43:25 by jsantos          ###   ########.fr       */
+/*   Updated: 2021/12/13 20:44:14 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../headers/terminate_and_free.h"
+#include "../headers/error_utils.h"
 
 void	terminate_program(char *name, int error)
 {

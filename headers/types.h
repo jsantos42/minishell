@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   types.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsantos <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 14:48:15 by jsantos           #+#    #+#             */
-/*   Updated: 2021/12/13 14:48:21 by jsantos          ###   ########.fr       */
+/*   Updated: 2021/12/13 20:39:36 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,8 @@ typedef enum e_node_type {
 
 typedef struct s_pair
 {
-	char *key;
-	char *value;
+	char	*key;
+	char	*value;
 }	t_pair;
 
 typedef struct s_branch_node
@@ -71,14 +71,14 @@ typedef struct s_branch_node
 }	t_branch_node;
 
 typedef struct s_leaf_node {
-	char			**args; //the first string is the command name
-	int				nb_args; //necessary to know how much memory to allocate; note that since the first arg is the command itself, if the command has no arguments tha nb_args will be 1 (and not 0)
+	char			**args;
+	int				nb_args;
 	char			*redir_input;
 	char			*redir_output;
 	bool			append_mode;
 	bool			here_doc;
 	char			*heredoc_file;
-	char 			*delimiter;
+	char			*delimiter;
 }	t_leaf_node;
 
 typedef struct s_tree {

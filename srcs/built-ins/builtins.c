@@ -1,95 +1,42 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/13 16:51:08 by pbielik           #+#    #+#             */
+/*   Updated: 2021/12/13 20:45:51 by pbielik          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../headers/built-ins/builtins.h"
 
-int	__echo(char **args, int *ctx)
-{
-	int		iter;
-	bool	new_line;
-	bool	print_space;
+#define PIPELINE 2
+#define TRUE 1
+#define FALSE 0
 
-	iter = 1;
-	if (args[iter] && !ft_strncmp(args[iter], "-n", 3))
-	{
-		new_line = false;
-		iter = 2;
-	}
-	else
-		new_line = true;
-	print_space = false;
-	while (args[iter])
-	{
-		if (print_space)
-			write(ctx[1], " ", 1);
-		else
-			print_space = true;
-		write(ctx[1], args[iter], ft_strlen(args[iter]));
-		iter++;
-	}
-	if (new_line)
-		write(ctx[1], "\n", 1);
-	return (0);
+bool	is_builtin(char *cmd)
+{
+	if (ft_strstr("__echo__cd__pwd__export__unset__env__exit__", cmd))
+		return (true);
+	return (false);
 }
 
-static char	*get_dir_path(char *arg);
-
-int	__cd(char **args, int *ctx)
+int	exec_builtin(t_leaf_node *leaf, int *ctx)
 {
-	char	*old_pwd;
-	char	*path;
+	const char			*keys[8] = {
+		"echo", "cd", "pwd", "export", "unset", "env", "exit", NULL};
+	const t_builtin		builtin[8] = {
+		__echo, __cd, __pwd, __export, __unset, __env, __exit, NULL};
+	int					cmd;
+	int					ret;
 
-	(void)ctx;
-	path = get_dir_path(args[1]);
-	old_pwd = getcwd(NULL, 0);
-	if (chdir(path) != -1)
-	{
-		update_env_var("OLDPWD", old_pwd);
-		update_env_var("PWD", getcwd(NULL, 0));
-		free(path);
-		return (0);
-	}
-	if (errno == ENOTDIR)
-		printf("Minishell: cd: %s: Not a directory\n", path);
-	else if (errno == ENOENT)
-		printf("Minishell: cd: %s: No such file or directory\n", path);
-	else if (errno == EACCES)
-		printf("Minishell: cd: %s: Permission denied\n", path);
-	free(path);
-	return (1);
-}
-
-static char	*get_dir_path(char *path)
-{
-	char	*cur_dir;
-
-	cur_dir = getcwd(NULL, 0);
-	if (!path || !ft_strncmp(path, "~", 2))
-		return (ft_strdup(get_env_var("HOME")));
-	else if (!ft_strncmp(path, "-", 2))
-		return (ft_strdup(get_env_var("OLDPWD")));
-	else if (!ft_strncmp(path, "~/", 2))
-		return (ft_strnjoin(3, get_env_var("HOME"), "/", path));
-	else if (!ft_strncmp(path, "./", 2) || !ft_strncmp(path, "../", 3))
-		return (ft_strnjoin(3, cur_dir, "/", path));
-	else
-		return (ft_strdup(path));
-}
-
-int	__exit(char **args, int *ctx)
-{
-	(void)args;
-	(void)ctx;
-	ft_putstr_fd("exit\n", STDOUT_FILENO);
-	exit(EXIT_SUCCESS);
-	return (0);
-}
-
-int	__pwd(char **args, int *ctx)
-{
-	char	*cwd;
-
-	(void)args;
-	(void)ctx;
-	cwd = getcwd(NULL, 0);
-	printf("%s\n", cwd);
-	free(cwd);
-	return (0);
+	cmd = -1;
+	while (keys[++cmd])
+		if (!ft_strncmp(keys[cmd], leaf->args[0], ft_strlen(keys[cmd]) + 1))
+			ret = builtin[cmd](leaf->args, ctx);
+	if (ctx[PIPELINE] == TRUE)
+		exit(ret);
+	return (ret);
 }
