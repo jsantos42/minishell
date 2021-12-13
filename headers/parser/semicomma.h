@@ -1,23 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.h                                             :+:      :+:    :+:   */
+/*   semicomma.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jsantos <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/13 14:46:19 by jsantos           #+#    #+#             */
-/*   Updated: 2021/12/13 14:48:19 by jsantos          ###   ########.fr       */
+/*   Created: 2021/12/13 14:47:29 by jsantos           #+#    #+#             */
+/*   Updated: 2021/12/13 14:48:20 by jsantos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef INIT_H
-# define INIT_H
+#ifndef SEMICOMMA_H
+# define SEMICOMMA_H
 
-# include "main.h"
+# include "../main.h"
 
-void	init_data(t_data *data, char **envp);
-t_tree	*init_leaf_node(t_tree *previous);
-t_tree	*init_branch_node(t_tree *previous);
-void	init_history(void);
+bool	is_semicomma(char chr);
 
 #endif

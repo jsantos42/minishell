@@ -1,23 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.h                                             :+:      :+:    :+:   */
+/*   dollar_sign.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jsantos <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/13 14:46:19 by jsantos           #+#    #+#             */
+/*   Created: 2021/12/13 14:45:44 by jsantos           #+#    #+#             */
 /*   Updated: 2021/12/13 14:48:19 by jsantos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef INIT_H
-# define INIT_H
+#ifndef DOLLAR_SIGN_H
+# define DOLLAR_SIGN_H
 
-# include "main.h"
+# include "../main.h"
+# define  DOLLAR_SIGN 1
 
-void	init_data(t_data *data, char **envp);
-t_tree	*init_leaf_node(t_tree *previous);
-t_tree	*init_branch_node(t_tree *previous);
-void	init_history(void);
+typedef struct s_dollar {
+	char	*name;
+	char	*expanded;
+	int		name_len;
+	int		expanded_len;
+}	t_dollar;
+
+bool	is_dollar_sign(char chr);
+int		handle_dollar_sign(t_data *data, int *dollar_pos);
+int		get_var_length(char *var);
+char	*replace_input(char *original, t_dollar *dollar, int dollar_pos);
 
 #endif

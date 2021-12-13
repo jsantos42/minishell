@@ -1,23 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.h                                             :+:      :+:    :+:   */
+/*   redirect_output.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jsantos <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/13 14:46:19 by jsantos           #+#    #+#             */
-/*   Updated: 2021/12/13 14:48:19 by jsantos          ###   ########.fr       */
+/*   Created: 2021/12/13 14:42:09 by jsantos           #+#    #+#             */
+/*   Updated: 2021/12/13 14:43:31 by jsantos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef INIT_H
-# define INIT_H
+#include "../../headers/parser/redirect_output.h"
 
-# include "main.h"
+void	handle_output_redirection(t_tree **current_node, t_data *data, int *i)
+{
+	char	*redir;
 
-void	init_data(t_data *data, char **envp);
-t_tree	*init_leaf_node(t_tree *previous);
-t_tree	*init_branch_node(t_tree *previous);
-void	init_history(void);
-
-#endif
+	(*i)++;
+	if (data->input[*i] == '>')
+	{
+		(*current_node)->leaf.append_mode = true;
+		(*i)++;
+	}
+	skip_white_space(data->input, i);
+	redir = parser_core(data, i, true);
+	(*current_node)->leaf.redir_output = redir;
+}

@@ -1,6 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jsantos <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/13 14:39:31 by jsantos           #+#    #+#             */
+/*   Updated: 2021/12/13 14:43:31 by jsantos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../headers/main.h"
 
-static void	check_for_arguments(int argc, char **argv);
 /*
 **	1) Checks for arguments, which are not expected by the program.
 **	2) Initiates the data structure.
@@ -48,7 +59,7 @@ int	main(int argc, char **argv, char **envp)
 **	it exits.
 */
 
-static void	check_for_arguments(int argc, char **argv)
+void	check_for_arguments(int argc, char **argv)
 {
 	(void)argv;
 	if (argc > 1)
