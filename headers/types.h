@@ -65,6 +65,7 @@ typedef struct s_leaf_node {
 	char			*redir_output;
 	bool			append_mode;
 	bool			here_doc;
+	char			*heredoc_file;
 	char 			*delimiter;
 }	t_leaf_node;
 

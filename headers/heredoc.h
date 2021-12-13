@@ -3,6 +3,6 @@
 
 # include "main.h"
 
-void	run_heredoc (t_leaf_node *current_node);
+int	run_heredoc(t_leaf_node *current_node);
 
 #endif

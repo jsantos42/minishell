@@ -9,7 +9,7 @@ t_env	ft_init_env(char **envp);
 
 bool	is_env_var(t_list *env_list, char *key);
 
-void	print_env_vars(t_list *env_list, int *ctx);
+void	print_env_vars(t_env *env, int *ctx);
 
 int		update_env_var(char *key, char *new_value);
 
