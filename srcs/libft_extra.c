@@ -66,7 +66,7 @@ char	**ft_push_to_matrix(char **array, char *str)
 
 void	ft_matrix_del_one(char **array, int index)
 {
-	while (array[index + 1])
+	while (array[index])
 	{
 		array[index] = array[index + 1];
 		index++;

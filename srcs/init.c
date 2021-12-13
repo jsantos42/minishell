@@ -42,6 +42,7 @@ t_tree	*init_leaf_node(t_tree *previous)
 	new_node->leaf.redir_output = NULL;
 	new_node->leaf.append_mode = false;
 	new_node->leaf.here_doc = false;
+	new_node->leaf.heredoc_file = NULL;
 	new_node->leaf.delimiter = NULL;
 	new_node->previous = previous;
 	return (new_node);

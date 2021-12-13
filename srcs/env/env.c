@@ -77,32 +77,52 @@ int	update_env_var(char *key, char *new_value)
 	return (1);
 }
 
-void	ft_swap_list(t_list **fst_node, t_list **sec_node)
+void	print_env_vars(t_env *env, int *ctx)
 {
-	t_list	*tmp;
+	int		iter;
+	char	*tmp;
+	char	**ordered;
 
-	tmp = *fst_node;
-	*fst_node = *sec_node;
-	*sec_node = tmp;
-}
-
-void	print_env_vars(t_list *env_list, int *ctx)
-{
-	t_pair	*var;
-
-	while (env_list)
+	ordered = xmalloc(sizeof(char *) * (env->nb_vars + 1), __FILE__, __LINE__);
+	iter = -1;
+	while (env->array[++iter])
+		ordered[iter] = env->array[iter];
+	ordered[iter] = NULL;
+	iter = 0;
+	while (ordered[iter + 1])
 	{
-		var = ((t_pair *)env_list->content);
-		ft_putstr_fd("declare -x ", ctx[1]);
-		ft_putstr_fd(var->key, ctx[1]);
-		if (var->value)
+		if (ft_strncmp(ordered[iter], ordered[iter + 1], ft_strlen(ordered[iter])) > 0)
 		{
-			ft_putstr_fd("=", ctx[1]);
-			ft_putstr_fd(var->value, ctx[1]);
+			tmp = ordered[iter];
+			ordered[iter] = ordered[iter + 1];
+			ordered[iter + 1] = tmp;
+			iter = -1;
 		}
-		write(ctx[1], "\n", 1);
-		env_list = env_list->next;
+		iter++;
 	}
+	iter = -1;
+	while(ordered[++iter])
+	{
+		ft_putstr_fd("declare -x ", ctx[1]);
+		ft_putstr_fd(ordered[iter], ctx[1]);
+		write(ctx[1], "\n", 1);
+	}
+	free(ordered);
+	ordered = NULL;
+
+	// while (env_list)
+	// {
+	// 	var = ((t_pair *)env_list->content);
+	// 	ft_putstr_fd("declare -x ", ctx[1]);
+	// 	ft_putstr_fd(var->key, ctx[1]);
+	// 	if (var->value)
+	// 	{
+	// 		ft_putstr_fd("=", ctx[1]);
+	// 		ft_putstr_fd(var->value, ctx[1]);
+	// 	}
+	// 	write(ctx[1], "\n", 1);
+	// 	env_list = env_list->next;
+	// }
 }
 
 char	*get_env_var(char *key)
@@ -130,7 +150,7 @@ int	__export(char **args, int *ctx)
 	data = get_data(NULL);
 	if (!args[1])
 	{
-		print_env_vars(*(data->env.list), ctx);
+		print_env_vars(&data->env, ctx);
 		return (0);
 	}
 	iter = 0;
