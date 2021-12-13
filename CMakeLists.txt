@@ -13,8 +13,8 @@ project(${PROJECT_NAME} C)
 #        ${SRCS_DIR}
 #        ${HEADERS_DIR})
 
-file(GLOB_RECURSE SRCS ${SRCS_DIR}/*.c ${LIBS_DIR}/*.c)
-file(GLOB_RECURSE HEADERS ${HEADERS_DIR}/*.h ${LIBS_DIR}/*.h)
+file(GLOB_RECURSE SRCS ${SRCS_DIR}/*.c ${SRCS_DIR}/*/*.c ${LIBS_DIR}/*.c)
+file(GLOB_RECURSE HEADERS ${HEADERS_DIR}/*.h ${HEADERS_DIR}/*/*.h ${LIBS_DIR}/*.h)
 
 add_executable(${PROJECT_NAME}_mandatory ${SRCS} ${HEADERS})
 target_link_libraries(${PROJECT_NAME}_mandatory "readline")
