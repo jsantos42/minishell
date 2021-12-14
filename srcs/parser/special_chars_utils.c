@@ -38,4 +38,3 @@ void	relink(t_tree **current_node, int operator)
 	branch_node->branch.operator = operator;
 	*current_node = branch_node->branch.right;
 }
-

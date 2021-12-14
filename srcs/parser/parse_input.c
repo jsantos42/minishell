@@ -112,10 +112,7 @@ char	*parser_core(t_data *data, int *i, bool interpret_dollar)
 		else if (is_semicomma(data->input[*i]) && !data->escaped)
 			data->forbidden_chars = true;
 		else
-		{
-			data->escaped = false;
-			(*i)++;
-		}
+			data->escaped = false & (*i)++;
 	}
 	str = NULL;
 	if (*i != old_i)

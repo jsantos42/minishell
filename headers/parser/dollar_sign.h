@@ -21,11 +21,13 @@ typedef struct s_dollar {
 	char	*expanded;
 	int		name_len;
 	int		expanded_len;
+	bool	expand_status;
 }	t_dollar;
 
 bool	is_dollar_sign(char chr);
 int		handle_dollar_sign(t_data *data, int *dollar_pos);
 int		get_var_length(char *var);
+void	get_expanded_var(t_dollar *d, int status);
 char	*replace_input(char *original, t_dollar *dollar, int dollar_pos);
 
 #endif

@@ -27,29 +27,17 @@ int	handle_dollar_sign(t_data *data, int *dollar_pos)
 {
 	t_dollar	d;
 	char		*new_input;
-	bool		expand_status;
 
 	if (data->escaped)
 		return (escape(data, dollar_pos));
 	d.name_len = get_var_length(data->input + *dollar_pos + DOLLAR_SIGN);
 	d.name = ft_substr(data->input, *dollar_pos + DOLLAR_SIGN, d.name_len);
-	if (ft_strncmp(d.name, "?", 2) == 0)
-	{
-		expand_status = true;
-		d.expanded = ft_itoa(data->status);
-	}
-	else
-	{
-		expand_status = false;
-		d.expanded = getenv(d.name);
-	}
-	if (!d.expanded)
-		d.expanded = ft_strdup("");
+	get_expanded_var(&d, data->status);
 	d.expanded_len = ft_strlen(d.expanded);
 	new_input = replace_input(data->input, &d, *dollar_pos);
 	free(d.name);
 	*dollar_pos += d.expanded_len;
-	if (expand_status)
+	if (d.expand_status)
 		free(d.expanded);
 	free(data->input);
 	data->input = new_input;
@@ -71,6 +59,28 @@ int	get_var_length(char *var)
 		&& !is_escape_char(var[i]))
 		i++;
 	return (i);
+}
+
+/*
+**	Checks whether there it is supposed to expand the exit status of the last
+**	command or a variable. If it is a variable, and it does exist, saves it to
+**	d->expanded, otherwise saves an empty string there.
+*/
+
+void	get_expanded_var(t_dollar *d, int status)
+{
+	if (ft_strncmp(d->name, "?", 2) == 0)
+	{
+		d->expand_status = true;
+		d->expanded = ft_itoa(status);
+	}
+	else
+	{
+		d->expand_status = false;
+		d->expanded = getenv(d->name);
+	}
+	if (!d->expanded)
+		d->expanded = ft_strdup("");
 }
 
 /*

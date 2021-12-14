@@ -1,5 +1,3 @@
-#include <stdarg.h>
-#include <string.h>
 #include "../headers/main.h"
 
 void	*xmalloc(size_t size, char *file, int line)
@@ -18,11 +16,11 @@ void	*xmalloc(size_t size, char *file, int line)
 	return (ptr);
 }
 
-char	*ft_strnjoin(int count,...)
+char	*ft_strnjoin(int count, ...)
 {
 	char	*new;
 	char	*tmp;
-	va_list args;
+	va_list	args;
 	int		size;
 	int		i;
 
@@ -52,11 +50,11 @@ char	**ft_push_to_matrix(char **array, char *str)
 	int		iter;
 
 	iter = -1;
-	while(array[++iter])
+	while (array[++iter])
 		;
 	new = xmalloc(sizeof(char *) * (iter + 2), __FILE__, __LINE__);
 	iter = -1;
-	while(array[++iter])
+	while (array[++iter])
 		new[iter] = array[iter];
 	new[iter] = str;
 	new[++iter] = NULL;

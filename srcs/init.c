@@ -15,14 +15,14 @@
 void	init_data(t_data *data, char **envp)
 {
 	data->input = NULL;
-	data->status = 0;
-	data->forbidden_chars = false;
 	data->tree = NULL;
-	data->stdin_fd = 0;
-	data->sigint_received = false;
+	data->forbidden_chars = false;
 	data->escaped = false;
-	data->plist = NULL;
+	data->sigint_received = false;
+	data->stdin_fd = 0;
 	data->env = ft_init_env(envp);
+	data->status = 0;
+	data->plist = NULL;
 	get_data(data);
 	init_signals();
 }

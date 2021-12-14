@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ERROR_UTILS_H
-# define ERROR_UTILS_H
+#ifndef TERMINATE_AND_FREE_H
+# define TERMINATE_AND_FREE_H
 
 # include "main.h"
 
