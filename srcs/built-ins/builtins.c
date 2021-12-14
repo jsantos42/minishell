@@ -18,8 +18,19 @@
 
 bool	is_builtin(char *cmd)
 {
-	if (ft_strstr("__echo__cd__pwd__export__unset__env__exit__", cmd))
-		return (true);
+	const char			*keys[8] = {
+		"echo", "cd", "pwd", "export", "unset", "env", "exit", NULL};
+	int					size;
+	int					i;
+
+	size = ft_strlen(cmd);
+	i = 0;
+	while (i < 7)
+	{
+		if (ft_strncmp(cmd, keys[i], size + 1) == 0)
+			return (true);
+		i++;
+	}
 	return (false);
 }
 

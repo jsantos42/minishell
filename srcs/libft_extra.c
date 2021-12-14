@@ -80,20 +80,18 @@ char	**ft_matrix_dup(char **matrix, int items)
 	return (new);
 }
 
-char	*ft_strstr(const char *str1, const char *str2)
+void	*xmalloc(size_t size, char *file, int line)
 {
-	size_t	n;
+	void	*ptr;
 
-	n = ft_strlen(str2);
-	if (*str2 == '\0')
-		return ((char *)str1);
-	if (n == 0)
-		return (NULL);
-	while (*str1)
+	ptr = (void *)malloc(size);
+	if (ptr == NULL)
 	{
-		if (!ft_memcmp(str1, str2, n))
-			return ((char *)str1);
-		str1++;
+		perror(file);
+		perror("_");
+		perror(ft_itoa(line));
+		perror(" : Failed to allocate memory\n");
+		exit(EXIT_FAILURE);
 	}
-	return (NULL);
+	return (ptr);
 }
