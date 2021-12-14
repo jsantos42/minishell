@@ -18,7 +18,7 @@ int	run_heredoc(t_leaf_node *node)
 	char	*heredoc_input;
 	int		heredoc_fd;
 
-	node->heredoc_file = ft_strnjoin(4, "tmp/", ".", node->args[0], ".heredoc");
+	node->heredoc_file = ft_strnjoin(3, ".", node->args[0], ".heredoc");
 	heredoc_fd = open(node->heredoc_file, O_CREAT | O_APPEND | O_RDWR, 0644);
 	size = ft_strlen(node->delimiter);
 	heredoc_input = readline("heredoc > ");
