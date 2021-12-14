@@ -19,6 +19,5 @@ void	terminate_program(char *name, int error);
 void	free_data(void);
 void	*free_tree(t_tree *tree);
 int		print_input_error(void);
-void	*xmalloc(size_t size, char *file, int line);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 14:43:21 by jsantos           #+#    #+#             */
-/*   Updated: 2021/12/14 16:58:13 by pbielik          ###   ########.fr       */
+/*   Updated: 2021/12/14 17:21:07 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void	terminate_program(char *name, int error)
 {
-	//free_data();
 	printf("ERROR\n");
 	if (error == MALLOC)
 		printf("Memory allocation failed.\n");
@@ -67,20 +66,4 @@ void	*free_tree(t_tree *tree)
 		free(tree);
 	}
 	return (NULL);
-}
-
-void	*xmalloc(size_t size, char *file, int line)
-{
-	void	*ptr;
-
-	ptr = (void *)malloc(size);
-	if (ptr == NULL)
-	{
-		perror(file);
-		perror("_");
-		perror(ft_itoa(line));
-		perror(" : Failed to allocate memory\n");
-		exit(EXIT_FAILURE);
-	}
-	return (ptr);
 }

@@ -85,6 +85,7 @@ void	look_for_expansions(t_data *data, int i, int *end)
 	{
 		if (is_escape_char(data->input[i])
 			&& (is_dollar_sign(data->input[i + 1])
+				|| is_escape_char(data->input[i + 1])
 				|| data->input[i + 1] == '\"'))
 			*end -= remove_escape_char(data, &i);
 		else if (is_dollar_sign(data->input[i]))

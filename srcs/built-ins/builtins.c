@@ -6,7 +6,7 @@
 /*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 16:51:08 by pbielik           #+#    #+#             */
-/*   Updated: 2021/12/14 17:08:34 by pbielik          ###   ########.fr       */
+/*   Updated: 2021/12/14 17:20:55 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,19 @@
 
 bool	is_builtin(char *cmd)
 {
-	if (strstr("__echo__cd__pwd__export__unset__env__exit__", cmd))
-		return (true);
+	const char			*keys[8] = {
+		"echo", "cd", "pwd", "export", "unset", "env", "exit", NULL};
+	int					size;
+	int					i;
+
+	size = ft_strlen(cmd);
+	i = 0;
+	while (i < 7)
+	{
+		if (ft_strncmp(cmd, keys[i], size + 1) == 0)
+			return (true);
+		i++;
+	}
 	return (false);
 }
 
