@@ -14,7 +14,6 @@
 
 void	terminate_program(char *name, int error)
 {
-	free_data();
 	printf("ERROR\n");
 	if (error == MALLOC)
 		printf("Memory allocation failed.\n");
