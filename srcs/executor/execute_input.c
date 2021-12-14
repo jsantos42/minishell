@@ -6,7 +6,7 @@
 /*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 16:26:49 by pbielik           #+#    #+#             */
-/*   Updated: 2021/12/13 20:48:00 by pbielik          ###   ########.fr       */
+/*   Updated: 2021/12/14 14:06:54 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ static void	execute_branch(t_tree *node, int *ctx);
 void	execute_input(t_data *data)
 {
 	int			*ctx;
-	int			status;
 	t_list		*active_proc;		
 
 	ctx = (int [3]){0, 1, FALSE};
@@ -48,11 +47,10 @@ void	execute_input(t_data *data)
 	active_proc = data->plist;
 	while (active_proc)
 	{
-		waitpid(*((pid_t *)active_proc->content), &status, 0);
+		waitpid(*((pid_t *)active_proc->content), &data->status, 0);
 		active_proc = active_proc->next;
 	}
 	ft_lstclear(&data->plist, free);
-	data->status = WEXITSTATUS(status);
 }
 
 static void	execute_pipeline(t_tree *node, int *ctx)

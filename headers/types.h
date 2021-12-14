@@ -6,7 +6,7 @@
 /*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 14:48:15 by jsantos           #+#    #+#             */
-/*   Updated: 2021/12/13 20:39:36 by pbielik          ###   ########.fr       */
+/*   Updated: 2021/12/14 14:06:37 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ typedef enum e_builtins {
 
 /*
 **	Struct that has the environment variables, both in a list and in an array.
+**	Keep tracks of how many variables are setted and holds a pointer to the
+**	original envp array.
 */
 
 typedef struct s_env
@@ -50,6 +52,10 @@ typedef struct s_env
 	char	**envp;
 	char	**array;
 }	t_env;
+
+/*
+**	Simple key:value data structure to hold the variables in the env_list.
+*/
 
 typedef struct s_pair
 {
