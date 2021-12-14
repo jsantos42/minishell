@@ -6,7 +6,7 @@
 /*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 14:43:21 by jsantos           #+#    #+#             */
-/*   Updated: 2021/12/13 20:44:14 by pbielik          ###   ########.fr       */
+/*   Updated: 2021/12/14 16:58:13 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	terminate_program(char *name, int error)
 {
-	free_data();
+	//free_data();
 	printf("ERROR\n");
 	if (error == MALLOC)
 		printf("Memory allocation failed.\n");

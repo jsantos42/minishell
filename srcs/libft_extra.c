@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft_extra.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsantos <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/14 14:11:57 by jsantos           #+#    #+#             */
-/*   Updated: 2021/12/14 14:12:00 by jsantos          ###   ########.fr       */
+/*   Updated: 2021/12/14 17:17:35 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,20 +42,18 @@ char	*ft_strnjoin(int count, ...)
 
 char	**ft_push_to_matrix(char **array, char *str)
 {
-	char	**new;
 	int		iter;
 
 	iter = -1;
 	while (array[++iter])
 		;
-	new = xmalloc(sizeof(char *) * (iter + 2), __FILE__, __LINE__);
+	array = realloc(array, sizeof(char *) * (iter + 2));
 	iter = -1;
 	while (array[++iter])
-		new[iter] = array[iter];
-	new[iter] = str;
-	new[++iter] = NULL;
-	free(array);
-	return (new);
+		array[iter] = array[iter];
+	array[iter] = ft_strdup(str);
+	array[++iter] = NULL;
+	return (array);
 }
 
 void	ft_matrix_del_one(char **array, int index)
@@ -75,7 +73,7 @@ char	**ft_matrix_dup(char **matrix, int items)
 	new = xmalloc(sizeof(char *) * (items + 1), __FILE__, __LINE__);
 	iter = -1;
 	while (matrix[++iter])
-		new[iter] = matrix[iter];
+		new[iter] = ft_strdup(matrix[iter]);
 	new[iter] = NULL;
 	return (new);
 }

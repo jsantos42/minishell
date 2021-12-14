@@ -6,7 +6,7 @@
 /*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 16:51:08 by pbielik           #+#    #+#             */
-/*   Updated: 2021/12/13 20:45:51 by pbielik          ###   ########.fr       */
+/*   Updated: 2021/12/14 17:08:34 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 bool	is_builtin(char *cmd)
 {
-	if (ft_strstr("__echo__cd__pwd__export__unset__env__exit__", cmd))
+	if (strstr("__echo__cd__pwd__export__unset__env__exit__", cmd))
 		return (true);
 	return (false);
 }
