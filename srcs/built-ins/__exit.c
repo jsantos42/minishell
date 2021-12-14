@@ -1,23 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libft_extra.h                                      :+:      :+:    :+:   */
+/*   __exit.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/13 19:45:36 by pbielik           #+#    #+#             */
-/*   Updated: 2021/12/13 20:23:39 by pbielik          ###   ########.fr       */
+/*   Created: 2021/12/13 16:50:42 by pbielik           #+#    #+#             */
+/*   Updated: 2021/12/13 16:50:43 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBFT_EXTRA_H
-# define LIBFT_EXTRA_H
+#include "../../headers/built-ins/__exit.h"
 
-char	*ft_strnjoin(int count, ...);
-void	*xmalloc(size_t size, char *file, int line);
-char	**ft_push_to_matrix(char **array, char *str);
-void	ft_matrix_del_one(char **array, int index);
-char	**ft_matrix_dup(char **matrix, int items);
-char	*ft_strstr(const char *str1, const char *str2);
-
-#endif
+int	__exit(char **args, int *ctx)
+{
+	(void)args;
+	(void)ctx;
+	ft_putstr_fd("exit\n", STDOUT_FILENO);
+	exit(EXIT_SUCCESS);
+	return (0);
+}

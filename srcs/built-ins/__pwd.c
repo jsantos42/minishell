@@ -1,23 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   terminate_and_free.h                               :+:      :+:    :+:   */
+/*   __pwd.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jsantos <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/13 14:48:03 by jsantos           #+#    #+#             */
-/*   Updated: 2021/12/13 14:48:21 by jsantos          ###   ########.fr       */
+/*   Created: 2021/12/13 16:50:45 by pbielik           #+#    #+#             */
+/*   Updated: 2021/12/13 16:50:46 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TERMINATE_AND_FREE_H
-# define TERMINATE_AND_FREE_H
+#include "../../headers/built-ins/__pwd.h"
 
-# include "main.h"
+int	__pwd(char **args, int *ctx)
+{
+	char	*cwd;
 
-void	terminate_program(char *name, int error);
-void	free_data(void);
-void	*free_tree(t_tree *tree);
-int		print_input_error(void);
-
-#endif
+	(void)args;
+	(void)ctx;
+	cwd = getcwd(NULL, 0);
+	printf("%s\n", cwd);
+	free(cwd);
+	return (0);
+}

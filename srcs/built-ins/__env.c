@@ -1,23 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libft_extra.h                                      :+:      :+:    :+:   */
+/*   __env.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/13 19:45:36 by pbielik           #+#    #+#             */
-/*   Updated: 2021/12/13 20:23:39 by pbielik          ###   ########.fr       */
+/*   Created: 2021/12/13 16:51:01 by pbielik           #+#    #+#             */
+/*   Updated: 2021/12/13 16:54:05 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBFT_EXTRA_H
-# define LIBFT_EXTRA_H
+#include "../../headers/built-ins/__env.h"
 
-char	*ft_strnjoin(int count, ...);
-void	*xmalloc(size_t size, char *file, int line);
-char	**ft_push_to_matrix(char **array, char *str);
-void	ft_matrix_del_one(char **array, int index);
-char	**ft_matrix_dup(char **matrix, int items);
-char	*ft_strstr(const char *str1, const char *str2);
+int	__env(char **args, int *ctx)
+{
+	t_list	*env_list;
+	t_pair	*var;
 
-#endif
+	(void)args;
+	(void)ctx;
+	env_list = *(get_data(NULL)->env.list);
+	while (env_list)
+	{	
+		var = ((t_pair *)env_list->content);
+		if (var->value)
+			printf("%s=%s\n", var->key, var->value);
+		env_list = env_list->next;
+	}
+	return (1);
+}

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execute_input.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/13 16:26:49 by pbielik           #+#    #+#             */
+/*   Updated: 2021/12/13 20:48:00 by pbielik          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../headers/executor/execute_input.h"
 
 #define READ_END 0
@@ -11,9 +23,6 @@
 static void	execute_pipeline(t_tree *node, int *ctx);
 static void	execute_leaf(t_data *data, t_leaf_node *leaf, int *ctx);
 static void	execute_branch(t_tree *node, int *ctx);
-static char	*get_cmd_path(char *cmd);
-static void	ft_close_fds(t_leaf_node *leaf, int *ctx);
-static void	open_io_files(t_leaf_node *leaf, int *ctx);
 
 /*
 *	1) Starts by creating a base context to be shared by processes.
@@ -79,7 +88,8 @@ static void	execute_leaf(t_data *data, t_leaf_node *leaf, int *ctx)
 	pid_t	*child;
 
 	open_io_files(leaf, ctx);
-	if (!ctx[PIPELINE] && leaf->args && is_builtin(leaf->args[0]) && ctx[INPUT] != -1)
+	if (!ctx[PIPELINE] && leaf->args && ctx[INPUT] != -1
+		&& is_builtin(leaf->args[0]))
 		data->status = exec_builtin(leaf, ctx);
 	else if (leaf->args && ctx[INPUT] != -1)
 	{
@@ -89,8 +99,7 @@ static void	execute_leaf(t_data *data, t_leaf_node *leaf, int *ctx)
 		{
 			if (dup2(ctx[INPUT], 0) == -1 || dup2(ctx[OUTPUT], 1) == -1)
 				terminate_program(leaf->args[0], DUP2);
-			if (is_builtin(leaf->args[0]))
-				exec_builtin(leaf, ctx);
+			is_builtin(leaf->args[0]) && exec_builtin(leaf, ctx);
 			ft_close_fds(leaf, ctx);
 			cmd_path = get_cmd_path(leaf->args[0]);
 			execve(cmd_path, leaf->args, data->env.array);
@@ -116,60 +125,4 @@ static void	execute_branch(t_tree *node, int *ctx)
 	right_ctx[INPUT] = p[READ_END];
 	right_ctx[PIPELINE] = TRUE;
 	execute_pipeline(node->branch.right, right_ctx);
-}
-
-static char	*get_cmd_path(char *cmd)
-{
-	char	**paths;
-	char	*path;
-	int		i;
-
-	if (!ft_strchr(cmd, '/'))
-	{
-		i = 0;
-		paths = ft_split(get_env_var("PATH"), ':', NULL);
-		while (paths[i])
-		{
-			path = ft_strnjoin(3, paths[i], "/", cmd);
-			if (access(path, X_OK) == 0)
-				return (path);
-			free(paths[i]);
-			free(path);
-			i++;
-		}
-	}
-	else if (access(cmd, X_OK) == 0)
-		return (cmd);
-	return (NULL);
-}
-
-static void	ft_close_fds(t_leaf_node *leaf, int *ctx)
-{
-	if (ctx[INPUT] != STDIN_FILENO)
-		close(ctx[INPUT]);
-	if (ctx[OUTPUT] != STDOUT_FILENO)
-		close(ctx[OUTPUT]);
-	if (leaf->heredoc_file)
-		unlink(leaf->heredoc_file);
-}
-
-static void	open_io_files(t_leaf_node *leaf, int *ctx)
-{
-	const char	*redir_in = leaf->redir_input;
-	const char	*redir_out = leaf->redir_output;
-	const bool	append_mode = leaf->append_mode;
-	const bool	here_doc = leaf->here_doc;
-
-	if (redir_in)
-	{
-		ctx[INPUT] = open(redir_in, O_RDONLY, 0);
-		if (ctx[INPUT] == -1)
-			printf("Minishell: no such file or directory: %s\n", redir_in);
-	}
-	if (redir_out && append_mode)
-		ctx[OUTPUT] = open(redir_out, O_CREAT | O_APPEND | O_WRONLY, 0644);
-	else if (redir_out)
-		ctx[OUTPUT] = open(redir_out, O_CREAT | O_TRUNC | O_WRONLY, 0644);
-	if (here_doc)
-		ctx[INPUT] = run_heredoc(leaf);
 }

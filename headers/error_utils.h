@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libft_extra.h                                      :+:      :+:    :+:   */
+/*   error_utils.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/13 19:45:36 by pbielik           #+#    #+#             */
-/*   Updated: 2021/12/13 20:23:39 by pbielik          ###   ########.fr       */
+/*   Created: 2021/12/13 14:48:03 by jsantos           #+#    #+#             */
+/*   Updated: 2021/12/13 20:43:55 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBFT_EXTRA_H
-# define LIBFT_EXTRA_H
+#ifndef ERROR_UTILS_H
+# define ERROR_UTILS_H
 
-char	*ft_strnjoin(int count, ...);
-void	*xmalloc(size_t size, char *file, int line);
-char	**ft_push_to_matrix(char **array, char *str);
-void	ft_matrix_del_one(char **array, int index);
-char	**ft_matrix_dup(char **matrix, int items);
-char	*ft_strstr(const char *str1, const char *str2);
+# include "main.h"
+
+void	terminate_program(char *name, int error);
+void	free_data(void);
+void	*free_tree(t_tree *tree);
+int		print_input_error(void);
 
 #endif

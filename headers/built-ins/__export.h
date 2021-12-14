@@ -1,23 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libft_extra.h                                      :+:      :+:    :+:   */
+/*   __export.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pbielik <pbielik@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/13 19:45:36 by pbielik           #+#    #+#             */
-/*   Updated: 2021/12/13 20:23:39 by pbielik          ###   ########.fr       */
+/*   Created: 2021/12/13 19:46:16 by pbielik           #+#    #+#             */
+/*   Updated: 2021/12/13 19:55:43 by pbielik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBFT_EXTRA_H
-# define LIBFT_EXTRA_H
+#ifndef __EXPORT_H
+# define __EXPORT_H
 
-char	*ft_strnjoin(int count, ...);
-void	*xmalloc(size_t size, char *file, int line);
-char	**ft_push_to_matrix(char **array, char *str);
-void	ft_matrix_del_one(char **array, int index);
-char	**ft_matrix_dup(char **matrix, int items);
-char	*ft_strstr(const char *str1, const char *str2);
+# include "../main.h"
 
-#endif
+int	__export(char **args, int *ctx);
+
+#endif // !__EXPORT_H_
