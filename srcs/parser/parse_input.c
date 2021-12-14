@@ -98,8 +98,8 @@ char	*parser_core(t_data *data, int *i, bool interpret_dollar)
 
 	old_i = *i;
 	while (data->input[*i] != '\0' && !data->forbidden_chars
-		   && (!ft_isspace(data->input[*i])
-			   || (ft_isspace(data->input[*i]) && data->escaped)))
+		&& (!ft_isspace(data->input[*i])
+			|| (ft_isspace(data->input[*i]) && data->escaped)))
 	{
 		if (is_escape_char(data->input[*i]))
 			remove_escape_char(data, i);

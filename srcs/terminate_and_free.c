@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../headers/error_utils.h"
+#include "../headers/terminate_and_free.h"
 
 void	terminate_program(char *name, int error)
 {
@@ -67,4 +67,20 @@ void	*free_tree(t_tree *tree)
 		free(tree);
 	}
 	return (NULL);
+}
+
+void	*xmalloc(size_t size, char *file, int line)
+{
+	void	*ptr;
+
+	ptr = (void *)malloc(size);
+	if (ptr == NULL)
+	{
+		perror(file);
+		perror("_");
+		perror(ft_itoa(line));
+		perror(" : Failed to allocate memory\n");
+		exit(EXIT_FAILURE);
+	}
+	return (ptr);
 }

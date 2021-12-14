@@ -1,20 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   libft_extra.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jsantos <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/14 14:11:57 by jsantos           #+#    #+#             */
+/*   Updated: 2021/12/14 14:12:00 by jsantos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../headers/main.h"
-
-void	*xmalloc(size_t size, char *file, int line)
-{
-	void	*ptr;
-
-	ptr = (void *)malloc(size);
-	if (ptr == NULL)
-	{
-		perror(file);
-		perror("_");
-		perror(ft_itoa(line));
-		perror(" : Failed to allocate memory\n");
-		exit(EXIT_FAILURE);
-	}
-	return (ptr);
-}
 
 char	*ft_strnjoin(int count, ...)
 {

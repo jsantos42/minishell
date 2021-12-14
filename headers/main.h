@@ -44,7 +44,7 @@
 # include "parser/special_chars.h"
 # include "parser/special_chars_utils.h"
 # include "signals.h"
-# include "error_utils.h"
+# include "terminate_and_free.h"
 
 # define PROMPT "\033[38;5;214m𓆉  Minishell $ "
 

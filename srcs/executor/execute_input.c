@@ -97,7 +97,8 @@ static void	execute_leaf(t_data *data, t_leaf_node *leaf, int *ctx)
 		{
 			if (dup2(ctx[INPUT], 0) == -1 || dup2(ctx[OUTPUT], 1) == -1)
 				terminate_program(leaf->args[0], DUP2);
-			is_builtin(leaf->args[0]) && exec_builtin(leaf, ctx);
+			if (is_builtin(leaf->args[0]))
+				exec_builtin(leaf, ctx);
 			ft_close_fds(leaf, ctx);
 			cmd_path = get_cmd_path(leaf->args[0]);
 			execve(cmd_path, leaf->args, data->env.array);
