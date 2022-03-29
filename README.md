@@ -4,7 +4,7 @@
 
 This is a project from the 42 curriculum, in which we are supposed to build our own shell.
 The subject can be found in the repo.<br>
-We implemented an Abstract Syntax Tree to work with the pipes.<br>
+We implemented an <b>Abstract Syntax Tree</b> to work with the pipes.<br>
 Enjoy! <br><br>
 
 
