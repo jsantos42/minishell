@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <sys/wait.h>
 #include "../../headers/executor/execute_input.h"
 
 #define READ_END 0
