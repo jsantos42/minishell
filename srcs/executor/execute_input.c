@@ -32,7 +32,7 @@ static void	execute_branch(t_tree *node, int *ctx);
 *	2) If the tree is a single cmd, execute the leaf. Otherwise, evoke the
 *	recursion core to traverse through the tree leafs and branches.
 *	3) Block execution and wait for all the launched processes to finish
-*	before returning control. Clear the proccess list at the end.
+*	before returning control. Clear the process list at the end.
 *	4) Update the status with the  exit code of the last process.
 */
 void	execute_input(t_data *data)
@@ -63,19 +63,19 @@ static void	execute_pipeline(t_tree *node, int *ctx)
 }
 
 /*
-*	1) Open the redicirection files if needed and overwrite the ctx FIFO.
+*	1) Open the redirection files if needed and overwrite the ctx FIFO.
 *	2) If the cmd is a builtin and is not inside a pipeline, execute the
 *	respective function inside the main process. Saving the result in the
-*	data->status. In this cenario, the exec_builtin does not exit!
+*	data->status. In this scenario, the exec_builtin does not exit!
 *	3) If the cmd is not null, create a Child process and push its PID to
-*	the active proccess list.
-*	4) !CHILD PROCCESS!
-*		1. Copy the ctx FIFO to the proccess STDIO.
-*		2. Close all the oppened file descriptors, to make sure that no
+*	the active process list.
+*	4) !CHILD PROCESS!
+*		1. Copy the ctx FIFO to the process STDIO.
+*		2. Close all the opened file descriptors, to make sure that no
 *		loose ends of the pipes will be left open.
 *		3. If the cmd is a builtin, execute it and exit the child.
-*		4. Get the path to the binary of the comand by traversing and testing
-*		the paths avaible on env.
+*		4. Get the path to the binary of the command by traversing and testing
+*		the paths available on env.
 *		5. Try to execute the given path, if the command exist and execve
 *		succeed, the child is exited by execve. Otherwise, the child is
 *		terminated with an error message.
