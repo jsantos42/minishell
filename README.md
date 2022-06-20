@@ -1,6 +1,6 @@
 # minishell
 
-![screenshot](screenshot.png)
+![screenshot](sample.gif)
 
 This is a project from the 42 curriculum, in which we are supposed to build our own shell.
 The subject can be found in the repo.<br>
